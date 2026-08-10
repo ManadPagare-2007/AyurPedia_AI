@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AyurPedia — Results, Reasoning & Differentiator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Philosopher:wght@400;700&family=Noto+Serif+Devanagari:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME TOKENS (copied from landing) ============ */
+:root{
+  --cream:#fbf5e6; --cream2:#f4e8d0; --card:#fffdf6;
+  --green-900:#1f3a1a; --green:#3d6b2e; --green-soft:#5d8a4b;
+  --gold:#d4871c; --gold-2:#e8b94a; --sienna:#a0522d; --amber:#b3541e;
+  --ink:#2a1810; --muted:#6b5a48; --line:rgba(160,82,45,.22); --line-soft:rgba(160,82,45,.14);
+  --shadow:0 14px 40px rgba(160,82,45,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{
+  font-family:'Cormorant Garamond',serif; color:var(--ink); background:var(--cream);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M32 25v14M25 32h14' stroke='%23a0522d' stroke-opacity='.10' stroke-width='1.4'/%3E%3C/svg%3E");
+  overflow-x:hidden;
+}
+::selection{background:var(--gold-2);color:var(--green-900)}
+h1,h2,h3,.cinzel{font-family:'Cinzel',serif}
+.dev{font-family:'Noto Serif Devanagari',serif}
+button{font-family:'Philosopher',sans-serif;cursor:pointer}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+main{position:relative;z-index:1}
+/* results now opens the page — clear the fixed navbar */
+#results{padding-top:140px}
+/* floating theme decor (kept from landing, now page-level) */
+.page-decor{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ============ NAVBAR ============ */
+header{
+  position:fixed;inset:0 0 auto 0;z-index:100;
+  background:rgba(251,245,230,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line-soft);transition:box-shadow .3s,background .3s;
+}
+header.scrolled{background:rgba(251,245,230,.97);box-shadow:0 8px 30px rgba(31,58,26,.12)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:80px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:46px;height:46px;flex:none;filter:drop-shadow(0 3px 6px rgba(160,82,45,.35))}
+.brand-name{font-family:'Cinzel',serif;font-weight:800;font-size:22px;letter-spacing:.5px;
+  background:linear-gradient(90deg,#7a5a17,#a0522d 55%,#d4871c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand-tag{font-family:'Philosopher',sans-serif;font-size:9.5px;letter-spacing:.38em;color:var(--sienna);text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a{font-family:'Philosopher',sans-serif;font-weight:700;font-size:15px;color:var(--ink);position:relative;padding:6px 2px;transition:color .25s}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .3s;border-radius:2px}
+.nav-links a:hover{color:var(--gold)} .nav-links a:hover::after{width:100%}
+.btn-journey{background:linear-gradient(135deg,#3d6b2e,#1f3a1a);color:#fbf5e6;border:none;border-radius:999px;padding:12px 26px;font-size:14.5px;font-weight:700;letter-spacing:.03em;box-shadow:0 6px 18px rgba(31,58,26,.35);transition:transform .25s,box-shadow .25s}
+.btn-journey:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(31,58,26,.45)}
+
+/* ============ DECOR ============ */
+.decor{position:absolute;pointer-events:none;opacity:.5}
+.leaf{animation:float 7s ease-in-out infinite}
+.leaf2{animation:float 9s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(4deg)}}
+.mandala{animation:spin 90s linear infinite;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============ SECTION HEADS ============ */
+section{position:relative;padding:70px 0}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-kicker{font-family:'Noto Serif Devanagari',serif;color:var(--gold);font-size:15px;letter-spacing:.14em}
+.sec-title{font-size:clamp(28px,4vw,44px);font-weight:800;margin-top:8px;
+  background:linear-gradient(90deg,#1f3a1a 10%,#3d6b2e 45%,#d4871c 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-sub{font-style:italic;font-size:18px;color:var(--muted);margin-top:10px;max-width:640px;margin-left:auto;margin-right:auto}
+
+/* ============ FILTER BAR ============ */
+.filterbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 20px;margin-bottom:26px;box-shadow:0 8px 24px rgba(160,82,45,.08)}
+.fgroup{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fgroup .fl{font-family:'Philosopher',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:12px;background:var(--cream) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a0522d' fill='none' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center;padding:10px 34px 10px 14px;font-family:'Philosopher',sans-serif;font-size:13.5px;color:var(--ink);outline:none;transition:border-color .25s}
+select:focus{border-color:var(--gold)}
+.comorb{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;font-family:'Philosopher',sans-serif;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;transition:all .25s;background:var(--card)}
+.comorb input{display:none}
+.comorb .dot{width:9px;height:9px;border-radius:50%;background:#cbb794;transition:background .25s}
+.comorb.on{background:linear-gradient(135deg,#c96a1b,var(--amber));border-color:transparent;color:#fff;box-shadow:0 6px 14px rgba(179,84,30,.35)}
+.comorb.on .dot{background:#ffe9c9}
+.hideunsafe{display:inline-flex;gap:8px;align-items:center;font-family:'Philosopher',sans-serif;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.hideunsafe input{accent-color:var(--green);width:15px;height:15px}
+
+/* ============ RESULT CARDS ============ */
+.results{display:flex;flex-direction:column;gap:18px}
+.rcard{display:grid;grid-template-columns:96px 1fr 132px;gap:22px;align-items:center;background:var(--card);border:1px solid var(--line-soft);border-radius:18px;padding:24px 26px;transition:transform .3s,box-shadow .3s,border-color .3s;position:relative}
+.rcard:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--gold-2)}
+.ringbox{text-align:center}
+.ring-pct{font-family:'Cinzel',serif;font-weight:800;font-size:19px;fill:var(--green-900)}
+.ring-lbl{font-family:'Philosopher',sans-serif;font-size:9px;letter-spacing:.2em;fill:var(--muted)}
+.rmain h3{font-size:21px;color:var(--green-900);display:inline}
+.rdev{font-family:'Noto Serif Devanagari',serif;color:var(--sienna);font-size:14px;margin-left:10px}
+.badges{margin:8px 0 10px;display:flex;flex-wrap:wrap;gap:8px}
+.bdg{font-family:'Philosopher',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.06em;border-radius:999px;padding:4px 12px}
+.bdg.form{color:var(--green);border:1px solid var(--green);background:rgba(61,107,46,.07)}
+.bdg.dosha{color:var(--gold);border:1px solid var(--gold);background:rgba(212,135,28,.07)}
+.bdg.reg{color:var(--muted);border:1px solid var(--line)}
+.symchips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.sym{font-family:'Philosopher',sans-serif;font-size:12px;border-radius:999px;padding:5px 12px;border:1px solid var(--line);color:var(--muted);background:var(--cream);transition:all .25s}
+.sym.hit{background:linear-gradient(135deg,var(--gold-2),var(--gold));border-color:transparent;color:#fff;font-weight:700;box-shadow:0 4px 10px rgba(212,135,28,.35)}
+.sym.miss{border:1.5px dashed var(--amber);color:var(--amber);background:transparent}
+.sym-alt{font-size:0.85em;opacity:0.82;font-style:italic;font-weight:400;font-family:'Cormorant Garamond',serif}
+.props{font-style:italic;font-size:14.5px;color:var(--muted);margin-bottom:8px}
+.props b{color:var(--sienna);font-style:normal;font-family:'Philosopher',sans-serif;font-size:12px;letter-spacing:.08em}
+.src-line{display:flex;align-items:center;gap:8px;font-style:italic;font-size:14px;color:var(--sienna)}
+.safetyrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.safety{display:inline-flex;align-items:center;gap:8px;background:#f9e7d6;border:1px solid var(--amber);color:#7a2d12;border-radius:10px;padding:6px 12px;font-family:'Philosopher',sans-serif;font-size:12px;font-weight:700}
+.safety .sq{width:8px;height:8px;background:var(--amber);flex:none}
+.rside{display:flex;flex-direction:column;align-items:center;gap:10px;border-left:1px dashed var(--line);padding-left:20px;height:100%;justify-content:center}
+.shortlist{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.shortlist input{display:none}
+.shortlist .box{width:26px;height:26px;border:2px solid var(--green);border-radius:8px;display:grid;place-items:center;color:transparent;transition:all .25s;background:var(--card)}
+.shortlist input:checked + .box{background:linear-gradient(135deg,var(--green),var(--green-900));color:#fbf5e6;box-shadow:0 4px 10px rgba(31,58,26,.35)}
+.shortlist .txt{font-family:'Philosopher',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.empty{text-align:center;font-style:italic;color:var(--muted);padding:40px 0;font-size:17px}
+
+/* ============ ENGINES (master feature) ============ */
+.engines{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.engine{background:linear-gradient(180deg,var(--card),#faf0dc);border:1px solid var(--line);border-radius:18px;padding:26px 24px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s}
+.engine:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--gold-2)}
+.engine::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--gold))}
+.engine .ico{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#fff6df,#f0dcae);border:1px solid var(--line);margin-bottom:16px}
+.engine h3{font-size:19px;color:var(--green-900);letter-spacing:.02em}
+.engine .role{font-style:italic;font-size:15.5px;color:var(--muted);margin:8px 0 14px;line-height:1.5;min-height:46px}
+.engine .live{border-top:1px dashed var(--line);padding-top:14px;font-family:'Philosopher',sans-serif;font-size:13.5px;line-height:1.6;color:var(--ink);min-height:110px}
+.live .bar-row{display:grid;grid-template-columns:1fr auto;gap:4px 10px;margin-bottom:8px;align-items:center}
+.live .track{grid-column:1/-1;height:6px;border-radius:6px;background:#efe3c8;overflow:hidden}
+.live .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold-2),var(--gold));transition:width .8s cubic-bezier(.2,.7,.3,1)}
+.live b{color:var(--green-900)} .live .gld{color:var(--gold);font-weight:700}
+.live .flagline{display:block;margin-top:6px;color:#7a2d12}
+
+/* ============ COMPARE TRAY ============ */
+#tray{position:fixed;left:50%;bottom:20px;transform:translate(-50%,180%);z-index:90;background:linear-gradient(135deg,#2c4f22,var(--green-900));color:var(--cream);border-radius:999px;padding:10px 12px 10px 22px;display:flex;align-items:center;gap:14px;box-shadow:0 18px 44px rgba(31,58,26,.45);transition:transform .45s cubic-bezier(.2,.8,.3,1)}
+#tray.show{transform:translate(-50%,0)}
+#tray .names{font-family:'Philosopher',sans-serif;font-size:13px;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tray button{background:linear-gradient(135deg,var(--gold-2),var(--gold));border:none;border-radius:999px;color:#fff;font-weight:700;font-size:13.5px;padding:10px 20px;display:inline-flex;align-items:center;gap:8px;transition:filter .25s}
+#tray button:hover{filter:brightness(1.08)}
+#tray .clr{background:none;border:none;color:#cfe3c2;font-size:12px;text-decoration:underline}
+
+/* ============ DIFFERENTIATOR ============ */
+#diff{background:linear-gradient(180deg,transparent,rgba(244,232,208,.7) 12%,rgba(244,232,208,.7) 88%,transparent)}
+.diff-tools{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+.tool-btn{border:2px solid var(--green);background:transparent;color:var(--green-900);border-radius:999px;padding:11px 22px;font-weight:700;font-size:13.5px;transition:all .25s}
+.tool-btn:hover{background:rgba(61,107,46,.08);transform:translateY(-2px)}
+.tool-btn.on{background:linear-gradient(135deg,var(--green),var(--green-900));color:var(--cream);box-shadow:0 8px 18px rgba(31,58,26,.3)}
+.tool-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.shared-band{text-align:center;margin-bottom:26px}
+.shared-band .lbl{font-family:'Philosopher',sans-serif;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:10px}
+.shared-band .sym.hit{font-size:13px}
+.diff-grid{display:grid;gap:20px;margin-bottom:26px}
+.diff-grid.n2{grid-template-columns:1fr 1fr}
+.diff-grid.n3{grid-template-columns:repeat(3,1fr)}
+.dcol{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;transition:transform .3s,box-shadow .3s;position:relative;overflow:hidden}
+.dcol:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.dcol .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dcol h3{font-size:19px;color:var(--green-900)}
+.dcol .ddev{font-family:'Noto Serif Devanagari',serif;color:var(--sienna);font-size:13px;margin-top:2px}
+.dcol .pct{font-family:'Cinzel',serif;font-weight:800;font-size:24px;color:var(--gold)}
+.dcol .pct small{font-size:11px;color:var(--muted);font-family:'Philosopher',sans-serif;display:block;letter-spacing:.14em}
+.tips{margin:14px 0;border-left:3px solid var(--gold);background:rgba(232,185,74,.14);border-radius:10px;padding:10px 14px;font-family:'Philosopher',sans-serif;font-size:13px;line-height:1.5}
+.tips b{color:var(--gold)}
+.drow{margin:10px 0;font-size:14.5px}
+.drow .k{font-family:'Philosopher',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px}
+.drow .v{font-style:italic;color:var(--ink)}
+.narrative{background:linear-gradient(180deg,var(--card),#f6ead2);border:1px solid var(--line);border-radius:18px;padding:32px 34px;box-shadow:0 10px 30px rgba(160,82,45,.1)}
+.narrative h3{font-size:22px;color:var(--green-900);margin-bottom:6px}
+.narrative .nk{font-family:'Noto Serif Devanagari',serif;color:var(--gold);font-size:13px}
+.narrative p{font-size:17px;line-height:1.75;margin-top:14px}
+.narrative p b{color:var(--green-900)} .narrative p i.g{color:var(--gold)}
+.narrative .cite{display:block;text-align:right;font-style:italic;color:var(--sienna);margin-top:18px;font-size:15px}
+.scenarios{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.scenarios .cap{width:100%;text-align:center;font-style:italic;color:var(--muted);font-size:14px;margin-bottom:2px}
+
+/* ============ FOOTER ============ */
+footer{background:linear-gradient(180deg,#24421d,var(--green-900));color:#e9e2cf;margin-top:60px;padding:60px 0 0}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1.4fr;gap:44px;padding-bottom:44px}
+.fgrid h4{font-family:'Cinzel',serif;color:var(--gold-2);font-size:16px;letter-spacing:.06em;margin-bottom:14px}
+.fgrid p,.fgrid a{font-size:15.5px;line-height:1.7;color:#d8d2bd}
+.fgrid a{display:block;margin-bottom:8px;font-family:'Philosopher',sans-serif;font-size:14px;transition:color .25s,transform .25s}
+.fgrid a:hover{color:var(--gold-2);transform:translateX(4px)}
+.fbottom{border-top:1px solid rgba(232,185,74,.25);padding:18px 0;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-family:'Philosopher',sans-serif;font-size:12.5px;color:#bdb8a2}
+.fbottom .dev{color:var(--gold-2);font-size:14px}
+
+/* toast + reveal */
+#toast{position:fixed;top:96px;left:50%;transform:translate(-50%,-200%);z-index:120;background:var(--green-900);color:var(--cream);font-family:'Philosopher',sans-serif;font-size:13.5px;border-radius:999px;padding:10px 22px;box-shadow:0 12px 30px rgba(0,0,0,.3);transition:transform .4s}
+#toast.show{transform:translate(-50%,0)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:960px){
+  .engines{grid-template-columns:1fr}
+  .diff-grid.n2,.diff-grid.n3{grid-template-columns:1fr}
+  .rcard{grid-template-columns:80px 1fr}
+  .rside{grid-column:1/-1;border-left:none;border-top:1px dashed var(--line);padding:14px 0 0;flex-direction:row;justify-content:center}
+  .fgrid{grid-template-columns:1fr}
+  .nav-links a{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<header id="hdr">
+  <div class="wrap nav">
+  <style>
+    @keyframes spinSlowBrand{to{transform:rotate(360deg)}}
+  </style>
+  <a href="/static/home.html" style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;text-decoration:none;">
+    <svg viewBox="0 0 100 100" style="width:48px;height:48px;animation:spinSlowBrand 30s linear infinite;">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div style="font-family:'Cinzel',serif;font-weight:900;font-size:1.6rem;background:linear-gradient(135deg,#1f3a1a 0%,#d4871c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;line-height:1.2;">AyurPedia</div>
+      <div style="font-size:0.65rem;color:#a0522d;letter-spacing:3px;text-transform:uppercase;margin-top:-4px;font-family:'Philosopher',sans-serif;">Ancient Wisdom · Modern Search</div>
+    </div>
+  </a>
+    <nav class="nav-links">
+      <a href="#results">Results</a><a href="#engines">Engines</a><a href="#diff">Differentiator</a><a href="/feedback/">Feedback</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<!-- theme decor retained as a page-level layer -->
+<div class="page-decor" aria-hidden="true">
+  <svg class="decor leaf" style="right:8%;top:16%" width="34" height="56" viewBox="0 0 40 60"><path d="M20 0C34 18 34 40 20 60C6 40 6 18 20 0Z" fill="#5d8a4b" opacity=".5"/><path d="M20 6V54" stroke="#3d6b2e" stroke-width="1.4" opacity=".6"/></svg>
+  <svg class="decor leaf2" style="right:5%;top:58%" width="30" height="50" viewBox="0 0 40 60"><path d="M20 0C34 18 34 40 20 60C6 40 6 18 20 0Z" fill="#7ba366" opacity=".45"/></svg>
+  <svg class="decor leaf2" style="left:4%;top:44%" width="22" height="34" viewBox="0 0 40 60"><path d="M20 0C34 18 34 40 20 60C6 40 6 18 20 0Z" fill="#a0522d" opacity=".35"/></svg>
+  <svg class="decor mandala" style="left:6%;bottom:5%" width="70" height="70" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="none" stroke="#d4871c" stroke-width="1.4" opacity=".55"/><circle cx="40" cy="40" r="20" fill="none" stroke="#d4871c" stroke-width="1" opacity=".5"/><path d="M40 8V72M8 40H72M17 17L63 63M63 17L17 63" stroke="#d4871c" stroke-width="1" opacity=".45"/></svg>
+</div>
+
+<!-- ══════════ 1 · RESULTS / RECOMMENDATION (front) ══════════ -->
+<section id="results">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker dev">॥ औषधम् ॥</div>
+      <h2 class="sec-title">Ranked Recommendations</h2>
+      <p class="sec-sub">Matched symptoms glow gold; gaps appear dashed. Shortlist two or three to send them into the Differentiator.</p>
+    </div>
+
+    <div class="filterbar reveal">
+      <div class="fgroup">
+        <span class="fl">Filter</span>
+        <select id="fDosha"><option value="any">Dosha · Any</option><option>Vata</option><option>Pitta</option><option>Kapha</option><option>Tridoshic</option></select>
+        <select id="fRegion"><option value="any">Region · Any</option><option>Pan-India</option><option>North</option><option>South</option><option>East</option><option>West</option></select>
+        <select id="fSource"><option value="any">Source Text · Any</option></select>
+        <label class="hideunsafe"><input type="checkbox" id="fHide"> Hide flagged for comorbidity</label>
+      </div>
+      <div class="fgroup">
+        <span class="fl">Patient comorbidity</span>
+        <label class="comorb" id="cDia"><input type="checkbox" data-com="diabetes"><span class="dot"></span>Diabetes (Prameha)</label>
+        <label class="comorb" id="cPreg"><input type="checkbox" data-com="pregnancy"><span class="dot"></span>Pregnancy (Garbhini)</label>
+      </div>
+    </div>
+
+    <div class="results" id="list"></div>
+  </div>
+</section>
+
+<!-- ══════════ 2 · MASTER FEATURE : THREE ENGINES ══════════ -->
+<section id="engines">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker dev">॥ युक्ति ॥</div>
+      <h2 class="sec-title">The Reasoning Zone</h2>
+      <p class="sec-sub">Three engines work together on every query — scoring, explaining and safeguarding the recommendation.</p>
+    </div>
+    <div class="engines">
+      <div class="engine reveal">
+        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d6b2e" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg></div>
+        <h3>Matching / Ranking Engine</h3>
+        <p class="role">Scores formulations against the symptom constellation.</p>
+        <div class="live" id="engMatch"></div>
+      </div>
+      <div class="engine reveal">
+        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d4871c" stroke-width="1.8"><path d="M6 3v8M6 11c0 4 4 4 6 6s2 4 2 4M18 3v8M18 11c0 4-4 4-6 6"/><circle cx="6" cy="3" r="1.6"/><circle cx="18" cy="3" r="1.6"/></svg></div>
+        <h3>Differential Reasoning Engine</h3>
+        <p class="role">Explains why one close match beats another.</p>
+        <div class="live" id="engDiff"></div>
+      </div>
+      <div class="engine reveal">
+        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a0522d" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8.5 12l2.4 2.4L15.5 9.5"/></svg></div>
+        <h3>Safety / Contraindication Engine</h3>
+        <p class="role">Flags unsuitable ingredients or mediums per comorbidity.</p>
+        <div class="live" id="engSafe"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 3 · FORMULATION DIFFERENTIATOR ══════════ -->
+<section id="diff">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-kicker dev">॥ विवेकः ॥</div>
+      <h2 class="sec-title">Formulation Differentiator</h2>
+      <p class="sec-sub">Side-by-side reasoning: what two classics share, and the single symptom that tips the decision.</p>
+    </div>
+
+    <div class="diff-tools reveal">
+      <button class="tool-btn on" id="btnWorked">Worked Example · Punarnavadi ⇄ Vyaghryadi</button>
+      <button class="tool-btn" id="btnShort" disabled>Use My Shortlist</button>
+    </div>
+
+    <div class="shared-band reveal" id="sharedBand"></div>
+    <div class="diff-grid n2" id="diffGrid"></div>
+
+    <div class="narrative reveal">
+      <span class="nk">॥ निर्णयः ॥</span>
+      <h3>Why one over the other — in plain language</h3>
+      <div id="narrBody"></div>
+      <div class="scenarios">
+        <span class="cap">Watch the verdict flip as the constellation changes:</span>
+        <button class="chip" id="scA">Scenario A · + Pinasa (common cold)</button>
+        <button class="chip" id="scB">Scenario B · + Shopha (inflammation)</button>
+      </div>
+      <span class="cite" id="narrCite"></span>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer id="about">
+  <div class="wrap fgrid">
+    <div>
+      <h4>AyurPedia</h4>
+      <p>A definitive knowledge engine surfacing the perfect formulation for every constellation of symptoms — drawn from 150+ digitised Samhitas, with synonyms mapped (Jvara ≡ Santapa), context-sensitive names resolved, and Rasa–Guna–Virya–Vipaka properties wherever available.</p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <a href="#results">Ranked Results</a><a href="#engines">Reasoning Engines</a><a href="#diff">Differentiator</a><a href="#top">Back to Top</a>
+    </div>
+    <div>
+      <h4>Caution</h4>
+      <p>Educational aid for students &amp; practitioners of Ayurveda. Contraindication flags are textual pointers, not medical advice — consult a qualified Vaidya before prescribing.</p>
+    </div>
+  </div>
+  <div class="wrap fbottom">
+    <span>© 2026 AyurPedia · Ancient Wisdom · Modern Search</span>
+    <span class="dev">॥ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः ॥</span>
+  </div>
+</footer>
+
+<div id="tray"><span class="names" id="trayNames"></span><button id="trayGo">Differentiate →</button><button class="clr" id="trayClr">clear</button></div>
+<div id="toast"></div>
+
+<script>
+/* ═══════════════ DATA ═══════════════ */
+const SYM = {
+  jvara:{l:'Jvara',en:'Fever',syn:['jvara','jwara','santapa','fever','temperature']},
+  kasa:{l:'Kasa',en:'Cough',syn:['kasa','cough']},
+  pinasa:{l:'Pinasa',en:'Cold / Rhinitis',syn:['pinasa','cold','rhinitis','nasal','congestion']},
+  shvasa:{l:'Shvasa',en:'Dyspnoea',syn:['shvasa','dyspnoea','asthma','breath']},
+  shopha:{l:'Shopha',en:'Inflammation / Oedema',syn:['shopha','shotha','inflammation','edema','swelling']},
+  angamarda:{l:'Angamarda',en:'Body ache',syn:['angamarda','bodyache','body ache','aches']},
+  pandu:{l:'Pandu',en:'Anaemia',syn:['pandu','anaemia','anemia']},
+  daha:{l:'Daha',en:'Burning sensation',syn:['daha','burning']},
+  aruchi:{l:'Aruchi',en:'Loss of taste',syn:['aruchi','anorexia','taste']},
+  klama:{l:'Klama',en:'Fatigue',syn:['klama','fatigue','weakness']}
+};
+const FORMS = [
+ {id:'vyaghryadi',n:'Vyaghryadi Kashaya',dev:'व्याघ्र्यादि काषायः',form:'Kashaya',ind:['jvara','kasa','pinasa','shvasa'],dosha:['Vata','Kapha'],region:'Pan-India',
+  src:[['Charaka Samhita','Chikitsa 3'],['Ashtanga Hridaya','Uttara 39']],props:'Rasa Katu·Tikta · Guna Laghu·Ruksha · Virya Ushna · Vipaka Katu',unsafe:[{com:'pregnancy',t:'Ushna–Katu potency — caution in Garbhini'}],
+  tip:'its Kantakari–Vyaghri pair opens the upper channels, clearing the nasal congestion of Pinasa and the breath-tightness of Shvasa'},
+ {id:'punarnavadi',n:'Punarnavadi Kashaya',dev:'पुनर्नवादि काषायः',form:'Kashaya',ind:['jvara','kasa','shopha','pandu'],dosha:['Pitta','Kapha'],region:'South',
+  src:[['Charaka Samhita','Chikitsa 16'],['Bhavaprakasha','Madhya 16']],props:'Rasa Tikta·Madhura · Guna Laghu · Virya Shita · Vipaka Madhura',unsafe:[],
+  tip:'Punarnava’s Tikta–Shita, cooling action drains Shopha — inflammatory swelling that spreads through the body — and calms Pitta'},
+ {id:'sitopaladi',n:'Sitopaladi Churna',dev:'शितोपलादि चूर्णम्',form:'Churna',ind:['kasa','pinasa','shvasa','jvara'],dosha:['Kapha','Pitta','Vata'],region:'North',
+  src:[['Bhavaprakasha','Churna Khanda'],['Yoga Ratnakara','Kasa']],props:'Rasa Madhura · Guna Guru·Snigdha · Virya Shita · Vipaka Madhura',unsafe:[{com:'diabetes',t:'Contains sugar-candy (Mishri) base'}],
+  tip:'a gentle cooling churna that soothes dry, hot coughs and post-fever throat irritation'},
+ {id:'dashamula',n:'Dashamula Kashaya',dev:'दशमूल काषायः',form:'Kashaya',ind:['jvara','shopha','angamarda','klama'],dosha:['Vata'],region:'Pan-India',
+  src:[['Sushruta Samhita','Uttara 39'],['Ashtanga Hridaya','Uttara']],props:'Rasa Katu·Tikta · Guna Laghu · Virya Ushna · Vipaka Katu',unsafe:[],
+  tip:'the ten-root group pacifies Vata aches (Angamarda) and low-grade inflammatory Shopha during febrile fatigue'},
+ {id:'chyavanaprasha',n:'Chyavanaprasha Avaleha',dev:'च्यवनप्राश अवलेहः',form:'Avaleha',ind:['kasa','shvasa','pinasa','klama'],dosha:['Vata','Pitta','Kapha'],region:'Pan-India',
+  src:[['Charaka Samhita','Chikitsa 1']],props:'Rasa Amla·Madhura · Guna Guru · Virya Ushna · Vipaka Amla',unsafe:[{com:'diabetes',t:'Contains jaggery (Guda) medium'}],
+  tip:'a rasayana jam that rebuilds strength in chronic cough, breathlessness and post-fever exhaustion'},
+ {id:'draksharishta',n:'Draksharishta',dev:'द्राक्षारिष्टः',form:'Arishta (fermented)',ind:['jvara','daha','aruchi','klama'],dosha:['Pitta'],region:'West',
+  src:[['Charaka Samhita','Chikitsa 3'],['Sharngadhara Samhita','Arishta']],props:'Rasa Madhura·Amla · Guna Snigdha · Virya Shita · Vipaka Amla',unsafe:[{com:'diabetes',t:'Fermented / alcoholic medium (Arishta)'},{com:'pregnancy',t:'Alcoholic medium (Arishta)'}],
+  tip:'a cooling fermented tonic for Pitta fevers with burning (Daha) and tastelessness — the medium itself is the caution'},
+ {id:'sudarsana',n:'Sudarsana Churna',dev:'सुदर्शन चूर्णम्',form:'Churna',ind:['jvara','shopha','aruchi','daha'],dosha:['Pitta','Kapha'],region:'Pan-India',
+  src:[['Sharngadhara Samhita','Khanda 2'],['Bhavaprakasha','Jvara']],props:'Rasa Tikta·Kashaya · Guna Laghu · Virya Shita · Vipaka Katu',unsafe:[],
+  tip:'the classical “fever powder” for toxic Jvara with burning and loss of taste'},
+ {id:'shadanga',n:'Shadanga Paniya',dev:'षडङ्ग पानीयम्',form:'Paniya (infusion)',ind:['jvara','angamarda','aruchi'],dosha:['Vata','Pitta','Kapha'],region:'East',
+  src:[['Ashtanga Hridaya','Uttara 39']],props:'Rasa Kashaya·Tikta · Guna Laghu · Virya Shita · Vipaka Katu',unsafe:[],
+  tip:'six-herb infusion for Santapa–Jvara across all doshas — a light, safe medium'},
+ {id:'talisadi',n:'Talisadi Churna',dev:'तलीसादि चूर्णम्',form:'Churna',ind:['kasa','pinasa','shvasa','aruchi'],dosha:['Kapha','Vata'],region:'North',
+  src:[['Yoga Ratnakara','Kasa'],['Bhavaprakasha','Churna']],props:'Rasa Katu·Madhura · Guna Laghu · Virya Ushna · Vipaka Katu',unsafe:[{com:'diabetes',t:'Traditionally taken with honey & sugar'}],
+  tip:'a warming churna for congested coughs with weak digestion (Mandagni)'}
+];
+const COMLBL={diabetes:'diabetic patients',pregnancy:'pregnancy'};
+
+/* ═══════════════ STATE ═══════════════ */
+const state={query:['jvara','kasa','pinasa'],com:new Set(),short:new Set(),mode:'worked',
+  f:{dosha:'any',region:'any',source:'any',hide:false}};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const lbl=k=>SYM[k].l; const labels=a=>a.map(lbl).join(' · ');
+const byId=id=>FORMS.find(f=>f.id===id);
+const doshaTxt=f=>f.dosha.length===3?'Tridoshic':f.dosha.join(' · ');
+
+/* ═══════════════ MATCHING ENGINE ═══════════════ */
+function parseQuery(str){
+  const toks=str.toLowerCase().split(/[,+;/&]|\band\b/).map(t=>t.trim()).filter(Boolean);
+  const keys=[],unk=[];
+  toks.forEach(t=>{let hit=null;
+    for(const[k,s]of Object.entries(SYM)){
+      if(s.syn.some(w=>t===w||t.includes(w)||(w.includes(t)&&t.length>3))||s.l.toLowerCase()===t||s.en.toLowerCase().includes(t)){hit=k;break}}
+    hit?(keys.includes(hit)||keys.push(hit)):unk.push(t)});
+  return{keys,unk};
+}
+function rank(){
+  return FORMS.map(f=>{
+    const matched=f.ind.filter(k=>state.query.includes(k));
+    const pct=state.query.length?Math.round(matched.length/state.query.length*100):0;
+    return{f,matched,pct};
+  }).sort((a,b)=>b.pct-a.pct||b.matched.length-a.matched.length||a.f.ind.length-b.f.ind.length);
+}
+function flags(f){return f.unsafe.filter(u=>state.com.has(u.com))}
+
+/* ═══════════════ RENDER : ENGINES ═══════════════ */
+function renderEngines(rk){
+  const q=state.query;
+  const top=rk.slice(0,3);
+  $('#engMatch').innerHTML = q.length
+   ? `<div style="margin-bottom:10px">Query: <span class="gld">${labels(q)}</span></div>`+
+     top.map(r=>`<div class="bar-row"><b>${r.f.n}</b><span class="gld">${r.pct}%</span><div class="track"><div class="fill" style="width:${r.pct}%"></div></div></div>`).join('')
+   : `Awaiting a symptom constellation…`;
+  const[a,b]=rk;
+  if(q.length&&a&&b){
+    const dec=a.f.ind.filter(k=>q.includes(k)&&!b.f.ind.includes(k));
+    $('#engDiff').innerHTML = dec.length
+      ? `<b>${a.f.n}</b> edges past <b>${b.f.n}</b> — it alone covers <span class="gld">${labels(dec)}</span> in your constellation. <span style="color:var(--muted)">Full reasoning in the Differentiator ↓</span>`
+      : `<b>${a.f.n}</b> leads <b>${b.f.n}</b> on breadth of coverage; open the Differentiator ↓ for the symptom-by-symptom edge.`;
+  } else $('#engDiff').innerHTML='Add symptoms to see the ranking edge.';
+  if(!state.com.size){$('#engSafe').innerHTML='No comorbidity selected.<br>Toggle <span class="gld">Diabetes</span> or <span class="gld">Pregnancy</span> above the results to see ingredient / medium flags.';return}
+  let out='';
+  rk.forEach(r=>flags(r.f).forEach(u=>{out+=`<span class="flagline">■ <b>${r.f.n}</b> — ${u.t.toLowerCase()} · unsuitable for ${COMLBL[u.com]}</span>`}));
+  $('#engSafe').innerHTML=out||'No flags under the active comorbidity ✓';
+}
+
+/* ═══════════════ RENDER : RESULTS ═══════════════ */
+function ring(pct){
+  const C=188.5,off=C*(1-pct/100);
+  return `<svg width="86" height="86" viewBox="0 0 86 86">
+    <circle cx="43" cy="43" r="30" fill="none" stroke="#eee0c2" stroke-width="7"/>
+    <circle cx="43" cy="43" r="30" fill="none" stroke="${pct===100?'#3d6b2e':'#d4871c'}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}" transform="rotate(-90 43 43)"/>
+    <text x="43" y="45" text-anchor="middle" class="ring-pct">${state.query.length?pct+'%':'—'}</text>
+    <text x="43" y="60" text-anchor="middle" class="ring-lbl">MATCH</text></svg>`;
+}
+function renderResults(rk){
+  const f=state.f;
+  const list=rk.filter(r=>{
+    if(f.dosha!=='any'){ if(f.dosha==='Tridoshic'){if(r.f.dosha.length!==3)return false} else if(!r.f.dosha.includes(f.dosha))return false }
+    if(f.region!=='any'&&r.f.region!==f.region)return false;
+    if(f.source!=='any'&&!r.f.src.some(s=>s[0]===f.source))return false;
+    if(f.hide&&flags(r.f).length)return false;
+    return true;
+  });
+  $('#list').innerHTML=list.length?list.map(r=>{
+    const g=r.f,miss=state.query.filter(k=>!g.ind.includes(k)),fl=flags(g);
+    return `<article class="rcard reveal in">
+      <div class="ringbox">${ring(r.pct)}</div>
+      <div class="rmain">
+        <h3>${g.n}</h3><span class="rdev dev">${g.dev}</span>
+        <div class="badges"><span class="bdg form">${g.form}</span><span class="bdg dosha">${doshaTxt(g)}</span><span class="bdg reg">${g.region}</span></div>
+        <div class="symchips">
+          ${g.ind.map(k=>`<span class="sym ${state.query.includes(k)?'hit':''}">${lbl(k)} <span class="sym-alt">(${SYM[k].en})</span></span>`).join('')}
+          ${miss.map(k=>`<span class="sym miss" title="not covered">✕ ${lbl(k)} <span class="sym-alt">(${SYM[k].en})</span></span>`).join('')}
+        </div>
+        <div class="props"><b>PROPERTIES&nbsp;</b> ${g.props}</div>
+        <div class="src-line"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a0522d" stroke-width="1.8"><path d="M4 19V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 0 2 2h14"/></svg>${g.src.map(s=>s[0]+' · '+s[1]).join('  |  ')}</div>
+        ${fl.length?`<div class="safetyrow">${fl.map(u=>`<span class="safety"><span class="sq"></span>Contains ${u.t} — flag for ${COMLBL[u.com]}</span>`).join('')}</div>`:''}
+      </div>
+      <div class="rside">
+        <label class="shortlist"><input type="checkbox" data-id="${g.id}" ${state.short.has(g.id)?'checked':''}><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4"><path d="M4 12.5l5 5L20 7"/></svg></span><span class="txt">Shortlist</span></label>
+      </div>
+    </article>`;
+  }).join(''):`<div class="empty">No formulation survives these filters — loosen a constraint, teacher.</div>`;
+}
+
+/* ═══════════════ RENDER : TRAY ═══════════════ */
+function renderTray(){
+  const n=state.short.size;
+  $('#tray').classList.toggle('show',n>0);
+  $('#trayNames').textContent=[...state.short].map(id=>byId(id).n.split(' ')[0]).join('  +  ')||'';
+  $('#btnShort').disabled=n<2;
+  $('#btnShort').textContent=`Use My Shortlist (${n})`;
+}
+
+/* ═══════════════ DIFFERENTIAL ENGINE ═══════════════ */
+function renderDiff(){
+  let ids=state.mode==='worked'?['punarnavadi','vyaghryadi']:[...state.short];
+  if(ids.length<2)ids=['punarnavadi','vyaghryadi'];
+  const cols=ids.map(byId);
+  $('#diffGrid').className='diff-grid '+(cols.length===3?'n3':'n2');
+  const shared=cols.reduce((a,f)=>a.filter(k=>f.ind.includes(k)),cols[0].ind);
+  $('#sharedBand').innerHTML=`<span class="lbl">Shared indications — the common ground</span>`+
+    (shared.length?shared.map(k=>`<span class="sym hit">${lbl(k)} <em style="opacity:.8">(${SYM[k].en})</em></span>`).join(' '):`<span class="sym">no overlap</span>`);
+  $('#diffGrid').innerHTML=cols.map(f=>{
+    const others=cols.filter(o=>o.id!==f.id).flatMap(o=>o.ind);
+    const uniq=f.ind.filter(k=>!others.includes(k));
+    const dec=uniq.filter(k=>state.query.includes(k));
+    const r=rank().find(x=>x.f.id===f.id);
+    return `<div class="dcol">
+      <div class="top"><div><h3>${f.n}</h3><div class="ddev dev">${f.dev}</div></div>
+      <div class="pct">${r?r.pct:0}%<small>MATCH</small></div></div>
+      <div class="tips">${dec.length?`<b>Tips the scale:</b> ${labels(dec)} — present in your query, covered only here.`:(uniq.length?`<b>Unique reach:</b> ${labels(uniq.slice(0,2))}`:`<b>No unique edge</b> in this pairing`)}</div>
+      <div class="drow"><span class="k">Form & Dosha</span><span class="v">${f.form} · ${doshaTxt(f)}</span></div>
+      <div class="drow"><span class="k">Properties</span><span class="v">${f.props}</span></div>
+      <div class="drow"><span class="k">Source</span><span class="v">${f.src.map(s=>s[0]+' '+s[1]).join(' · ')}</span></div>
+      ${flags(f).length?`<div class="safetyrow">${flags(f).map(u=>`<span class="safety"><span class="sq"></span>${u.t}</span>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+  const isWorked=ids.slice().sort().join()===['punarnavadi','vyaghryadi'].sort().join();
+  let html='';
+  if(isWorked){
+    html+=`<p>Both decoctions are advised for <b>Jvara</b> (fever) and <b>Kasa</b> (cough) — the shared core of this comparison.</p>
+    <p>When the constellation includes <i class="g">Pinasa</i> — the upper-respiratory congestion of a common cold — <b>Vyaghryadi Kashaya</b> suits better: ${byId('vyaghryadi').tip}.</p>
+    <p>Whereas in a condition associated with <i class="g">Shopha</i> — inflammatory changes all over the body — <b>Punarnavadi Kashaya</b> is the appropriate choice: ${byId('punarnavadi').tip}.</p>`;
+  }else{
+    html+=`<p>Both answer <b>${labels(shared)||'overlapping indications'}</b>, so the decision rests on what only one covers.</p>`;
+    cols.forEach(f=>{
+      const others=cols.filter(o=>o.id!==f.id).flatMap(o=>o.ind);
+      const dec=f.ind.filter(k=>!others.includes(k));
+      if(dec.length)html+=`<p>Choose <b>${f.n}</b> when <i class="g">${labels(dec)}</i> dominate the picture — ${f.tip}.</p>`;
+    });
+  }
+  const q=state.query;
+  if(q.includes('pinasa')&&isWorked)html+=`<p>→ Your current constellation carries <i class="g">Pinasa</i>: the edge goes to <b>Vyaghryadi</b>.</p>`;
+  if(q.includes('shopha')&&isWorked)html+=`<p>→ Your current constellation carries <i class="g">Shopha</i>: the edge goes to <b>Punarnavadi</b>.</p>`;
+  const sf=cols.flatMap(f=>flags(f).map(u=>`${f.n} (${u.t.toLowerCase()})`));
+  if(sf.length)html+=`<p><b>Safety lens:</b> unsuitable here — ${sf.join(', ')} for the active comorbidity.</p>`;
+  $('#narrBody').innerHTML=html;
+  $('#narrCite').textContent='— '+cols.flatMap(f=>f.src.map(s=>s[0]+', '+s[1])).filter((v,i,a)=>a.indexOf(v)===i).join('  ·  ');
+  $('#btnWorked').classList.toggle('on',state.mode==='worked');
+  $('#btnShort').classList.toggle('on',state.mode==='custom');
+}
+
+/* ═══════════════ ORCHESTRATION ═══════════════ */
+function renderAll(){
+  const rk=rank();
+  renderEngines(rk);renderResults(rk);renderTray();renderDiff();
+}
+function setQuery(str,scroll){
+  const{keys}=parseQuery(str);
+  state.query=keys;
+  renderAll();
+  if(scroll)$('#results').scrollIntoView({behavior:'smooth'});
+}
+
+/* events */
+['fDosha','fRegion','fSource'].forEach(id=>$('#'+id).addEventListener('change',e=>{
+  state.f[id==='fDosha'?'dosha':id==='fRegion'?'region':'source']=e.target.value;renderResults(rank());
+}));
+$('#fHide').addEventListener('change',e=>{state.f.hide=e.target.checked;renderResults(rank())});
+$$('.comorb input').forEach(i=>i.addEventListener('change',e=>{
+  e.target.checked?state.com.add(e.target.dataset.com):state.com.delete(e.target.dataset.com);
+  e.target.closest('.comorb').classList.toggle('on',e.target.checked);
+  const rk=rank();renderEngines(rk);renderResults(rk);renderDiff();
+}));
+$('#list').addEventListener('change',e=>{
+  const cb=e.target.closest('.shortlist input');if(!cb)return;
+  const id=cb.dataset.id;
+  if(cb.checked){
+    if(state.short.size>=3){cb.checked=false;toast('Shortlist holds three — remove one first.');return}
+    state.short.add(id);
+  }else state.short.delete(id);
+  renderTray();
+  if(state.mode==='custom')renderDiff();
+});
+$('#trayGo').onclick=()=>{if(state.short.size<2)return toast('Select at least two formulations.');state.mode='custom';renderDiff();$('#diff').scrollIntoView({behavior:'smooth'})};
+$('#trayClr').onclick=()=>{state.short.clear();renderTray();renderResults(rank());if(state.mode==='custom'){state.mode='worked';renderDiff()}};
+$('#btnWorked').onclick=()=>{state.mode='worked';renderDiff()};
+$('#btnShort').onclick=()=>{if(state.short.size<2)return;state.mode='custom';renderDiff();$('#diff').scrollIntoView({behavior:'smooth'})};
+$('#scA').onclick=()=>setQuery('Jvara, Kasa, Pinasa',false);
+$('#scB').onclick=()=>setQuery('Jvara, Kasa, Shopha',false);
+
+/* toast */
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200)}
+
+/* nav scroll + reveal */
+addEventListener('scroll',()=>$('#hdr').classList.toggle('scrolled',scrollY>30));
+const io=new IntersectionObserver(es=>es.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:.12});
+$$('.reveal').forEach(el=>io.observe(el));
+
+/* source filter options */
+[...new Set(FORMS.flatMap(f=>f.src.map(s=>s[0])))].forEach(t=>$('#fSource').insertAdjacentHTML('beforeend',`<option>${t}</option>`));
+
+/* init — results render immediately at the front */
+setQuery('Jvara, Kasa, Pinasa',false);
+</script>
+</body>
+</html>

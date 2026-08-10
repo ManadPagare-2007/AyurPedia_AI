@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AyurPedia | Sacred Texts & Reference Library</title>
+    
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+Devanagari:wght@400;700&family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            /* Palette */
+            --bg-parchment: #fbf5e6;
+            --bg-cream: #f4e8d0;
+            --green-deep: #1f3a1a;
+            --green-primary: #3d6b2e;
+            --gold-accent: #d4871c;
+            --gold-light: #e8b94a;
+            --sienna: #a0522d;
+            --ink-text: #2a1810;
+            
+            /* Book Dimensions */
+            --page-width: 480px;
+            --page-height: 680px;
+            
+            /* Transitions */
+            --ease-elegant: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-parchment);
+            color: var(--ink-text);
+            font-family: 'Cormorant Garamond', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND MOTIFS --- */
+        .mandala-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 120vmax;
+            height: 120vmax;
+            transform: translate(-50%, -50%);
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231f3a1a' stroke-width='1'%3E%3Ccircle cx='200' cy='200' r='180'/%3E%3Ccircle cx='200' cy='200' r='140'/%3E%3Ccircle cx='200' cy='200' r='100'/%3E%3Cpath d='M200 20 L200 380 M20 200 L380 200 M72 72 L328 328 M72 328 L328 72'/%3E%3Cpath d='M200 60 Q260 140 340 200 Q260 260 200 340 Q140 260 60 200 Q140 140 200 60Z'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 400px 400px;
+            animation: rotateMandala 120s linear infinite;
+        }
+
+        @keyframes rotateMandala {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .floating-herb {
+            position: fixed;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+            fill: var(--green-deep);
+        }
+        .herb-1 { top: 10%; left: 5%; width: 120px; animation: floatHerb 8s ease-in-out infinite; }
+        .herb-2 { bottom: 15%; right: 8%; width: 150px; animation: floatHerb 10s ease-in-out infinite reverse; }
+        .herb-3 { top: 40%; right: -2%; width: 90px; animation: floatHerb 12s ease-in-out infinite 2s; }
+
+        @keyframes floatHerb {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+        /* --- NAVIGATION --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s var(--ease-elegant);
+            background: rgba(251, 245, 230, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(61, 107, 46, 0.1);
+        }
+
+        header.scrolled {
+            padding: 0.8rem 3rem;
+            box-shadow: 0 4px 20px rgba(42, 24, 16, 0.08);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logo-text-main {
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #1f3a1a 0%, #d4871c 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+        .logo-sub-text {
+            font-size: 0.65rem;
+            color: var(--sienna);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            font-family: 'Philosopher', sans-serif;
+            line-height: 1;
+        }
+        .header-nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+        .header-nav-links a {
+            text-decoration: none;
+            color: var(--green-deep);
+            font-family: 'Philosopher', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            position: relative;
+            transition: color 0.3s ease;
+            margin-left: 0;
+        }
+        .header-nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-accent);
+            transition: width 0.3s var(--ease-elegant);
+        }
+        .header-nav-links a:hover { color: var(--gold-accent); }
+        .header-nav-links a:hover::after { width: 100%; }
+        .header-nav-links a.active { color: var(--gold-accent); }
+        .header-nav-links .nav-cta {
+            background: linear-gradient(135deg, var(--green-deep), var(--green-primary));
+            color: var(--bg-parchment) !important;
+            -webkit-text-fill-color: var(--bg-parchment) !important;
+            padding: 0.6rem 1.4rem;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(31,58,26,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .header-nav-links .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(31,58,26,0.4); }
+        .header-nav-links .nav-cta::after { display: none; }
+
+        nav a {
+            font-family: 'Philosopher', sans-serif;
+            color: var(--green-deep);
+            text-decoration: none;
+            margin-left: 2.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-accent);
+            transition: width 0.3s var(--ease-elegant);
+        }
+
+        nav a:hover { color: var(--gold-accent); }
+        nav a:hover::after { width: 100%; }
+        nav a.active { color: var(--gold-accent); }
+
+        /* --- MAIN LAYOUT --- */
+        main {
+            position: relative;
+            z-index: 1;
+            margin-top: 100px;
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.5rem;
+            perspective: 2500px;
+        }
+
+        /* --- LIBRARY CONTROLS --- */
+        .library-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--green-primary);
+            padding: 0.7rem 1.2rem 0.7rem 2.8rem;
+            border-radius: 30px;
+            color: var(--ink-text);
+            font-family: 'Philosopher', sans-serif;
+            font-size: 1rem;
+            width: 340px;
+            transition: all 0.3s var(--ease-elegant);
+            outline: none;
+        }
+
+        .search-box:focus {
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(212, 135, 28, 0.2);
+            border-color: var(--gold-accent);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            stroke: var(--green-primary);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1.5px solid var(--green-deep);
+            color: var(--green-deep);
+            padding: 0.6rem 1.8rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Philosopher', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s var(--ease-elegant);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--green-deep);
+            color: var(--bg-parchment);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(31, 58, 26, 0.25);
+        }
+
+        .page-indicator {
+            font-family: 'Cinzel', serif;
+            color: var(--sienna);
+            font-size: 1rem;
+            min-width: 100px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* --- BOOK ENGINE --- */
+        .book-container {
+            width: var(--page-width);
+            height: var(--page-height);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        @media (min-width: 1050px) {
+            .book-container { width: calc(var(--page-width) * 2); }
+        }
+
+        .page {
+            position: absolute;
+            width: var(--page-width);
+            height: var(--page-height);
+            top: 0;
+            left: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.4s var(--ease-elegant);
+            cursor: pointer;
+            border-radius: 4px 12px 12px 4px;
+            
+            /* Premium Parchment Texture */
+            background-color: var(--bg-parchment);
+            background-image: 
+                linear-gradient(to right, rgba(42,24,16,0.06) 0%, transparent 8%, transparent 92%, rgba(42,24,16,0.06) 100%),
+                radial-gradient(ellipse at 30% 20%, rgba(232,185,74,0.08) 0%, transparent 60%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+            box-shadow: 
+                inset 4px 0 15px -3px rgba(42, 24, 16, 0.12),
+                2px 0 8px rgba(42, 24, 16, 0.08);
+        }
+
+        @media (min-width: 1050px) {
+            .page { left: var(--page-width); }
+        }
+
+        .page.flipped { transform: rotateY(-180deg); }
+
+        .page-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            padding: 3rem 2.8rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px 12px 12px 4px;
+        }
+
+        .page-face.back {
+            transform: rotateY(180deg);
+            background-color: var(--bg-cream);
+            border-radius: 12px 4px 4px 12px;
+            box-shadow: inset -4px 0 15px -3px rgba(42, 24, 16, 0.12);
+        }
+
+        /* Decorative Border on Pages */
+        .page-face::before {
+            content: '';
+            position: absolute;
+            top: 12px; left: 12px; right: 12px; bottom: 12px;
+            border: 1px solid rgba(160, 82, 45, 0.2);
+            pointer-events: none;
+            border-radius: 2px 8px 8px 2px;
+        }
+        .back::before { border-radius: 8px 2px 2px 8px; }
+
+        /* Corner Ornaments */
+        .corner-ornament {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            opacity: 0.3;
+            fill: var(--sienna);
+        }
+        .co-tl { top: 18px; left: 18px; }
+        .co-tr { top: 18px; right: 18px; transform: scaleX(-1); }
+        .co-bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
+        .co-br { bottom: 18px; right: 18px; transform: scale(-1,-1); }
+
+        /* --- TYPOGRAPHY INSIDE BOOK --- */
+        h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--green-deep);
+            font-size: 1.7rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.8rem;
+        }
+
+        h2::after {
+            content: '❧';
+            display: block;
+            font-size: 1.2rem;
+            color: var(--gold-accent);
+            margin-top: 0.4rem;
+        }
+
+        h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--sienna);
+            font-size: 1.15rem;
+            margin: 1.2rem 0 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 0.7rem;
+            text-align: justify;
+            color: var(--ink-text);
+        }
+
+        strong { color: var(--green-deep); }
+
+        .sanskrit {
+            font-family: 'Noto Serif Devanagari', serif;
+            color: var(--gold-accent);
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: block;
+            text-align: center;
+            margin: 1.2rem 0;
+            text-shadow: 0 1px 2px rgba(212, 135, 28, 0.15);
+        }
+
+        .metadata {
+            font-family: 'Philosopher', sans-serif;
+            font-size: 0.8rem;
+            color: var(--sienna);
+            margin-top: auto;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(160, 82, 45, 0.2);
+            letter-spacing: 0.3px;
+        }
+
+        /* Catalogue Table */
+        .catalogue-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Philosopher', sans-serif;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .catalogue-table th {
+            text-align: left;
+            border-bottom: 2px solid var(--green-primary);
+            padding: 0.5rem 0.3rem;
+            color: var(--green-deep);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .catalogue-table td {
+            padding: 0.5rem 0.3rem;
+            border-bottom: 1px dotted rgba(160, 82, 45, 0.25);
+            color: var(--ink-text);
+        }
+
+        .status-digitized { color: var(--green-primary); font-weight: 700; }
+        .status-partial { color: var(--gold-accent); font-weight: 700; }
+        .status-fragment { color: var(--sienna); font-weight: 700; }
+
+        /* Herb Icon Circle */
+        .herb-badge {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(61,107,46,0.1), rgba(212,135,28,0.1));
+            border: 2px solid var(--gold-accent);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+        }
+
+        /* Page Numbers */
+        .page-number {
+            position: absolute;
+            bottom: 1.8rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--sienna);
+        }
+        .front .page-number { right: 2.5rem; }
+        .back .page-number { left: 2.5rem; }
+
+        /* Pulse Dot for CTA */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-accent);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            font-family: 'Philosopher', sans-serif;
+            color: var(--sienna);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(160, 82, 45, 0.15);
+            background: rgba(251, 245, 230, 0.9);
+        }
+
+        footer .sanskrit-blessing {
+            font-family: 'Noto Serif Devanagari', serif;
+            color: var(--green-deep);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1049px) {
+            :root {
+                --page-width: 88vw;
+                --page-height: 72vh;
+            }
+            .book-container { width: var(--page-width); }
+            .page { left: 0; }
+            header { padding: 1rem 1.5rem; }
+            nav a { margin-left: 1.2rem; font-size: 0.9rem; }
+            .search-box { width: 260px; }
+        }
+
+        @media (max-width: 600px) {
+            nav { display: none; } /* Simplified for mobile demo */
+            .library-controls { gap: 0.6rem; }
+            .search-box { width: 100%; max-width: 280px; }
+            .nav-btn { padding: 0.5rem 1.2rem; font-size: 0.85rem; }
+            .page-face { padding: 2rem 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            p { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Motifs -->
+    <div class="mandala-bg"></div>
+    
+    <!-- Floating Herb SVGs -->
+    <svg class="floating-herb herb-1" viewBox="0 0 100 100"><path d="M50 10 C30 25 10 45 10 65 C10 85 28 95 50 95 C72 95 90 85 90 65 C90 45 70 25 50 10Z M50 20 C40 35 30 50 30 65 C30 78 39 85 50 85 C61 85 70 78 70 65 C70 50 60 35 50 20Z"/></svg>
+    <svg class="floating-herb herb-2" viewBox="0 0 100 100"><path d="M50 5 Q20 30 20 60 Q20 90 50 95 Q80 90 80 60 Q80 30 50 5Z M50 25 Q35 42 35 60 Q35 78 50 82 Q65 78 65 60 Q65 42 50 25Z"/><path d="M50 5 L50 95" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+    <svg class="floating-herb herb-3" viewBox="0 0 100 100"><ellipse cx="50" cy="40" rx="25" ry="35"/><path d="M50 75 L50 95" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+
+    <!-- Navigation -->
+    <header id="mainHeader">
+        <a href="/static/home.html" class="logo">
+            <svg viewBox="0 0 100 100" style="width:48px;height:48px;animation:spinSlow 30s linear infinite;flex-shrink:0;">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1f3a1a"/>
+                  <stop offset="100%" stop-color="#d4871c"/>
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+              <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+              <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+              <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+              <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+              <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+              <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+            </svg>
+            <div>
+              <div class="logo-text-main">AyurPedia</div>
+              <div class="logo-sub-text">Ancient Wisdom · Modern Search</div>
+            </div>
+        </a>
+        <ul class="header-nav-links">
+          <li><a href="/static/home.html">Home</a></li>
+          <li><a href="/static/library.html" class="active">Library</a></li>
+          <li><a href="/static/query.html">Query</a></li>
+          <li><a href="/static/login.html" class="nav-cta">Begin Journey</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <!-- Controls -->
+        <div class="library-controls">
+            <div class="search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="search-box" placeholder="Search texts... (e.g., 'Vata', 'Triphala')" id="libSearch">
+            </div>
+            <button class="nav-btn" onclick="prevPage()">❮ Previous</button>
+            <span class="page-indicator" id="pageIndicator"><span class="pulse-dot"></span> Cover</span>
+            <button class="nav-btn" onclick="nextPage()">Next ❯</button>
+        </div>
+
+        <!-- 3D Book -->
+        <div class="book-container" id="book">
+            
+            <!-- PAGE 1: COVER -->
+            <div class="page" id="p1">
+                <div class="page-face front" style="justify-content:center; align-items:center; text-align:center;">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <div style="font-size:4rem; color:var(--gold-accent); margin-bottom:1.5rem; text-shadow:0 2px 8px rgba(212,135,28,0.2);">ॐ</div>
+                    <h1 style="font-family:'Cinzel'; font-size:2.6rem; color:var(--green-deep); line-height:1.15; letter-spacing:2px;">AYURVEDIC<br>GRANTHA<br>SANGRAHA</h1>
+                    <div style="width:50%; height:2px; background:linear-gradient(90deg, transparent, var(--gold-accent), transparent); margin:2rem auto;"></div>
+                    <p style="text-align:center; font-style:italic; font-size:1.15rem; color:var(--sienna);">A Curated Compendium of<br>150+ Classical Texts & Materia Medica</p>
+                    <div class="metadata" style="border:none; margin-top:3rem; font-size:0.85rem;">Digitized Reference Edition · 2026</div>
+                    <span class="page-number">i</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Library Catalogue I</h2>
+                    <p style="font-size:0.95rem; margin-bottom:1rem;">Primary source texts indexed in this volume. Use the search function to locate specific shlokas or formulations.</p>
+                    <table class="catalogue-table">
+                        <tr><th>Text</th><th>Era</th><th>Status</th></tr>
+                        <tr><td>Charaka Samhita</td><td>2nd BCE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Sushruta Samhita</td><td>6th BCE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Ashtanga Hridayam</td><td>7th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Bhaishajya Ratnavali</td><td>18th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Sharngadhara Samhita</td><td>14th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Rasa Tarangini</td><td>20th CE</td><td class="status-partial">◐ Partial</td></tr>
+                    </table>
+                    <span class="page-number">ii</span>
+                </div>
+            </div>
+
+            <!-- PAGE 2 -->
+            <div class="page" id="p2">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Library Catalogue II</h2>
+                    <table class="catalogue-table">
+                        <tr><th>Text</th><th>Era</th><th>Status</th></tr>
+                        <tr><td>Kashyapa Samhita</td><td>Unknown</td><td class="status-fragment">⚠ Fragment</td></tr>
+                        <tr><td>Madhava Nidana</td><td>8th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Chakradatta</td><td>10th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Dhanvantari Nighantu</td><td>12th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Bhavaprakasha</td><td>16th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                        <tr><td>Raja Nighantu</td><td>14th CE</td><td class="status-digitized">✓ Digitized</td></tr>
+                    </table>
+                    <div class="metadata">Total Indexed Manuscripts: 153<br>Languages: Sanskrit, Prakrit, Tamil, Malayalam</div>
+                    <span class="page-number">1</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Amalaki</h2>
+                    <div class="herb-badge">🌿</div>
+                    <span class="sanskrit">आमलकी (Āmalakī)</span>
+                    <h3>Rasa-Guna-Virya Profile</h3>
+                    <p><strong>Rasa:</strong> Pancharasa (5 tastes except Lavana)<br>
+                    <strong>Guna:</strong> Guru, Ruksha<br>
+                    <strong>Virya:</strong> Sheeta (Cooling)<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <h3>Therapeutic Indications</h3>
+                    <p>Prameha, Pandu, Shotha, Kasa, Vatarakta. Primary Rasayana in Charaka Chikitsa Sthana.</p>
+                    <div class="metadata">Ref: Charaka Samhita, Sutra Sthana 27/102</div>
+                    <span class="page-number">2</span>
+                </div>
+            </div>
+
+            <!-- PAGE 3 -->
+            <div class="page" id="p3">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Haritaki</h2>
+                    <div class="herb-badge">🍂</div>
+                    <span class="sanskrit">हरीतकी (Harītakī)</span>
+                    <h3>Pharmacological Profile</h3>
+                    <p><strong>Rasa:</strong> Pancha Rasa (Lavana Varjya)<br>
+                    <strong>Guna:</strong> Laghu, Ruksha<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <h3>Key Formulations</h3>
+                    <p>Abhayarishta, Triphala Churna, Pathyadi Kashaya. Known as "The King of Medicines" in Tibetan & Ayurvedic traditions.</p>
+                    <div class="metadata">Ref: Bhavaprakasha Nighantu, Haritakyadi Varga</div>
+                    <span class="page-number">3</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Bibhitaki</h2>
+                    <div class="herb-badge">🌰</div>
+                    <span class="sanskrit">बिभीतकी (Bibhītakī)</span>
+                    <h3>Rasa-Guna-Virya Profile</h3>
+                    <p><strong>Rasa:</strong> Kashaya, Madhura, Katu<br>
+                    <strong>Guna:</strong> Laghu, Ruksha<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <h3>Special Notes</h3>
+                    <p>Seeds are narcotic in high doses. Fruit pulp is primary therapeutic part. Excellent for Kapha-Vata disorders, Netra Rogas, and Swasa.</p>
+                    <div class="metadata">Ref: Dhanvantari Nighantu, Guduchyadi Varga</div>
+                    <span class="page-number">4</span>
+                </div>
+            </div>
+
+            <!-- PAGE 4 -->
+            <div class="page" id="p4">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Punarnava</h2>
+                    <div class="herb-badge">🌱</div>
+                    <span class="sanskrit">पुनर्नवा (Punarnavā)</span>
+                    <h3>Profile & Action</h3>
+                    <p><strong>Rasa:</strong> Madhura, Kashaya<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Katu</p>
+                    <p><em>"Punar" = Again, "Nava" = New.</em> The renewer. Primary diuretic and anti-inflammatory in Ayurvedic pharmacopeia.</p>
+                    <h3>Indications</h3>
+                    <p>Shotha (Edema), Mutrakrichra, Vatarakta, Pandu. Key ingredient in Punarnavadi Kashaya.</p>
+                    <div class="metadata">Ref: Sharngadhara Samhita, Purva Khanda</div>
+                    <span class="page-number">5</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Guggulu</h2>
+                    <div class="herb-badge">💧</div>
+                    <span class="sanskrit">गुग्गुलु (Guggulu)</span>
+                    <h3>Resin Profile</h3>
+                    <p><strong>Rasa:</strong> Tikta, Katu, Kashaya<br>
+                    <strong>Guna:</strong> Laghu, Snigdha, Vishada<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Katu</p>
+                    <h3>Shodhana (Purification)</h3>
+                    <p>Must be purified in Triphala decoction or Gomutra before internal use. Raw resin causes adverse effects.</p>
+                    <div class="metadata">Ref: Rasa Tarangini, Chapter 11</div>
+                    <span class="page-number">6</span>
+                </div>
+            </div>
+
+            <!-- PAGE 5 -->
+            <div class="page" id="p5">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Ashwagandha</h2>
+                    <div class="herb-badge">🐎</div>
+                    <span class="sanskrit">अश्वगन्धा (Aśvagandhā)</span>
+                    <h3>Rasayana Profile</h3>
+                    <p><strong>Rasa:</strong> Tikta, Kashaya, Katu<br>
+                    <strong>Guna:</strong> Laghu, Snigdha<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <p>Name derives from horse-smell (Ashwa) and strength-giving properties. Primary adaptogen and Balya drug.</p>
+                    <div class="metadata">Ref: Charaka Samhita, Chikitsa Sthana 1/72</div>
+                    <span class="page-number">7</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Shatavari</h2>
+                    <div class="herb-badge">🌾</div>
+                    <span class="sanskrit">शतावरी (Śatāvarī)</span>
+                    <h3>Stree Roga Specialist</h3>
+                    <p><strong>Rasa:</strong> Madhura, Tikta<br>
+                    <strong>Guna:</strong> Guru, Snigdha<br>
+                    <strong>Virya:</strong> Sheeta<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <p>"She who possesses a hundred husbands." Premier female tonic, galactagogue, and Pitta pacifier.</p>
+                    <div class="metadata">Ref: Ashtanga Hridayam, Uttara Sthana</div>
+                    <span class="page-number">8</span>
+                </div>
+            </div>
+
+            <!-- PAGE 6 -->
+            <div class="page" id="p6">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Tulsi</h2>
+                    <div class="herb-badge">🍃</div>
+                    <span class="sanskrit">तुलसी (Tulasī)</span>
+                    <h3>Sacred Herb Profile</h3>
+                    <p><strong>Rasa:</strong> Katu, Tikta<br>
+                    <strong>Guna:</strong> Laghu, Ruksha<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Katu</p>
+                    <p>Three varieties: Rama (Green), Krishna (Purple), Vana (Wild). All possess Krimighna, Jvaraghna, and Shwasahara properties.</p>
+                    <div class="metadata">Ref: Bhavaprakasha, Padma Khanda</div>
+                    <span class="page-number">9</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Neem</h2>
+                    <div class="herb-badge">🌳</div>
+                    <span class="sanskrit">निम्ब (Nimba)</span>
+                    <h3>Bitter Guardian</h3>
+                    <p><strong>Rasa:</strong> Tikta, Kashaya<br>
+                    <strong>Guna:</strong> Laghu, Ruksha<br>
+                    <strong>Virya:</strong> Sheeta<br>
+                    <strong>Vipaka:</strong> Katu</p>
+                    <p>Supreme Krimighna and Rakta Shodhaka. Used externally for Kushtha and internally for Pitta-Kapha detoxification.</p>
+                    <div class="metadata">Ref: Sushruta Samhita, Sutra Sthana 46</div>
+                    <span class="page-number">10</span>
+                </div>
+            </div>
+
+            <!-- PAGE 7 -->
+            <div class="page" id="p7">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Brahmi</h2>
+                    <div class="herb-badge">🧠</div>
+                    <span class="sanskrit">ब्राह्मी (Brāhmī)</span>
+                    <h3>Medhya Rasayana</h3>
+                    <p><strong>Rasa:</strong> Tikta, Kashaya<br>
+                    <strong>Guna:</strong> Laghu<br>
+                    <strong>Virya:</strong> Sheeta<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <p>Note: Often confused with Mandukaparni (Centella asiatica). True Brahmi is Bacopa monnieri. Both are Medhya but differ in potency.</p>
+                    <div class="metadata">Ref: Charaka Samhita, Chikitsa 1/3</div>
+                    <span class="page-number">11</span>
+                </div>
+                <div class="page-face back">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Shankhapushpi</h2>
+                    <div class="herb-badge">🌸</div>
+                    <span class="sanskrit">शङ्खपुष्पी (Śaṅkhapuṣpī)</span>
+                    <h3>Nervine Tonic</h3>
+                    <p><strong>Rasa:</strong> Kashaya, Tikta, Madhura<br>
+                    <strong>Guna:</strong> Laghu, Snigdha<br>
+                    <strong>Virya:</strong> Sheeta<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <p>Conch-shaped flower gives it the name. Unmatched in Unmada, Apasmara, and Manasika Vikara treatment.</p>
+                    <div class="metadata">Ref: Madhava Dravya Guna, Page 214</div>
+                    <span class="page-number">12</span>
+                </div>
+            </div>
+
+            <!-- PAGE 8: END -->
+            <div class="page" id="p8">
+                <div class="page-face front">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <h2>Jadi-Buti: Guduchi</h2>
+                    <div class="herb-badge">🔄</div>
+                    <span class="sanskrit">गुडूची (Guḍūcī)</span>
+                    <h3>Amrita - The Immortal</h3>
+                    <p><strong>Rasa:</strong> Tikta, Kashaya, Katu<br>
+                    <strong>Guna:</strong> Laghu, Snigdha<br>
+                    <strong>Virya:</strong> Ushna<br>
+                    <strong>Vipaka:</strong> Madhura</p>
+                    <p>Tridoshahara. One of the few drugs that balances all three doshas simultaneously. Essential in Jvara Chikitsa.</p>
+                    <div class="metadata">Ref: Charaka Samhita, Chikitsa 3/133</div>
+                    <span class="page-number">13</span>
+                </div>
+                <div class="page-face back" style="justify-content:center; align-items:center; text-align:center;">
+                    <svg class="corner-ornament co-tl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-tr" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-bl" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    <svg class="corner-ornament co-br" viewBox="0 0 30 30"><path d="M0 0 L30 0 L30 5 L5 5 L5 30 L0 30Z"/></svg>
+                    
+                    <span class="sanskrit" style="font-size:2.2rem; margin-bottom:2rem;">॥ इति ग्रन्थ समाप्तः ॥</span>
+                    <p style="text-align:center; max-width:80%;">This digital reproduction preserves the wisdom of classical Ayurvedic manuscripts while enabling modern search and cross-referencing capabilities.</p>
+                    <p style="text-align:center; margin-top:1rem; font-style:italic; color:var(--sienna);">For full access to 150+ texts, API integration, and manuscript scans, visit the AyurPedia Research Portal.</p>
+                    <div style="margin-top:3rem; font-size:3.5rem; color:var(--gold-accent); text-shadow:0 2px 10px rgba(212,135,28,0.25);">ॐ</div>
+                    <span class="page-number">14</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="sanskrit-blessing">ॐ सर्वे भवन्तु सुखिनः ॥</div>
+        © 2026 AyurPedia · Preserving Tradition, Empowering Practice
+    </footer>
+
+    <script>
+        // --- HEADER SCROLL EFFECT ---
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 30);
+        });
+
+        // --- BOOK ENGINE ---
+        const pages = document.querySelectorAll('.page');
+        const totalPages = pages.length;
+        let currentPage = 0;
+
+        function updateZIndexes() {
+            pages.forEach((page, index) => {
+                if (index < currentPage) {
+                    page.style.zIndex = index + 1;
+                } else {
+                    page.style.zIndex = totalPages - index;
+                }
+            });
+        }
+
+        function updateIndicator() {
+            const indicator = document.getElementById('pageIndicator');
+            if (currentPage === 0) {
+                indicator.innerHTML = '<span class="pulse-dot"></span> Cover';
+            } else if (currentPage >= totalPages) {
+                indicator.innerHTML = '<span class="pulse-dot"></span> Back Cover';
+            } else {
+                const left = currentPage * 2;
+                const right = currentPage * 2 + 1;
+                indicator.innerHTML = `<span class="pulse-dot"></span> pp. ${left}–${right}`;
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                pages[currentPage].classList.add('flipped');
+                currentPage++;
+                setTimeout(updateZIndexes, 100);
+                updateIndicator();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                pages[currentPage].classList.remove('flipped');
+                setTimeout(updateZIndexes, 100);
+                updateIndicator();
+            }
+        }
+
+        // Click-to-flip
+        pages.forEach((page, index) => {
+            page.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (page.classList.contains('flipped')) {
+                    prevPage();
+                } else {
+                    nextPage();
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft') prevPage();
+        });
+
+        // Search (demo)
+        document.getElementById('libSearch').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                const term = this.value.trim().toLowerCase();
+                if (!term) return;
+                let found = false;
+                pages.forEach((page, idx) => {
+                    if (!found && page.textContent.toLowerCase().includes(term)) {
+                        while (currentPage <= idx) nextPage();
+                        found = true;
+                    }
+                });
+                if (!found) alert(`"${this.value}" not found in current volume.`);
+            }
+        });
+
+        // Init
+        updateZIndexes();
+        updateIndicator();
+    </script>
+</body>
+</html>

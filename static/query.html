@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AyurPedia — Case Builder & Prakriti Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Philosopher:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --forest:#1f3a1a;--forest-deep:#0f1f0c;--leaf:#3d6b2e;
+  --saffron:#d4871c;--gold:#e8b94a;--gold-bright:#f5cf5a;
+  --terracotta:#a0522d;--parchment:#f4e8d0;--ink:#2a1810;--cream:#fbf5e6;
+  --vata:#8b6f47;--pitta:#c0392b;--kapha:#2e7d5b;
+}
+body{font-family:'Cormorant Garamond',serif;background:var(--cream);color:var(--ink);overflow-x:hidden;line-height:1.6;min-height:100vh}
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(212,135,28,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(61,107,46,0.08) 0%,transparent 40%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><path d='M30 5 Q35 15 30 25 Q25 15 30 5 Z' fill='%23d4871c' opacity='0.04'/></svg>");
+  pointer-events:none;z-index:0;
+}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@keyframes floatHerb{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(5deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+@keyframes blink{0%,100%{opacity:0.3}50%{opacity:1}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;padding:1rem 4%;display:flex;justify-content:space-between;align-items:center;z-index:100;background:rgba(251,245,230,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,135,28,0.2);box-shadow:0 2px 20px rgba(31,58,26,0.08)}
+.logo{display:flex;align-items:center;gap:0.7rem;cursor:pointer;text-decoration:none}
+.logo-icon{width:48px;height:48px;animation:spinSlow 30s linear infinite}
+.logo-text{font-family:'Cinzel',serif;font-weight:900;font-size:1.6rem;background:linear-gradient(135deg,var(--forest) 0%,var(--saffron) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:0.65rem;color:var(--terracotta);letter-spacing:3px;text-transform:uppercase;margin-top:-4px;font-family:'Philosopher',sans-serif}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{text-decoration:none;color:var(--forest);font-family:'Philosopher',sans-serif;font-weight:700;font-size:1rem;position:relative;transition:color 0.3s;cursor:pointer}
+.nav-links a::after{content:"";position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--saffron);transition:width 0.3s}
+.nav-links a:hover,.nav-links a.active{color:var(--saffron)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+
+/* VIEW SWITCHER */
+.view-switcher{margin-top:80px;padding:1.5rem 4%;display:flex;justify-content:center;gap:1rem;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);border-bottom:1px solid rgba(212,135,28,0.15);position:sticky;top:73px;z-index:50}
+.view-tab{background:transparent;border:2px solid rgba(61,107,46,0.2);color:var(--forest);padding:0.8rem 2rem;border-radius:50px;font-family:'Philosopher',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:0.6rem}
+.view-tab:hover{border-color:var(--saffron);background:rgba(212,135,28,0.05)}
+.view-tab.active{background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);border-color:var(--forest);box-shadow:0 6px 20px rgba(31,58,26,0.25)}
+.view-tab svg{width:20px;height:20px}
+
+.view{display:none;animation:fadeUp 0.5s both}
+.view.active{display:block}
+
+/* PAGE HEADER */
+.page-header{padding:3rem 4% 2rem;text-align:center;position:relative;overflow:hidden}
+.page-header::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;opacity:0.06;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><g fill='none' stroke='%23d4871c' stroke-width='0.5'><circle cx='200' cy='200' r='190'/><circle cx='200' cy='200' r='170'/><circle cx='200' cy='200' r='150'/><circle cx='200' cy='200' r='130'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z' transform='rotate(60 200 200)'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z' transform='rotate(120 200 200)'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z' transform='rotate(180 200 200)'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z' transform='rotate(240 200 200)'/><path d='M200 20 Q215 100 200 200 Q185 100 200 20 Z' transform='rotate(300 200 200)'/></g></svg>") no-repeat center;animation:spinSlow 120s linear infinite}
+.page-eyebrow{font-family:'Philosopher',sans-serif;color:var(--saffron);letter-spacing:5px;text-transform:uppercase;font-size:0.9rem;margin-bottom:0.8rem;position:relative}
+.page-title{font-family:'Cinzel',serif;font-size:clamp(2rem,4vw,3rem);font-weight:900;color:var(--forest);margin-bottom:1rem;position:relative}
+.page-title .italic{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;color:var(--saffron)}
+.page-subtitle{max-width:750px;margin:0 auto;color:var(--ink);opacity:0.8;font-size:1.15rem;font-style:italic;position:relative}
+.sanskrit-verse{font-family:'Noto Serif Devanagari',serif;color:var(--terracotta);font-size:1.1rem;margin-top:1rem;opacity:0.85;position:relative;letter-spacing:2px}
+
+/* ============ CASE BUILDER STYLES ============ */
+.builder-container{max-width:1200px;margin:0 auto;padding:2rem 4% 4rem;position:relative;z-index:2}
+.form-grid{display:grid;grid-template-columns:1fr 380px;gap:2rem;align-items:start}
+.form-section{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(212,135,28,0.2);border-radius:20px;padding:2rem;margin-bottom:2rem;box-shadow:0 10px 40px rgba(31,58,26,0.08);transition:all 0.3s}
+.form-section:hover{box-shadow:0 15px 50px rgba(31,58,26,0.12);border-color:rgba(212,135,28,0.3)}
+.section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid rgba(212,135,28,0.15)}
+.section-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--forest),var(--leaf));border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(31,58,26,0.2);flex-shrink:0}
+.section-icon svg{width:26px;height:26px;color:var(--gold-bright)}
+.section-title{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--forest);font-weight:700}
+.section-desc{font-size:0.95rem;color:var(--ink);opacity:0.7;font-style:italic;margin-top:0.2rem}
+
+.symptom-input-wrap{position:relative;margin-bottom:1rem}
+.symptom-input{width:100%;padding:1rem 1.2rem;border:2px solid rgba(61,107,46,0.2);border-radius:12px;background:var(--cream);font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ink);transition:all 0.3s}
+.symptom-input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(212,135,28,0.1)}
+.symptom-input::placeholder{color:#8a7a5a;font-style:italic}
+.autocomplete-dropdown{position:absolute;top:100%;left:0;right:0;background:white;border:2px solid var(--saffron);border-radius:12px;margin-top:0.5rem;max-height:320px;overflow-y:auto;box-shadow:0 10px 40px rgba(31,58,26,0.2);display:none;z-index:10}
+.autocomplete-dropdown.active{display:block}
+.autocomplete-item{padding:0.9rem 1.2rem;cursor:pointer;border-bottom:1px solid rgba(212,135,28,0.1);transition:background 0.2s}
+.autocomplete-item:hover{background:rgba(212,135,28,0.08)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-top{display:flex;justify-content:space-between;align-items:center;gap:0.5rem}
+.autocomplete-name{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:1rem}
+.autocomplete-cat{font-size:0.7rem;background:rgba(61,107,46,0.1);color:var(--forest);padding:0.15rem 0.6rem;border-radius:10px;font-family:'Philosopher',sans-serif}
+.autocomplete-synonym{font-size:0.85rem;color:var(--terracotta);font-style:italic;margin-top:0.2rem}
+.autocomplete-match{font-size:0.75rem;color:var(--saffron);font-weight:700;margin-top:0.2rem;font-family:'Philosopher',sans-serif;letter-spacing:0.5px}
+
+.symptom-tags{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:1rem;min-height:30px}
+.symptom-tag{background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);padding:0.5rem 1rem;border-radius:20px;font-family:'Philosopher',sans-serif;font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;animation:fadeUp 0.3s both}
+.symptom-tag .remove{cursor:pointer;opacity:0.7;transition:opacity 0.2s;font-size:1.1rem;line-height:1}
+.symptom-tag .remove:hover{opacity:1}
+.tag-alt{opacity:0.75;font-size:0.8em;font-weight:400;font-family:'Cormorant Garamond',serif;font-style:italic;letter-spacing:0}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.form-field{display:flex;flex-direction:column;gap:0.5rem}
+.form-label{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.95rem;letter-spacing:0.5px}
+.form-select,.form-input{padding:0.8rem 1rem;border:2px solid rgba(61,107,46,0.2);border-radius:10px;background:var(--cream);font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ink);cursor:pointer;transition:all 0.3s}
+.form-select:focus,.form-input:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(212,135,28,0.1)}
+.form-select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M6 9L1 4h10z' fill='%23d4871c'/></svg>");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+
+.chip-group{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem}
+.chip{background:rgba(255,255,255,0.8);border:2px solid rgba(61,107,46,0.2);color:var(--forest);padding:0.5rem 1rem;border-radius:20px;font-family:'Philosopher',sans-serif;font-size:0.9rem;cursor:pointer;transition:all 0.3s;user-select:none}
+.chip:hover{border-color:var(--saffron);background:rgba(212,135,28,0.05)}
+.chip.active{background:linear-gradient(135deg,var(--saffron),var(--gold));color:var(--cream);border-color:var(--saffron)}
+
+.prakriti-link{display:inline-flex;align-items:center;gap:0.6rem;background:rgba(212,135,28,0.1);border:2px dashed var(--saffron);color:var(--forest);padding:0.8rem 1.5rem;border-radius:12px;text-decoration:none;font-family:'Philosopher',sans-serif;font-weight:700;font-size:0.95rem;transition:all 0.3s;margin-top:1rem;cursor:pointer}
+.prakriti-link:hover{background:rgba(212,135,28,0.15);border-style:solid;transform:translateY(-2px)}
+.prakriti-link svg{width:20px;height:20px;color:var(--saffron)}
+
+.prakriti-badge{display:none;background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);padding:0.8rem 1.2rem;border-radius:12px;margin-top:1rem;font-family:'Philosopher',sans-serif;font-size:0.9rem;justify-content:space-between;align-items:center;gap:0.8rem}
+.prakriti-badge.show{display:flex}
+.prakriti-badge-info{display:flex;align-items:center;gap:0.6rem}
+.prakriti-badge svg{width:18px;height:18px;color:var(--gold-bright)}
+.prakriti-badge strong{color:var(--gold-bright)}
+.prakriti-badge-edit{background:rgba(255,255,255,0.2);border:none;color:var(--cream);padding:0.3rem 0.8rem;border-radius:20px;cursor:pointer;font-family:'Philosopher',sans-serif;font-size:0.8rem;transition:background 0.2s}
+.prakriti-badge-edit:hover{background:rgba(255,255,255,0.3)}
+
+.sidebar{position:sticky;top:160px}
+.sidebar-card{background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(244,232,208,0.95));border:2px solid rgba(212,135,28,0.3);border-radius:20px;padding:2rem;box-shadow:0 15px 50px rgba(31,58,26,0.12)}
+.summary-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid rgba(212,135,28,0.2)}
+.summary-title{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--forest);margin-bottom:0.3rem}
+.summary-subtitle{font-size:0.9rem;color:var(--terracotta);font-style:italic}
+.summary-section{margin-bottom:1.3rem}
+.summary-label{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.85rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.5rem}
+.summary-value{color:var(--ink);font-size:1rem;line-height:1.5}
+.summary-empty{color:#8a7a5a;font-style:italic;opacity:0.7}
+.summary-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+.summary-tag{background:rgba(61,107,46,0.1);color:var(--forest);padding:0.3rem 0.7rem;border-radius:15px;font-size:0.85rem;font-family:'Philosopher',sans-serif}
+
+.cta-button{width:100%;background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);border:none;padding:1.2rem 2rem;border-radius:15px;font-family:'Cinzel',serif;font-weight:700;font-size:1.15rem;letter-spacing:1px;cursor:pointer;transition:all 0.3s;box-shadow:0 10px 30px rgba(31,58,26,0.3);display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-top:1.5rem}
+.cta-button:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 15px 40px rgba(31,58,26,0.4)}
+.cta-button:disabled{opacity:0.45;cursor:not-allowed}
+.cta-button svg{width:24px;height:24px}
+.helper-text{font-size:0.85rem;color:var(--terracotta);font-style:italic;margin-top:0.5rem;opacity:0.85}
+
+/* ============ CHATBOT STYLES ============ */
+.chat-container{max-width:1200px;margin:2rem auto;padding:0 4% 4rem;display:grid;grid-template-columns:1fr 360px;gap:2rem;position:relative;z-index:2;align-items:start}
+.chat-column{display:flex;flex-direction:column;gap:1.5rem}
+
+.progress-wrap{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(212,135,28,0.2);border-radius:20px;padding:1.5rem 2rem;box-shadow:0 10px 30px rgba(31,58,26,0.08)}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem}
+.progress-label{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.95rem;letter-spacing:1px}
+.progress-count{font-family:'Cinzel',serif;font-weight:700;color:var(--saffron);font-size:1.1rem}
+.progress-bar{height:8px;background:rgba(61,107,46,0.1);border-radius:10px;overflow:hidden;position:relative}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--forest),var(--saffron),var(--gold));border-radius:10px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);position:relative}
+.progress-fill::after{content:"";position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5));animation:shimmer 2s infinite}
+
+.chat-window{background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);border:1px solid rgba(212,135,28,0.2);border-radius:20px;box-shadow:0 10px 40px rgba(31,58,26,0.08);overflow:hidden;display:flex;flex-direction:column;height:650px}
+
+.chat-header{background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:2px solid var(--saffron)}
+.chat-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--saffron),var(--gold));display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.chat-avatar svg{width:28px;height:28px;color:var(--forest-deep)}
+.chat-avatar::after{content:"";position:absolute;bottom:2px;right:2px;width:12px;height:12px;background:#4ade80;border:2px solid var(--forest);border-radius:50%}
+.chat-header-info h3{font-family:'Cinzel',serif;font-size:1.15rem;margin-bottom:0.2rem}
+.chat-header-info p{font-size:0.85rem;opacity:0.85;font-style:italic}
+.chat-header-actions{margin-left:auto;display:flex;gap:0.5rem}
+.chat-action-btn{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:var(--cream);padding:0.4rem 0.9rem;border-radius:20px;font-family:'Philosopher',sans-serif;font-size:0.8rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:0.3rem}
+.chat-action-btn:hover{background:rgba(255,255,255,0.25)}
+
+.chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:6px}
+.chat-messages::-webkit-scrollbar-track{background:transparent}
+.chat-messages::-webkit-scrollbar-thumb{background:rgba(212,135,28,0.3);border-radius:10px}
+
+.message{display:flex;gap:0.8rem;max-width:85%;animation:fadeUp 0.4s both}
+.message.bot{align-self:flex-start}
+.message.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:900;font-size:0.85rem;color:var(--cream)}
+.message.bot .msg-avatar{background:linear-gradient(135deg,var(--forest),var(--leaf))}
+.message.user .msg-avatar{background:linear-gradient(135deg,var(--saffron),var(--gold));color:var(--forest-deep)}
+.msg-bubble{padding:0.9rem 1.2rem;border-radius:18px;font-size:1.05rem;line-height:1.5;position:relative}
+.message.bot .msg-bubble{background:var(--cream);border:1px solid rgba(61,107,46,0.2);border-top-left-radius:4px;color:var(--ink)}
+.message.user .msg-bubble{background:linear-gradient(135deg,var(--saffron),var(--gold));color:var(--forest-deep);border-top-right-radius:4px;font-weight:600}
+.msg-category{font-family:'Philosopher',sans-serif;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--terracotta);margin-bottom:0.3rem;font-weight:700}
+.msg-hint{font-size:0.85rem;color:var(--terracotta);font-style:italic;margin-top:0.4rem;opacity:0.85}
+
+/* Typing indicator */
+.typing-indicator{display:flex;gap:0.3rem;padding:0.9rem 1.2rem;background:var(--cream);border:1px solid rgba(61,107,46,0.2);border-radius:18px;border-top-left-radius:4px;align-self:flex-start;margin-left:44px}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--saffron);animation:blink 1.4s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+
+/* Options as clickable bubbles */
+.options-bubble{display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem;margin-left:44px;animation:fadeUp 0.5s both}
+.option-bubble{background:white;border:2px solid rgba(61,107,46,0.25);padding:0.9rem 1.2rem;border-radius:15px;cursor:pointer;transition:all 0.3s;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ink);text-align:left;display:flex;align-items:center;gap:0.8rem;position:relative}
+.option-bubble:hover{border-color:var(--saffron);background:rgba(212,135,28,0.05);transform:translateX(5px);box-shadow:0 4px 15px rgba(212,135,28,0.15)}
+.option-bubble .opt-marker{width:24px;height:24px;border-radius:50%;background:rgba(61,107,46,0.1);color:var(--forest);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:0.8rem;flex-shrink:0}
+.option-bubble:hover .opt-marker{background:var(--saffron);color:var(--cream)}
+.option-bubble.selected{background:linear-gradient(135deg,rgba(212,135,28,0.15),rgba(232,185,74,0.15));border-color:var(--saffron);pointer-events:none;opacity:0.7}
+
+/* Result message in chat */
+.result-message{background:linear-gradient(135deg,var(--forest-deep),var(--forest));color:var(--cream);padding:1.5rem;border-radius:20px;margin-top:0.5rem;position:relative;overflow:hidden}
+.result-message::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%23d4871c' stroke-width='0.5' opacity='0.3'/></svg>");opacity:0.2}
+.result-message > *{position:relative}
+.result-eyebrow{font-family:'Philosopher',sans-serif;color:var(--gold);letter-spacing:3px;text-transform:uppercase;font-size:0.8rem;margin-bottom:0.5rem}
+.result-dosha{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--gold-bright);margin-bottom:0.3rem}
+.result-type{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--parchment);margin-bottom:0.8rem}
+.result-desc{font-size:0.95rem;color:var(--parchment);opacity:0.9;line-height:1.5;margin-bottom:1rem}
+.result-actions{display:flex;gap:0.6rem;flex-wrap:wrap}
+.result-btn{background:linear-gradient(135deg,var(--saffron),var(--gold));color:var(--forest-deep);border:none;padding:0.6rem 1.2rem;border-radius:30px;font-family:'Philosopher',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;gap:0.4rem}
+.result-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,135,28,0.4)}
+.result-btn.secondary{background:transparent;color:var(--gold);border:1.5px solid var(--gold)}
+.result-btn.secondary:hover{background:rgba(232,185,74,0.1)}
+
+/* PRAKRITI SIDEBAR */
+.psidebar{position:sticky;top:160px}
+.psidebar-card{background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(244,232,208,0.95));border:2px solid rgba(212,135,28,0.3);border-radius:20px;padding:2rem;box-shadow:0 15px 50px rgba(31,58,26,0.12);margin-bottom:1.5rem;margin-top: 10px;}
+.psidebar-title{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--forest);text-align:center;margin-bottom:0.3rem}
+.psidebar-subtitle{font-size:0.85rem;color:var(--terracotta);font-style:italic;text-align:center;margin-bottom:1.5rem}
+
+.tridosha-viz{width:100%;max-width:280px;margin:0 auto 1.5rem;aspect-ratio:1;position:relative}
+.tridosha-viz svg{width:100%;height:100%}
+.dosha-label{font-family:'Cinzel',serif;font-weight:700;font-size:14px}
+.dosha-percent{font-family:'Philosopher',sans-serif;font-size:11px;fill:var(--ink);opacity:0.7}
+
+.live-scores{display:flex;flex-direction:column;gap:0.8rem}
+.score-row{display:flex;align-items:center;gap:0.8rem}
+.score-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.score-dot.v{background:var(--vata)}
+.score-dot.p{background:var(--pitta)}
+.score-dot.k{background:var(--kapha)}
+.score-name{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.9rem;width:50px}
+.score-bar-wrap{flex:1;height:8px;background:rgba(61,107,46,0.1);border-radius:10px;overflow:hidden}
+.score-bar{height:100%;width:0%;border-radius:10px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.score-bar.v{background:linear-gradient(90deg,var(--vata),#a88960)}
+.score-bar.p{background:linear-gradient(90deg,var(--pitta),#e74c3c)}
+.score-bar.k{background:linear-gradient(90deg,var(--kapha),#3d9970)}
+.score-value{font-family:'Cinzel',serif;font-weight:700;color:var(--forest);font-size:0.95rem;width:40px;text-align:right}
+
+.sidebar-result{background:linear-gradient(135deg,var(--forest-deep),var(--forest));border-radius:20px;padding:1.5rem;color:var(--cream);text-align:center;position:relative;overflow:hidden;display:none;margin-bottom:1.5rem}
+.sidebar-result.show{display:block;animation:fadeUp 0.6s both}
+.sidebar-result::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%23d4871c' stroke-width='0.5' opacity='0.3'/></svg>");opacity:0.2}
+.sidebar-result > *{position:relative}
+
+.saved-profiles{background:rgba(255,255,255,0.85);backdrop-filter:blur(10px);border:1px solid rgba(212,135,28,0.2);border-radius:20px;padding:1.5rem;box-shadow:0 10px 30px rgba(31,58,26,0.08)}
+.saved-title{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--forest);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+.saved-title svg{width:20px;height:20px;color:var(--saffron)}
+.profile-item{display:flex;justify-content:space-between;align-items:center;padding:0.8rem;background:var(--cream);border-radius:10px;margin-bottom:0.5rem;border-left:3px solid var(--saffron);cursor:pointer;transition:all 0.3s}
+.profile-item:hover{transform:translateX(3px);box-shadow:0 4px 15px rgba(31,58,26,0.1)}
+.profile-info{flex:1}
+.profile-name{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.95rem}
+.profile-meta{font-size:0.8rem;color:var(--terracotta);font-style:italic}
+.profile-delete{background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:1.2rem;opacity:0.6;transition:opacity 0.2s;padding:0.3rem}
+.profile-delete:hover{opacity:1}
+.no-profiles{text-align:center;padding:1rem;color:#8a7a5a;font-style:italic;font-size:0.9rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);padding:1rem 2rem;border-radius:50px;font-family:'Philosopher',sans-serif;font-weight:700;box-shadow:0 10px 40px rgba(31,58,26,0.3);transition:transform 0.4s;z-index:200}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* FLOATING HERBS */
+.floating-herb{position:fixed;opacity:0.15;z-index:0;animation:floatHerb 8s ease-in-out infinite;pointer-events:none}
+.floating-herb:nth-child(1){top:20%;left:5%;animation-delay:0s}
+.floating-herb:nth-child(2){top:60%;right:3%;animation-delay:2s}
+.floating-herb:nth-child(3){bottom:15%;left:8%;animation-delay:4s}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,31,12,0.7);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:2rem}
+.modal-overlay.show{display:flex;animation:fadeUp 0.3s both}
+.modal{background:var(--cream);border-radius:20px;padding:2.5rem;max-width:500px;width:100%;border:2px solid var(--saffron);box-shadow:0 30px 80px rgba(31,58,26,0.4)}
+.modal h3{font-family:'Cinzel',serif;color:var(--forest);font-size:1.5rem;margin-bottom:0.5rem}
+.modal p{color:var(--ink);opacity:0.8;font-style:italic;margin-bottom:1.5rem}
+.modal-input{width:100%;padding:0.9rem 1.2rem;border:2px solid rgba(61,107,46,0.2);border-radius:10px;background:white;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--ink);margin-bottom:1rem}
+.modal-input:focus{outline:none;border-color:var(--saffron)}
+.modal-actions{display:flex;gap:0.8rem;justify-content:flex-end}
+.modal-btn{padding:0.7rem 1.5rem;border-radius:30px;font-family:'Philosopher',sans-serif;font-weight:700;cursor:pointer;border:none;transition:all 0.3s}
+.modal-btn.primary{background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream)}
+.modal-btn.primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(31,58,26,0.3)}
+.modal-btn.ghost{background:transparent;color:var(--forest);border:1.5px solid rgba(61,107,46,0.3)}
+
+@media (max-width:1024px){
+  .form-grid,.chat-container{grid-template-columns:1fr}
+  .sidebar,.psidebar{position:static}
+}
+@media (max-width:768px){
+  .nav-links{display:none}
+  .form-row{grid-template-columns:1fr}
+  .form-section{padding:1.5rem}
+  .view-switcher{flex-direction:column;align-items:stretch;padding:1rem 4%}
+  .view-tab{justify-content:center}
+  .chat-window{height:550px}
+  .message{max-width:92%}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Herbs -->
+<svg class="floating-herb" width="100" height="100" viewBox="0 0 100 100">
+  <path d="M50 10 Q70 30 70 50 Q70 70 50 90 Q30 70 30 50 Q30 30 50 10 Z" fill="#3d6b2e"/>
+  <path d="M50 15 L50 85" stroke="#1f3a1a" stroke-width="2"/>
+</svg>
+<svg class="floating-herb" width="80" height="80" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="30" fill="#d4871c"/>
+  <circle cx="50" cy="50" r="20" fill="#e8b94a"/>
+</svg>
+<svg class="floating-herb" width="90" height="90" viewBox="0 0 100 100">
+  <path d="M50 20 C70 30 70 70 50 80 C30 70 30 30 50 20 Z" fill="#a0522d"/>
+</svg>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" onclick="switchView('builder')">
+    <svg class="logo-icon" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div class="logo-text">AyurPedia</div>
+      <div class="logo-sub">Ancient Wisdom · Modern Search</div>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a onclick="switchView('builder')" id="navBuilder">Case Builder</a></li>
+    <li><a onclick="switchView('prakriti')" id="navPrakriti">Prakriti Chat</a></li>
+  
+  </ul>
+</nav>
+
+<!-- VIEW SWITCHER -->
+
+<!-- ============ VIEW 1: CASE BUILDER ============ -->
+ <br>
+ <br>
+ <br>
+<div class="view active" id="viewBuilder">
+  <div class="page-header">
+    <div class="page-eyebrow">॥ Discovery Zone ॥</div>
+    <h1 class="page-title">Build Your <span class="italic">Case Query</span></h1>
+    <p class="page-subtitle">Enter symptoms, conditions, and patient details to discover the most appropriate Ayurvedic formulations from 150+ classical texts.</p>
+  </div>
+
+  <div class="builder-container">
+    <div class="form-grid">
+      <div class="form-column">
+        
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+            <div>
+              <div class="section-title">Symptoms & Presentation</div>
+              <div class="section-desc">Add all presenting symptoms to capture the full constellation</div>
+            </div>
+          </div>
+          <div class="symptom-input-wrap">
+            <input type="text" class="symptom-input" id="symptomInput" placeholder="Type a symptom (e.g., Jvara, Santapa, Kasa, Shotha...)" autocomplete="off"/>
+            <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+          </div>
+          <div class="symptom-tags" id="symptomTags"></div>
+          <div class="helper-text">💡 Synonyms resolve silently — typing "Santapa" will tag as "Jvara (Fever)" automatically.</div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></div>
+            <div>
+              <div class="section-title">Comorbidities & Conditions</div>
+              <div class="section-desc">Select any existing conditions that may affect formulation choice</div>
+            </div>
+          </div>
+          <div class="chip-group" id="comorbidityChips">
+            <div class="chip" data-value="diabetes">Diabetes (Prameha)</div>
+            <div class="chip" data-value="pregnancy">Pregnancy</div>
+            <div class="chip" data-value="hypertension">Hypertension (Raktagata Vata)</div>
+            <div class="chip" data-value="anemia">Anemia (Panduroga)</div>
+            <div class="chip" data-value="asthma">Asthma (Tamaka Shwasa)</div>
+            <div class="chip" data-value="arthritis">Arthritis (Amavata)</div>
+            <div class="chip" data-value="thyroid">Thyroid Disorder</div>
+            <div class="chip" data-value="liver">Liver Disease (Yakrit Vikara)</div>
+            <div class="chip" data-value="kidney">Kidney Disease (Vrikka Rog)</div>
+            <div class="chip" data-value="obesity">Obesity (Sthaulya)</div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div>
+              <div class="section-title">Patient Metadata</div>
+              <div class="section-desc">Contextual factors that influence formulation selection</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label">Age (years)</label>
+              <input type="number" class="form-input" id="ageInput" placeholder="e.g., 35" min="0" max="120"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Gender</label>
+              <select class="form-select" id="genderSelect">
+                <option value="">Select gender</option>
+                <option value="male">Male (Purusha)</option>
+                <option value="female">Female (Stri)</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label">Desha (Region)</label>
+              <select class="form-select" id="deshaSelect">
+                <option value="">Select region</option>
+                <option value="jangala">Jangala (Arid/Dry)</option>
+                <option value="anupa">Anupa (Marshy/Wet)</option>
+                <option value="sadharana">Sadharana (Moderate)</option>
+                <option value="mountain">Mountainous (Parvata)</option>
+                <option value="coastal">Coastal (Samudra Tata)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Ritu (Season)</label>
+              <select class="form-select" id="rituSelect">
+                <option value="">Select season</option>
+                <option value="varsha">Varsha (Monsoon)</option>
+                <option value="sharad">Sharad (Autumn)</option>
+                <option value="hemanta">Hemanta (Early Winter)</option>
+                <option value="shishira">Shishira (Late Winter)</option>
+                <option value="vasanta">Vasanta (Spring)</option>
+                <option value="grishma">Grishma (Summer)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label">Agni (Digestive Fire)</label>
+              <select class="form-select" id="agniSelect">
+                <option value="">Select agni type</option>
+                <option value="sama">Sama (Balanced)</option>
+                <option value="vishama">Vishama (Irregular — Vata)</option>
+                <option value="tikshna">Tikshna (Sharp — Pitta)</option>
+                <option value="manda">Manda (Slow — Kapha)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Koshta (Bowel Habit)</label>
+              <select class="form-select" id="koshtaSelect">
+                <option value="">Select koshta</option>
+                <option value="krura">Krura (Hard/Constipated)</option>
+                <option value="mridu">Mridu (Soft/Loose)</option>
+                <option value="madhyama">Madhyama (Moderate)</option>
+              </select>
+            </div>
+          </div><br><br>
+          <button class="prakriti-link" onclick="switchView('prakriti')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat with Prakriti AI (Constitution Analysis)
+          </button>
+          <div class="prakriti-badge" id="prakritiBadge">
+            <div class="prakriti-badge-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+              <span>Prakriti loaded: <strong id="prakritiBadgeText">—</strong></span>
+            </div>
+            <button class="prakriti-badge-edit" onclick="switchView('prakriti')">Edit</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+        <div class="sidebar-card">
+          <div class="summary-header">
+            <div class="summary-title">Case Summary</div>
+            <div class="summary-subtitle">Your query at a glance</div>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">Symptoms (<span id="symptomCount">0</span>)</div>
+            <div class="summary-value" id="summarySymptoms"><span class="summary-empty">No symptoms added yet</span></div>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">Comorbidities</div>
+            <div class="summary-value" id="summaryComorbidities"><span class="summary-empty">None selected</span></div>
+          </div>
+          <div class="summary-section">
+            <div class="summary-label">Patient Profile</div>
+            <div class="summary-value" id="summaryPatient"><span class="summary-empty">No metadata entered</span></div>
+          </div>
+          <div class="summary-section" id="prakritiSummarySection" style="display:none">
+            <div class="summary-label">Prakriti (Constitution)</div>
+            <div class="summary-value" id="summaryPrakriti"></div>
+          </div>
+          <button class="cta-button" id="findFormulationsBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            Find Formulations
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ VIEW 2: PRAKRITI CHATBOT ============ -->
+<div class="view" id="viewPrakriti">
+  <div class="page-header">
+    <div class="page-eyebrow">॥ Personalization Zone ॥</div>
+    <h1 class="page-title">Chat with <span class="italic">Prakriti AI</span></h1>
+    <p class="page-subtitle">Your personal Ayurvedic constitution guide. Have a conversation to discover your unique doshic blueprint — 18 questions, one at a time.</p>
+    <div class="sanskrit-verse">शरीरमाद्यं खलु धर्मसाधनम् ॥</div>
+  </div>
+
+  <div class="chat-container">
+    
+    <!-- CHAT COLUMN -->
+    <div class="chat-column">
+      
+      <div class="progress-wrap">
+        <div class="progress-header">
+          <div class="progress-label">Conversation Progress</div>
+          <div class="progress-count"><span id="answeredCount">0</span> / 18</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="chat-window">
+        <div class="chat-header">
+          <div class="chat-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M6 20v-2a6 6 0 0 1 12 0v2"/>
+              <path d="M12 4v1M16 5l-1 1M8 5l1 1"/>
+            </svg>
+          </div>
+          <div class="chat-header-info">
+            <h3>Prakriti Muni</h3>
+            <p>Your Ayurvedic Constitution Guide · Online</p>
+          </div>
+          <div class="chat-header-actions">
+            <button class="chat-action-btn" onclick="restartChat()" title="Restart conversation">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Restart
+            </button>
+          </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <!-- Messages injected here -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="psidebar">
+
+      <div class="saved-profiles">
+        <div class="saved-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Saved Profiles
+        </div>
+        <div id="savedProfilesList"><div class="no-profiles">No saved profiles yet</div></div>
+      </div>
+      
+      <div class="psidebar-card">
+        <div class="psidebar-title">Live Dosha Balance</div>
+        <div class="psidebar-subtitle">Updates as you answer</div>
+        
+        <div class="tridosha-viz">
+          <svg viewBox="0 0 300 300">
+            <polygon points="150,40 260,240 40,240" fill="none" stroke="rgba(61,107,46,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+            <polygon points="150,90 225,215 75,215" fill="none" stroke="rgba(61,107,46,0.1)" stroke-width="1"/>
+            <polygon points="150,140 190,190 110,190" fill="none" stroke="rgba(61,107,46,0.1)" stroke-width="1"/>
+            <circle cx="150" cy="165" r="3" fill="rgba(61,107,46,0.3)"/>
+            <polygon id="doshaPolygon" points="150,165 150,165 150,165" fill="rgba(212,135,28,0.25)" stroke="#d4871c" stroke-width="2.5" style="transition:all 0.6s cubic-bezier(0.4,0,0.2,1)"/>
+            <circle id="vataPoint" cx="150" cy="165" r="6" fill="#8b6f47" style="transition:all 0.6s"/>
+            <circle id="pittaPoint" cx="150" cy="165" r="6" fill="#c0392b" style="transition:all 0.6s"/>
+            <circle id="kaphaPoint" cx="150" cy="165" r="6" fill="#2e7d5b" style="transition:all 0.6s"/>
+            <text x="150" y="25" text-anchor="middle" class="dosha-label" fill="#8b6f47">VATA</text>
+            <text x="150" y="42" text-anchor="middle" class="dosha-percent" id="vataPercent">0%</text>
+            <text x="275" y="265" text-anchor="middle" class="dosha-label" fill="#c0392b">PITTA</text>
+            <text x="275" y="280" text-anchor="middle" class="dosha-percent" id="pittaPercent">0%</text>
+            <text x="25" y="265" text-anchor="middle" class="dosha-label" fill="#2e7d5b">KAPHA</text>
+            <text x="25" y="280" text-anchor="middle" class="dosha-percent" id="kaphaPercent">0%</text>
+          </svg>
+        </div>
+
+        <div class="live-scores">
+          <div class="score-row">
+            <div class="score-dot v"></div>
+            <div class="score-name">Vata</div>
+            <div class="score-bar-wrap"><div class="score-bar v" id="vataBar"></div></div>
+            <div class="score-value" id="vataScore">0</div>
+          </div>
+          <div class="score-row">
+            <div class="score-dot p"></div>
+            <div class="score-name">Pitta</div>
+            <div class="score-bar-wrap"><div class="score-bar p" id="pittaBar"></div></div>
+            <div class="score-value" id="pittaScore">0</div>
+          </div>
+          <div class="score-row">
+            <div class="score-dot k"></div>
+            <div class="score-name">Kapha</div>
+            <div class="score-bar-wrap"><div class="score-bar k" id="kaphaBar"></div></div>
+            <div class="score-value" id="kaphaScore">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-result" id="sidebarResult">
+        <div class="result-eyebrow">Your Constitution</div>
+        <div class="result-dosha" id="sidebarDosha">—</div>
+        <div class="result-type" id="sidebarType">Complete the chat</div>
+        <div style="margin-top:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center">
+          <button class="result-btn" onclick="openSaveModal()">💾 Save Profile</button>
+          <button class="result-btn secondary" onclick="useInCaseBuilder()">→ Use in Case Builder</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SAVE MODAL -->
+<div class="modal-overlay" id="saveModal">
+  <div class="modal">
+    <h3>Save Prakriti Profile</h3>
+    <p>Give this profile a name to reuse it for repeat patients or case studies.</p>
+    <input type="text" class="modal-input" id="profileNameInput" placeholder="e.g., Patient Ravi, Case Study #3"/>
+    <div class="modal-actions">
+      <button class="modal-btn ghost" onclick="closeSaveModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ SHARED STATE ============
+const appState = { currentPrakriti: null, currentPrakritiName: null };
+
+// ============ VIEW SWITCHING ============
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  if (view === 'builder') {
+    document.getElementById('viewBuilder').classList.add('active');
+    document.getElementById('tabBuilder').classList.add('active');
+    document.getElementById('navBuilder').classList.add('active');
+  } else {
+    document.getElementById('viewPrakriti').classList.add('active');
+    document.getElementById('tabPrakriti').classList.add('active');
+    document.getElementById('navPrakriti').classList.add('active');
+  }
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ============ SYMPTOM DATABASE ============
+const symptomDatabase = [
+  { name:'Jvara', synonyms:['Santapa','Tapamana','Fever','Temperature'], category:'General' },
+  { name:'Kasa', synonyms:['Khasa','Cough','Dry Cough','Productive Cough'], category:'Respiratory' },
+  { name:'Shwasa', synonyms:['Shvasa','Dyspnea','Breathlessness','Shortness of Breath'], category:'Respiratory' },
+  { name:'Shotha', synonyms:['Shopha','Edema','Swelling','Inflammation'], category:'General' },
+  { name:'Pinasa', synonyms:['Pratishyaya','Rhinitis','Common Cold','Nasal Congestion','Runny Nose'], category:'Respiratory' },
+  { name:'Aruchi', synonyms:['Arati','Anorexia','Loss of Appetite'], category:'Digestive' },
+  { name:'Chardi', synonyms:['Vamana','Nausea','Vomiting','Emesis'], category:'Digestive' },
+  { name:'Atisara', synonyms:['Diarrhea','Loose Stools','Dysentery'], category:'Digestive' },
+  { name:'Grahani', synonyms:['Grahani Dosha','IBS','Malabsorption','Irritable Bowel'], category:'Digestive' },
+  { name:'Shirahshula', synonyms:['Shiroruja','Headache','Cephalalgia','Migraine'], category:'Neurological' },
+  { name:'Angamarda', synonyms:['Body Ache','Myalgia','Generalized Pain'], category:'Musculoskeletal' },
+  { name:'Daurbalya', synonyms:['Weakness','Fatigue','Debility','Tiredness'], category:'General' },
+  { name:'Pandu', synonyms:['Panduroga','Anemia','Pallor'], category:'Hematological' },
+  { name:'Kushtha', synonyms:['Skin Disease','Dermatitis','Eczema','Psoriasis'], category:'Dermatological' },
+  { name:'Vatarakta', synonyms:['Gout','Podagra','Joint Pain'], category:'Musculoskeletal' },
+  { name:'Amavata', synonyms:['Rheumatoid Arthritis','Joint Swelling'], category:'Musculoskeletal' },
+  { name:'Prameha', synonyms:['Diabetes','Polyuria','Excessive Urination'], category:'Metabolic' },
+  { name:'Hridroga', synonyms:['Heart Disease','Cardiac Pain','Chest Pain'], category:'Cardiovascular' },
+  { name:'Udararoga', synonyms:['Abdominal Disorder','Bloating','Ascites'], category:'Digestive' },
+  { name:'Bhagandara', synonyms:['Fistula-in-ano','Anal Fistula'], category:'Surgical' },
+  { name:'Arsha', synonyms:['Hemorrhoids','Piles'], category:'Surgical' },
+  { name:'Vidradhi', synonyms:['Abscess','Boil','Pus Formation'], category:'Surgical' },
+  { name:'Daha', synonyms:['Burning Sensation','Burning'], category:'General' },
+  { name:'Trishna', synonyms:['Excessive Thirst','Polydipsia'], category:'General' },
+  { name:'Nidra Nasha', synonyms:['Insomnia','Sleeplessness','Sleep Disorder'], category:'Neurological' },
+  { name:'Bhrama', synonyms:['Dizziness','Vertigo'], category:'Neurological' },
+  { name:'Moha', synonyms:['Confusion','Delirium','Fainting'], category:'Neurological' }
+];
+
+// ============ CASE BUILDER STATE ============
+const caseState = { symptoms: [], comorbidities: [], metadata: {} };
+const symptomInput = document.getElementById('symptomInput');
+const dropdown = document.getElementById('autocompleteDropdown');
+const tagsContainer = document.getElementById('symptomTags');
+const summarySymptoms = document.getElementById('summarySymptoms');
+const summaryComorbidities = document.getElementById('summaryComorbidities');
+const summaryPatient = document.getElementById('summaryPatient');
+const symptomCount = document.getElementById('symptomCount');
+const findBtn = document.getElementById('findFormulationsBtn');
+const toast = document.getElementById('toast');
+
+function searchSymptoms(query) {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase().trim();
+  const results = [];
+  symptomDatabase.forEach(item => {
+    let matchType = null, matchedTerm = null;
+    if (item.name.toLowerCase() === q) { matchType = 'exact'; matchedTerm = item.name; }
+    else if (item.synonyms.some(s => s.toLowerCase() === q)) { matchType = 'synonym'; matchedTerm = item.synonyms.find(s => s.toLowerCase() === q); }
+    else if (item.name.toLowerCase().startsWith(q)) { matchType = 'starts'; matchedTerm = item.name; }
+    else { const synMatch = item.synonyms.find(s => s.toLowerCase().startsWith(q)); if (synMatch) { matchType = 'syn-starts'; matchedTerm = synMatch; } }
+    if (matchType) results.push({ ...item, matchType, matchedTerm });
+  });
+  return results.slice(0, 8);
+}
+function renderDropdown(results, query) {
+  if (results.length === 0) { dropdown.classList.remove('active'); return; }
+  dropdown.innerHTML = results.map(r => {
+    let matchNote = '';
+    if (r.matchType === 'synonym') matchNote = `<div class="autocomplete-match">↳ Resolves to: ${r.name}</div>`;
+    else if (r.matchType === 'syn-starts') matchNote = `<div class="autocomplete-match">↳ Will tag as: ${r.name}</div>`;
+    const synonymsDisplay = r.synonyms.filter(s => s.toLowerCase() !== query.toLowerCase()).slice(0, 3).join(', ');
+    return `<div class="autocomplete-item" data-name="${r.name}"><div class="autocomplete-top"><div class="autocomplete-name">${r.name}</div><div class="autocomplete-cat">${r.category}</div></div>${synonymsDisplay ? `<div class="autocomplete-synonym">aka: ${synonymsDisplay}</div>` : ''}${matchNote}</div>`;
+  }).join('');
+  dropdown.classList.add('active');
+  dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+    item.addEventListener('click', () => { addSymptom(item.dataset.name); symptomInput.value = ''; dropdown.classList.remove('active'); });
+  });
+}
+symptomInput.addEventListener('input', (e) => renderDropdown(searchSymptoms(e.target.value), e.target.value));
+symptomInput.addEventListener('focus', (e) => { if (e.target.value.trim()) renderDropdown(searchSymptoms(e.target.value), e.target.value); });
+document.addEventListener('click', (e) => { if (!e.target.closest('.symptom-input-wrap')) dropdown.classList.remove('active'); });
+symptomInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); const results = searchSymptoms(e.target.value); if (results.length > 0) { addSymptom(results[0].name); e.target.value = ''; dropdown.classList.remove('active'); } }
+});
+function addSymptom(name) {
+  if (caseState.symptoms.includes(name)) { showToast(`"${name}" is already in your query`); return; }
+  caseState.symptoms.push(name); renderSymptomTags(); updateCaseSummary(); showToast(`Added: ${name}`);
+}
+function removeSymptom(name) { caseState.symptoms = caseState.symptoms.filter(s => s !== name); renderSymptomTags(); updateCaseSummary(); }
+function getEnglishAlt(name) {
+  const item = symptomDatabase.find(s => s.name === name);
+  if (!item) return '';
+  // Return first English synonym (heuristic: contains only ASCII letters/spaces)
+  const eng = item.synonyms.find(s => /^[A-Za-z\s\/\-]+$/.test(s));
+  return eng || '';
+}
+function renderSymptomTags() {
+  tagsContainer.innerHTML = caseState.symptoms.map(s => {
+    const alt = getEnglishAlt(s);
+    const label = alt ? `${s} <span class="tag-alt">(${alt})</span>` : s;
+    return `<div class="symptom-tag"><span>${label}</span><span class="remove" onclick="removeSymptom('${s}')">✕</span></div>`;
+  }).join('');
+}
+document.querySelectorAll('#comorbidityChips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('active');
+    const val = chip.dataset.value, label = chip.textContent;
+    if (chip.classList.contains('active')) caseState.comorbidities.push({ val, label });
+    else caseState.comorbidities = caseState.comorbidities.filter(c => c.val !== val);
+    updateCaseSummary();
+  });
+});
+['ageInput','genderSelect','deshaSelect','rituSelect','agniSelect','koshtaSelect'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updateCaseSummary);
+  document.getElementById(id).addEventListener('input', updateCaseSummary);
+});
+function updateCaseSummary() {
+  symptomCount.textContent = caseState.symptoms.length;
+  if (caseState.symptoms.length === 0) summarySymptoms.innerHTML = '<span class="summary-empty">No symptoms added yet</span>';
+  else summarySymptoms.innerHTML = `<div class="summary-tags">${caseState.symptoms.map(s => `<span class="summary-tag">${s}</span>`).join('')}</div>`;
+  if (caseState.comorbidities.length === 0) summaryComorbidities.innerHTML = '<span class="summary-empty">None selected</span>';
+  else summaryComorbidities.innerHTML = `<div class="summary-tags">${caseState.comorbidities.map(c => `<span class="summary-tag">${c.label.split('(')[0].trim()}</span>`).join('')}</div>`;
+  const age = document.getElementById('ageInput').value, gender = document.getElementById('genderSelect').value, desha = document.getElementById('deshaSelect').value, ritu = document.getElementById('rituSelect').value, agni = document.getElementById('agniSelect').value, koshta = document.getElementById('koshtaSelect').value;
+  const parts = [];
+  if (age) parts.push(`Age: ${age}`);
+  if (gender) parts.push(gender.charAt(0).toUpperCase() + gender.slice(1));
+  if (desha) parts.push(`Desha: ${desha.charAt(0).toUpperCase() + desha.slice(1)}`);
+  if (ritu) parts.push(`Ritu: ${ritu.charAt(0).toUpperCase() + ritu.slice(1)}`);
+  if (agni) parts.push(`Agni: ${agni.charAt(0).toUpperCase() + agni.slice(1)}`);
+  if (koshta) parts.push(`Koshta: ${koshta.charAt(0).toUpperCase() + koshta.slice(1)}`);
+  if (parts.length === 0) summaryPatient.innerHTML = '<span class="summary-empty">No metadata entered</span>';
+  else summaryPatient.innerHTML = parts.join('<br/>');
+  findBtn.disabled = caseState.symptoms.length === 0;
+}
+findBtn.addEventListener('click', () => {
+  if (caseState.symptoms.length === 0) return;
+  const prakritiInfo = appState.currentPrakriti ? `\nPrakriti: V${appState.currentPrakriti.vata}/P${appState.currentPrakriti.pitta}/K${appState.currentPrakriti.kapha}` : '\nPrakriti: Not set';
+  showToast(`🔍 Searching 12,500+ formulations for ${caseState.symptoms.length} symptom(s)...`);
+  setTimeout(() => window.location.href = '/static/disclamer.html', 800);
+});
+
+// ============ CHATBOT QUESTIONS ============
+const chatQuestions = [
+  { id:1, category:'Body Structure', text:'Namaste! 🙏 I am Prakriti Muni, your Ayurvedic constitution guide. Let us discover your unique doshic blueprint together. I\'ll ask you 18 simple questions about your body, mind, and habits. Shall we begin with your natural body frame?', hint:'Think of your body since childhood, not current weight.',
+    options:[{text:'Thin, light frame — gain/lose weight easily', dosha:'v'},{text:'Medium, well-proportioned frame — moderate muscle', dosha:'p'},{text:'Heavy, solid frame — sturdy build, hard to lose weight', dosha:'k'}]},
+  { id:2, category:'Skin', text:'Wonderful. Now, how would you describe your natural skin texture?',
+    options:[{text:'Dry, rough, or cracked — tends toward coolness', dosha:'v'},{text:'Warm, soft, sensitive — prone to moles, rashes, redness', dosha:'p'},{text:'Smooth, oily, thick, cool — prone to congestion', dosha:'k'}]},
+  { id:3, category:'Hair', text:'And what about the natural quality of your hair?',
+    options:[{text:'Dry, brittle, frizzy, early greying', dosha:'v'},{text:'Fine, reddish or premature greying/balding tendency', dosha:'p'},{text:'Thick, wavy, oily, lustrous, slow to grey', dosha:'k'}]},
+  { id:4, category:'Digestion', text:'Let\'s talk about digestion. When you are healthy, how is your natural digestive fire?',
+    options:[{text:'Irregular — sometimes fast, sometimes slow, often gassy', dosha:'v'},{text:'Sharp and strong — cannot skip meals, gets "hangry"', dosha:'p'},{text:'Slow but steady — can skip meals easily, feels heavy', dosha:'k'}]},
+  { id:5, category:'Appetite & Thirst', text:'How are your appetite and thirst patterns naturally?',
+    options:[{text:'Erratic appetite, variable thirst', dosha:'v'},{text:'Strong appetite and strong thirst — intolerant when hungry', dosha:'p'},{text:'Low appetite, low thirst — can go long without food', dosha:'k'}]},
+  { id:6, category:'Sleep', text:'Tell me about your natural sleep pattern.',
+    options:[{text:'Light sleeper, insomnia-prone, short sleep hours', dosha:'v'},{text:'Moderate sleep, dream-filled, wake refreshed', dosha:'p'},{text:'Deep, long sleeper — hard to wake, love naps', dosha:'k'}]},
+  { id:7, category:'Memory & Learning', text:'How do you learn and remember things?',
+    options:[{text:'Learn quickly but forget quickly', dosha:'v'},{text:'Moderate learning, moderate retention — sharp memory', dosha:'p'},{text:'Slow to learn but never forgets — excellent long-term memory', dosha:'k'}]},
+  { id:8, category:'Temperament', text:'Which temperament resonates most with your nature?',
+    options:[{text:'Enthusiastic, anxious, creative, changeable mood', dosha:'v'},{text:'Focused, ambitious, sharp, irritable when stressed', dosha:'p'},{text:'Calm, patient, loving, forgiving, slow to anger', dosha:'k'}]},
+  { id:9, category:'Weather Preference', text:'Which weather do you naturally prefer and feel best in?',
+    options:[{text:'Warm, humid weather — dislike cold and wind', dosha:'v'},{text:'Cool weather — dislike heat and sun', dosha:'p'},{text:'Dry, cool weather — dislike damp and cold', dosha:'k'}]},
+  { id:10, category:'Exercise', text:'What is your natural exercise capacity and preference?',
+    options:[{text:'Low stamina — prefer gentle movement, tire quickly', dosha:'v'},{text:'Moderate stamina — enjoy competitive sports, moderate intensity', dosha:'p'},{text:'High stamina — can exercise long, enjoy endurance activities', dosha:'k'}]},
+  { id:11, category:'Speech', text:'How would others describe your natural speech?',
+    options:[{text:'Fast, talkative, changing topics often', dosha:'v'},{text:'Sharp, precise, logical, sometimes critical', dosha:'p'},{text:'Slow, melodious, measured, thoughtful', dosha:'k'}]},
+  { id:12, category:'Walking', text:'How do you naturally walk and move through the world?',
+    options:[{text:'Fast, unsteady, light steps — always in motion', dosha:'v'},{text:'Moderate pace, purposeful, steady', dosha:'p'},{text:'Slow, graceful, heavy steps — deliberate movement', dosha:'k'}]},
+  { id:13, category:'Financial Habits', text:'How do you handle money and possessions?',
+    options:[{text:'Irregular spending, save little, change plans often', dosha:'v'},{text:'Moderate spender, strategic, brand-conscious', dosha:'p'},{text:'Saver, accumulates, attached to possessions', dosha:'k'}]},
+  { id:14, category:'Dreams', text:'What types of dreams do you commonly have?',
+    options:[{text:'Flying, running, windy/scary scenes, fragmented', dosha:'v'},{text:'Fire, anger, bright colors, conflict, achievement', dosha:'p'},{text:'Water, oceans, romance, peaceful, heavy themes', dosha:'k'}]},
+  { id:15, category:'Stool Pattern', text:'A delicate but important question — what is your natural bowel pattern?',
+    options:[{text:'Irregular, constipated, dry, gassy', dosha:'v'},{text:'Loose, urgent, yellowish, burning sensation', dosha:'p'},{text:'Regular, well-formed, slow digestion, heavy', dosha:'k'}]},
+  { id:16, category:'Sweat', text:'How much do you naturally sweat?',
+    options:[{text:'Little sweat, dry skin', dosha:'v'},{text:'Moderate to heavy sweat, strong body odor', dosha:'p'},{text:'Profuse sweating, oily skin, cool clammy feel', dosha:'k'}]},
+  { id:17, category:'Voice', text:'How would you describe your natural voice?',
+    options:[{text:'Low, unsteady, breaks easily, hoarse', dosha:'v'},{text:'Sharp, penetrating, medium pitch, commanding', dosha:'p'},{text:'Deep, resonant, pleasant, slow and clear', dosha:'k'}]},
+  { id:18, category:'Teeth & Gums', text:'Our final question — what is the state of your teeth and gums?',
+    options:[{text:'Irregular, crowded, receding gums, sensitive', dosha:'v'},{text:'Medium size, bleeding gums, sensitive to heat', dosha:'p'},{text:'Large, white, strong, healthy gums, cavity-prone', dosha:'k'}]}
+];
+
+const prakritiState = { answers: {}, scores: { v:0, p:0, k:0 }, currentQ: 0 };
+const chatMessages = document.getElementById('chatMessages');
+
+// ============ CHAT FUNCTIONS ============
+function addBotMessage(text, category = null, hint = null) {
+  // Remove existing typing indicator
+  const typing = chatMessages.querySelector('.typing-indicator');
+  if (typing) typing.remove();
+
+  const msg = document.createElement('div');
+  msg.className = 'message bot';
+  msg.innerHTML = `
+    <div class="msg-avatar">ॐ</div>
+    <div>
+      ${category ? `<div class="msg-bubble" style="padding:0.4rem 1rem;margin-bottom:0.4rem;font-size:0.85rem"><div class="msg-category">Question ${String(prakritiState.currentQ).padStart(2,'0')} · ${category.toUpperCase()}</div></div>` : ''}
+      <div class="msg-bubble">${text}${hint ? `<div class="msg-hint">💡 ${hint}</div>` : ''}</div>
+    </div>
+  `;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addUserMessage(text) {
+  const msg = document.createElement('div');
+  msg.className = 'message user';
+  msg.innerHTML = `
+    <div class="msg-avatar">You</div>
+    <div class="msg-bubble">${text}</div>
+  `;
+  chatMessages.appendChild(msg);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTyping() {
+  const typing = document.createElement('div');
+  typing.className = 'typing-indicator';
+  typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  chatMessages.appendChild(typing);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showOptions(question) {
+  const optsWrap = document.createElement('div');
+  optsWrap.className = 'options-bubble';
+  optsWrap.id = `opts-${question.id}`;
+  optsWrap.innerHTML = question.options.map((opt, i) => `
+    <div class="option-bubble" data-q="${question.id}" data-dosha="${opt.dosha}" data-text="${opt.text.replace(/"/g,'&quot;')}">
+      <div class="opt-marker">${String.fromCharCode(65+i)}</div>
+      <div>${opt.text}</div>
+    </div>
+  `).join('');
+  chatMessages.appendChild(optsWrap);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  optsWrap.querySelectorAll('.option-bubble').forEach(opt => {
+    opt.addEventListener('click', () => handleOptionClick(opt, question));
+  });
+}
+
+function handleOptionClick(optEl, question) {
+  // Mark selected and disable all options
+  const optsWrap = optEl.parentElement;
+  optsWrap.querySelectorAll('.option-bubble').forEach(o => {
+    o.classList.add('selected');
+    o.style.pointerEvents = 'none';
+  });
+  optEl.classList.remove('selected');
+  optEl.style.background = 'linear-gradient(135deg, var(--saffron), var(--gold))';
+  optEl.style.color = 'var(--forest-deep)';
+  optEl.style.borderColor = 'var(--saffron)';
+  optEl.style.fontWeight = '600';
+
+  const dosha = optEl.dataset.dosha;
+  const text = optEl.dataset.text;
+
+  // Record answer
+  const previous = prakritiState.answers[question.id];
+  if (previous) prakritiState.scores[previous]--;
+  prakritiState.answers[question.id] = dosha;
+  prakritiState.scores[dosha]++;
+
+  // Add user message
+  addUserMessage(text);
+
+  // Update UI
+  updateProgress();
+  updateVisualization();
+
+  // Proceed to next question
+  prakritiState.currentQ++;
+  setTimeout(() => {
+    if (prakritiState.currentQ < chatQuestions.length) {
+      askNextQuestion();
+    } else {
+      showFinalResult();
+    }
+  }, 800);
+}
+
+function askNextQuestion() {
+  const q = chatQuestions[prakritiState.currentQ];
+  showTyping();
+  setTimeout(() => {
+    addBotMessage(q.text, q.category, q.hint);
+    setTimeout(() => showOptions(q), 400);
+  }, 1000);
+}
+
+function showFinalResult() {
+  showTyping();
+  setTimeout(() => {
+    const {v, p, k} = prakritiState.scores;
+    const total = v + p + k;
+    const vPct = (v/total)*100, pPct = (p/total)*100, kPct = (k/total)*100;
+    const threshold = 40;
+    let type, doshaName, description;
+    
+    if (vPct >= threshold && pPct >= threshold) { type = 'Dual'; doshaName = 'Vata-Pitta'; description = 'A dynamic blend of movement and transformation — creative, ambitious, with variable energy and sharp intellect.'; }
+    else if (vPct >= threshold && kPct >= threshold) { type = 'Dual'; doshaName = 'Vata-Kapha'; description = 'A blend of creativity and stability — imaginative yet grounded, with steady endurance and gentle nature.'; }
+    else if (pPct >= threshold && kPct >= threshold) { type = 'Dual'; doshaName = 'Pitta-Kapha'; description = 'A blend of fire and structure — determined, strong, with excellent metabolism and steady ambition.'; }
+    else if (vPct >= 50) { type = 'Single'; doshaName = 'Vata Prakriti'; description = 'The creative mover — light, quick, enthusiastic. Prone to anxiety, dryness, and irregularity when imbalanced.'; }
+    else if (pPct >= 50) { type = 'Single'; doshaName = 'Pitta Prakriti'; description = 'The transformer — sharp, focused, warm-blooded. Prone to inflammation, acidity, and irritability when imbalanced.'; }
+    else if (kPct >= 50) { type = 'Single'; doshaName = 'Kapha Prakriti'; description = 'The stabilizer — strong, calm, loving. Prone to congestion, weight gain, and lethargy when imbalanced.'; }
+    else { type = 'Tri-doshic'; doshaName = 'Sama Prakriti'; description = 'A rare balanced constitution with elements of all three doshas — adaptable and resilient.'; }
+
+    // Remove typing
+    const typing = chatMessages.querySelector('.typing-indicator');
+    if (typing) typing.remove();
+
+    // Bot final message
+    const finalMsg = document.createElement('div');
+    finalMsg.className = 'message bot';
+    finalMsg.innerHTML = `
+      <div class="msg-avatar">ॐ</div>
+      <div style="max-width:100%;flex:1">
+        <div class="msg-bubble" style="padding:0.5rem 1rem;margin-bottom:0.5rem;font-size:0.9rem">
+          <div class="msg-category">✨ Assessment Complete</div>
+        </div>
+        <div class="result-message">
+          <div class="result-eyebrow">Your Constitution Revealed</div>
+          <div class="result-dosha">${doshaName}</div>
+          <div class="result-type">${type} · ${Math.round(vPct)}V / ${Math.round(pPct)}P / ${Math.round(kPct)}K</div>
+          <div class="result-desc">${description}</div>
+          <div class="result-actions">
+            <button class="result-btn" onclick="openSaveModal()">💾 Save Profile</button>
+            <button class="result-btn secondary" onclick="useInCaseBuilder()">→ Use in Case Builder</button>
+            <button class="result-btn secondary" onclick="restartChat()">↻ Restart Chat</button>
+          </div>
+        </div>
+        <div class="msg-bubble" style="margin-top:0.8rem">
+          🌿 Thank you for this thoughtful conversation. Your prakriti is now ready to guide therapeutic decisions. You can save this profile or carry it directly into the Case Builder to weight formulation recommendations.
+        </div>
+      </div>
+    `;
+    chatMessages.appendChild(finalMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Update shared state
+    appState.currentPrakriti = { vata: Math.round(vPct), pitta: Math.round(pPct), kapha: Math.round(kPct) };
+    appState.currentPrakritiName = doshaName;
+
+    // Update sidebar result
+    document.getElementById('sidebarDosha').textContent = doshaName;
+    document.getElementById('sidebarType').textContent = `${type} · ${Math.round(vPct)}V / ${Math.round(pPct)}P / ${Math.round(kPct)}K`;
+    document.getElementById('sidebarResult').classList.add('show');
+
+    showToast('✨ Prakriti assessment complete!');
+  }, 1200);
+}
+
+function updateProgress() {
+  const answered = Object.keys(prakritiState.answers).length;
+  document.getElementById('answeredCount').textContent = answered;
+  document.getElementById('progressFill').style.width = (answered / chatQuestions.length * 100) + '%';
+}
+
+function updateVisualization() {
+  const total = Object.values(prakritiState.scores).reduce((a,b) => a+b, 0);
+  if (total === 0) {
+    ['vataScore','pittaScore','kaphaScore'].forEach(id => document.getElementById(id).textContent = '0');
+    ['vataPercent','pittaPercent','kaphaPercent'].forEach(id => document.getElementById(id).textContent = '0%');
+    ['vataBar','pittaBar','kaphaBar'].forEach(id => document.getElementById(id).style.width = '0%');
+    resetTriangle();
+    return;
+  }
+  const vPct = Math.round((prakritiState.scores.v / total) * 100);
+  const pPct = Math.round((prakritiState.scores.p / total) * 100);
+  const kPct = Math.round((prakritiState.scores.k / total) * 100);
+  document.getElementById('vataScore').textContent = prakritiState.scores.v;
+  document.getElementById('pittaScore').textContent = prakritiState.scores.p;
+  document.getElementById('kaphaScore').textContent = prakritiState.scores.k;
+  document.getElementById('vataPercent').textContent = vPct + '%';
+  document.getElementById('pittaPercent').textContent = pPct + '%';
+  document.getElementById('kaphaPercent').textContent = kPct + '%';
+  document.getElementById('vataBar').style.width = vPct + '%';
+  document.getElementById('pittaBar').style.width = pPct + '%';
+  document.getElementById('kaphaBar').style.width = kPct + '%';
+  updateTriangle(vPct, pPct, kPct);
+}
+
+function resetTriangle() {
+  const cx = 150, cy = 165;
+  document.getElementById('doshaPolygon').setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy}`);
+  ['vataPoint','pittaPoint','kaphaPoint'].forEach(id => {
+    document.getElementById(id).setAttribute('cx', cx);
+    document.getElementById(id).setAttribute('cy', cy);
+  });
+}
+
+function updateTriangle(v, p, k) {
+  const vTop = {x:150, y:40}, pBR = {x:260, y:240}, kBL = {x:40, y:240}, center = {x:150, y:165};
+  const vPt = lerp(center, vTop, v/100), pPt = lerp(center, pBR, p/100), kPt = lerp(center, kBL, k/100);
+  document.getElementById('doshaPolygon').setAttribute('points', `${vPt.x},${vPt.y} ${pPt.x},${pPt.y} ${kPt.x},${kPt.y}`);
+  document.getElementById('vataPoint').setAttribute('cx', vPt.x);
+  document.getElementById('vataPoint').setAttribute('cy', vPt.y);
+  document.getElementById('pittaPoint').setAttribute('cx', pPt.x);
+  document.getElementById('pittaPoint').setAttribute('cy', pPt.y);
+  document.getElementById('kaphaPoint').setAttribute('cx', kPt.x);
+  document.getElementById('kaphaPoint').setAttribute('cy', kPt.y);
+}
+function lerp(a, b, t) { return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }; }
+
+function restartChat() {
+  if (Object.keys(prakritiState.answers).length > 0 && !confirm('Restart the conversation? All answers will be cleared.')) return;
+  prakritiState.answers = {};
+  prakritiState.scores = { v:0, p:0, k:0 };
+  prakritiState.currentQ = 0;
+  chatMessages.innerHTML = '';
+  document.getElementById('sidebarResult').classList.remove('show');
+  updateProgress();
+  updateVisualization();
+  startChat();
+}
+
+function startChat() {
+  // Welcome message
+  showTyping();
+  setTimeout(() => {
+    addBotMessage('Namaste! 🙏 I am <strong>Prakriti Muni</strong>, your Ayurvedic constitution guide. I will walk you through 18 thoughtful questions about your body, mind, and habits to reveal your unique <em>Prakriti</em> — your doshic blueprint.');
+    setTimeout(() => {
+      showTyping();
+      setTimeout(() => {
+        addBotMessage('Your answers will update the <strong>Live Dosha Balance</strong> in real-time on the sidebar. Ready to begin?');
+        setTimeout(() => {
+          prakritiState.currentQ = 0;
+          askNextQuestion();
+        }, 800);
+      }, 1000);
+    }, 1500);
+  }, 800);
+}
+
+// ============ SAVE PROFILE ============
+function openSaveModal() {
+  if (Object.keys(prakritiState.answers).length < chatQuestions.length) { showToast('⚠️ Complete the chat first'); return; }
+  document.getElementById('saveModal').classList.add('show');
+  document.getElementById('profileNameInput').focus();
+}
+function closeSaveModal() {
+  document.getElementById('saveModal').classList.remove('show');
+  document.getElementById('profileNameInput').value = '';
+}
+function saveProfile() {
+  const name = document.getElementById('profileNameInput').value.trim();
+  if (!name) { showToast('⚠️ Please enter a profile name'); return; }
+  const {v, p, k} = prakritiState.scores;
+  const total = v + p + k;
+  const profile = {
+    id: Date.now(), name,
+    date: new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}),
+    answers: {...prakritiState.answers},
+    scores: {...prakritiState.scores},
+    percentages: { v: Math.round((v/total)*100), p: Math.round((p/total)*100), k: Math.round((k/total)*100) }
+  };
+  const profiles = JSON.parse(localStorage.getItem('ayurpedia_profiles') || '[]');
+  profiles.push(profile);
+  localStorage.setItem('ayurpedia_profiles', JSON.stringify(profiles));
+  closeSaveModal();
+  renderSavedProfiles();
+  showToast(`✓ Profile "${name}" saved`);
+}
+function renderSavedProfiles() {
+  const profiles = JSON.parse(localStorage.getItem('ayurpedia_profiles') || '[]');
+  const list = document.getElementById('savedProfilesList');
+  if (profiles.length === 0) { list.innerHTML = '<div class="no-profiles">No saved profiles yet</div>'; return; }
+  list.innerHTML = profiles.map(p => {
+    const dominant = p.percentages.v >= p.percentages.p && p.percentages.v >= p.percentages.k ? 'Vata' : p.percentages.p >= p.percentages.k ? 'Pitta' : 'Kapha';
+    return `<div class="profile-item" onclick="loadProfile(${p.id})"><div class="profile-info"><div class="profile-name">${p.name}</div><div class="profile-meta">${dominant} dominant · ${p.date}</div></div><button class="profile-delete" onclick="event.stopPropagation();deleteProfile(${p.id})" title="Delete">✕</button></div>`;
+  }).join('');
+}
+function loadProfile(id) {
+  const profiles = JSON.parse(localStorage.getItem('ayurpedia_profiles') || '[]');
+  const profile = profiles.find(p => p.id === id);
+  if (!profile) return;
+  // Reset chat
+  prakritiState.answers = {...profile.answers};
+  prakritiState.scores = {...profile.scores};
+  prakritiState.currentQ = chatQuestions.length;
+  chatMessages.innerHTML = '';
+  // Show summary
+  const summaryMsg = document.createElement('div');
+  summaryMsg.className = 'message bot';
+  summaryMsg.innerHTML = `<div class="msg-avatar">ॐ</div><div class="msg-bubble">Welcome back! 🌿 I've loaded the profile <strong>"${profile.name}"</strong>. Your constitution has been restored.</div>`;
+  chatMessages.appendChild(summaryMsg);
+  updateProgress();
+  updateVisualization();
+  showFinalResult();
+  showToast(`✓ Loaded profile: ${profile.name}`);
+}
+function deleteProfile(id) {
+  if (!confirm('Delete this profile?')) return;
+  let profiles = JSON.parse(localStorage.getItem('ayurpedia_profiles') || '[]');
+  profiles = profiles.filter(p => p.id !== id);
+  localStorage.setItem('ayurpedia_profiles', JSON.stringify(profiles));
+  renderSavedProfiles();
+  showToast('Profile deleted');
+}
+
+function useInCaseBuilder() {
+  if (!appState.currentPrakriti) { showToast('⚠️ Complete the chat first'); return; }
+  const badge = document.getElementById('prakritiBadge');
+  const badgeText = document.getElementById('prakritiBadgeText');
+  badgeText.textContent = `${appState.currentPrakritiName} (${appState.currentPrakriti.vata}V / ${appState.currentPrakriti.pitta}P / ${appState.currentPrakriti.kapha}K)`;
+  badge.classList.add('show');
+  const prakritiSection = document.getElementById('prakritiSummarySection');
+  const summaryPrakriti = document.getElementById('summaryPrakriti');
+  prakritiSection.style.display = 'block';
+  summaryPrakriti.innerHTML = `<div class="summary-tags"><span class="summary-tag" style="background:rgba(139,111,71,0.15);color:#8b6f47">Vata ${appState.currentPrakriti.vata}%</span><span class="summary-tag" style="background:rgba(192,57,43,0.15);color:#c0392b">Pitta ${appState.currentPrakriti.pitta}%</span><span class="summary-tag" style="background:rgba(46,125,91,0.15);color:#2e7d5b">Kapha ${appState.currentPrakriti.kapha}%</span></div><div style="margin-top:0.5rem;font-style:italic;font-size:0.9rem;color:var(--terracotta)">${appState.currentPrakritiName}</div>`;
+  showToast('✓ Prakriti loaded into Case Builder');
+  setTimeout(() => switchView('builder'), 1000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.getElementById('saveModal').addEventListener('click', (e) => { if (e.target.id === 'saveModal') closeSaveModal(); });
+
+// ============ INIT ============
+renderSavedProfiles();
+updateVisualization();
+updateCaseSummary();
+startChat();
+</script>
+</body>
+</html>

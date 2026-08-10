@@ -1,0 +1,808 @@
+<!DOCTYPE html><html lang="en" style=""><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport">
+<title>Methodology &amp; Trust — AyurPedia AI</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&amp;family=Philosopher:wght@400;700&amp;family=Noto+Serif+Devanagari:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --cream:#fbf5e6;
+  --parchment:#f4e8d0;
+  --green-deep:#1f3a1a;
+  --green-mid:#3d6b2e;
+  --gold:#d4871c;
+  --gold-light:#e8b94a;
+  --rust:#a0522d;
+  --ink:#2a1810;
+
+  --font-display:'Cinzel',serif;
+  --font-body:'Cormorant Garamond',serif;
+  --font-ui:'Philosopher',sans-serif;
+  --font-sanskrit:'Noto Serif Devanagari',serif;
+
+  --grad-hero: linear-gradient(160deg, var(--cream) 0%, var(--parchment) 100%);
+  --grad-brand: linear-gradient(135deg, var(--green-mid) 0%, var(--green-deep) 100%);
+  --grad-gold: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, var(--rust) 100%);
+  --shadow-soft: 0 8px 30px rgba(31,58,26,0.10);
+  --shadow-lift: 0 16px 40px rgba(31,58,26,0.18);
+  --radius: 14px;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;padding:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--grad-hero);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display);color:var(--green-deep);margin:0;letter-spacing:.02em;}
+p{margin:0;}
+button{font-family:var(--font-ui);cursor:pointer;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--gold-light);color:var(--ink);}
+
+/* thin scrollbars for internal scroll panels */
+.scroll-y{scrollbar-width:thin;scrollbar-color:var(--gold) transparent;}
+.scroll-y::-webkit-scrollbar{width:6px;}
+.scroll-y::-webkit-scrollbar-thumb{background:var(--gold);border-radius:10px;}
+.scroll-y::-webkit-scrollbar-track{background:transparent;}
+
+/* focus visibility */
+a:focus-visible, button:focus-visible, input:focus-visible{
+  outline:3px solid var(--gold);
+  outline-offset:2px;
+  border-radius:6px;
+}
+
+/* ============ APP SHELL (single viewport) ============ */
+.app-shell{
+  height:100dvh;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ============ NAVBAR ============ */
+.navbar{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 28px;
+  background:rgba(251,245,230,0.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(31,58,26,0.10);
+  z-index:30;
+  transition:box-shadow .35s ease, background .35s ease;
+}
+.navbar.is-scrolled{
+  box-shadow:0 6px 24px rgba(42,24,16,0.12);
+  background:rgba(251,245,230,0.92);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{width:42px;height:42px;flex:0 0 auto;}
+.logo-star{transform-box:fill-box;transform-origin:50% 50%;animation:starSpin 14s linear infinite;}
+@keyframes starSpin{to{transform:rotate(360deg);}}
+.brand-text{display:flex;flex-direction:column;line-height:1.1;}
+.brand-text .name{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--green-deep);letter-spacing:.02em;}
+.brand-text .name em{font-style:normal;color:var(--rust);}
+.brand-text .tag{font-family:var(--font-ui);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:2px;}
+
+.nav-tabs{
+  display:flex;gap:4px;background:rgba(31,58,26,0.06);padding:4px;border-radius:999px;
+}
+.nav-tab{
+  font-family:var(--font-ui);font-size:13px;padding:9px 16px;border:none;background:transparent;
+  border-radius:999px;color:var(--green-deep);transition:all .25s ease;white-space:nowrap;
+}
+.nav-tab:hover{background:rgba(212,135,28,0.14);}
+.nav-tab.active{background:var(--grad-brand);color:var(--cream);box-shadow:var(--shadow-soft);}
+
+.nav-status{
+  display:flex;align-items:center;gap:8px;font-family:var(--font-ui);font-size:11.5px;
+  color:var(--green-deep);background:rgba(232,185,74,0.20);border:1px solid rgba(212,135,28,.35);
+  padding:7px 12px;border-radius:999px;white-space:nowrap;
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green-mid);position:relative;flex:0 0 auto;}
+.status-dot::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--green-mid);
+  animation:ping 1.8s ease-out infinite;
+}
+@keyframes ping{0%{transform:scale(0.6);opacity:.9;}100%{transform:scale(2.1);opacity:0;}}
+.nav-status .countdown-num{font-variant-numeric:tabular-nums;font-weight:700;color:var(--rust);min-width:2ch;display:inline-block;text-align:center;}
+
+/* mobile tabs toggle */
+.tabs-toggle{display:none;background:var(--grad-brand);color:var(--cream);border:none;border-radius:10px;padding:9px 12px;}
+
+/* ============ MAIN CONTENT ============ */
+.main-content{flex:1 1 auto;min-height:0;position:relative;overflow:hidden;}
+
+/* mandala background */
+.mandala-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;pointer-events:none;z-index:0;overflow:hidden;}
+.mandala{width:min(56vw,620px);height:min(56vw,620px);transform:translateX(-18%);opacity:.10;animation:spin 200s linear infinite;}
+@keyframes spin{to{transform:translateX(-18%) rotate(360deg);}}
+
+/* floating herbs */
+.herb{position:absolute;opacity:.22;pointer-events:none;z-index:0;}
+.herb-1{top:8%;left:6%;width:70px;animation:float1 9s ease-in-out infinite alternate;}
+.herb-2{bottom:12%;left:16%;width:56px;animation:float2 11s ease-in-out infinite alternate;}
+.herb-3{top:42%;left:2%;width:44px;animation:float1 7.5s ease-in-out infinite alternate-reverse;}
+@keyframes float1{from{transform:translateY(0) rotate(-4deg);}to{transform:translateY(-18px) rotate(4deg);}}
+@keyframes float2{from{transform:translateY(0) rotate(3deg);}to{transform:translateY(14px) rotate(-5deg);}}
+
+.layout-grid{
+  position:relative;z-index:1;height:100%;
+  display:grid;grid-template-columns:minmax(300px,34%) 1fr;
+}
+
+/* ============ TRUST PANEL (left) ============ */
+.trust-panel{
+  height:100%;overflow-y:auto;position:relative;
+  display:flex;flex-direction:column;justify-content:center;gap:26px;
+  padding:40px 34px;border-right:1px solid rgba(31,58,26,0.10);
+}
+.eyebrow{
+  font-family:var(--font-ui);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--rust);display:flex;align-items:center;gap:8px;
+}
+.eyebrow .line{width:22px;height:1px;background:var(--rust);display:inline-block;}
+.trust-panel h1{font-size:clamp(26px,3vw,36px);line-height:1.18;max-width:20ch;}
+.sanskrit-quote{
+  font-family:var(--font-sanskrit);font-size:20px;color:var(--green-mid);line-height:1.6;
+  border-left:2px solid var(--gold);padding-left:14px;
+}
+.sanskrit-quote .translit{display:block;font-family:var(--font-body);font-style:italic;font-size:15px;color:var(--rust);margin-top:4px;}
+.sanskrit-quote .en{display:block;font-family:var(--font-body);font-size:15px;color:var(--ink);margin-top:6px;opacity:.85;}
+
+.trust-lede{font-size:18px;line-height:1.6;color:var(--ink);max-width:42ch;opacity:.92;}
+
+.cta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.btn-primary{
+  position:relative;font-family:var(--font-ui);font-size:14px;font-weight:700;color:var(--cream);
+  background:var(--grad-brand);border:none;padding:14px 22px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:10px;box-shadow:var(--shadow-soft);
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);}
+.pulse-dot{position:relative;width:9px;height:9px;border-radius:50%;background:var(--gold-light);flex:0 0 auto;}
+.pulse-dot::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:var(--gold-light);opacity:.55;animation:pulse 1.6s ease-out infinite;}
+@keyframes pulse{0%{transform:scale(.5);opacity:.7;}100%{transform:scale(2.4);opacity:0;}}
+.btn-ghost{
+  font-family:var(--font-ui);font-size:13.5px;color:var(--green-deep);background:transparent;
+  border:1px solid rgba(31,58,26,0.30);padding:12px 18px;border-radius:10px;transition:all .25s ease;
+}
+.btn-ghost:hover{background:rgba(31,58,26,0.06);border-color:var(--green-deep);}
+.toast{
+  position:fixed;left:50%;bottom:78px;transform:translate(-50%,20px);background:var(--green-deep);color:var(--cream);
+  padding:11px 18px;border-radius:10px;font-family:var(--font-ui);font-size:13px;box-shadow:var(--shadow-lift);
+  opacity:0;pointer-events:none;transition:all .35s ease;z-index:80;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px;}
+.stat-card{
+  background:rgba(255,255,255,0.45);border:1px solid rgba(212,135,28,0.25);border-radius:12px;
+  padding:14px 14px;transition:all .25s ease;
+}
+.stat-card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:var(--shadow-soft);}
+.stat-num{font-family:var(--font-display);font-size:22px;color:var(--rust);}
+.stat-label{font-family:var(--font-ui);font-size:10.5px;color:var(--green-deep);letter-spacing:.02em;line-height:1.35;margin-top:2px;}
+
+/* ============ DETAIL PANEL (right) ============ */
+.detail-panel{height:100%;display:flex;flex-direction:column;min-height:0;padding:30px 36px 24px;}
+
+.panel-toolbar{flex:0 0 auto;display:flex;flex-direction:column;gap:16px;margin-bottom:18px;}
+.search-wrap{position:relative;max-width:560px;}
+.search-input{
+  width:100%;font-family:var(--font-ui);font-size:14px;color:var(--ink);
+  padding:13px 16px 13px 42px;border-radius:12px;border:1.5px solid rgba(31,58,26,0.18);
+  background:rgba(255,255,255,.65);transition:all .25s ease;
+}
+.search-input:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 4px rgba(232,185,74,0.28);outline:none;}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--rust);pointer-events:none;}
+.search-suggestions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;}
+.chip{
+  font-family:var(--font-ui);font-size:11.5px;color:var(--green-deep);background:rgba(61,107,46,0.08);
+  border:1px solid rgba(61,107,46,0.20);padding:6px 12px;border-radius:999px;transition:all .22s ease;
+}
+.chip:hover{background:var(--grad-brand);color:var(--cream);border-color:transparent;transform:translateY(-1px);}
+
+.tab-content{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:6px;}
+.panel{display:none;animation:fadein .4s ease;}
+.panel.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.panel h2{font-size:clamp(20px,2vw,26px);margin-bottom:6px;}
+.panel .sub{font-family:var(--font-ui);font-size:12.5px;color:var(--rust);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;display:block;}
+.panel .lede{font-size:16px;line-height:1.6;color:var(--ink);opacity:.88;max-width:66ch;margin-top:10px;margin-bottom:20px;}
+
+/* generic card grid used across tabs */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+
+/* overview: 2x2 card grid + big side timer */
+.overview-wrap{display:flex;gap:26px;align-items:stretch;}
+.card-grid-2col{flex:1 1 auto;grid-template-columns:1fr 1fr;align-content:start;min-width:0;}
+.side-timer{
+  flex:0 0 auto;width:220px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;
+  background:rgba(255,255,255,0.45);border:1px solid rgba(212,135,28,0.25);border-radius:var(--radius);
+  padding:24px 18px;justify-content:center;
+}
+.side-timer-ring{position:relative;width:150px;height:150px;}
+.side-timer-ring svg{width:100%;height:100%;}
+#overviewRingTrack{stroke-dasharray:377;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear;}
+.side-timer-num{
+  position:absolute;inset:0;display:flex;align-items:baseline;justify-content:center;gap:2px;
+  font-family:var(--font-display);
+}
+.side-timer-num span{
+  font-size:44px;font-variant-numeric:tabular-nums;background:var(--grad-gold);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.side-timer-num small{font-size:15px;color:var(--rust);}
+.side-timer-title{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--green-deep);letter-spacing:.02em;}
+.side-timer-desc{font-size:13px;line-height:1.5;color:var(--ink);opacity:.78;}
+@media (max-width:1000px){
+  .overview-wrap{flex-direction:column;}
+  .side-timer{width:100%;flex-direction:row;text-align:left;gap:18px;padding:18px;}
+  .side-timer-ring{width:100px;height:100px;flex:0 0 auto;}
+  .side-timer-num span{font-size:28px;}
+}
+@media (max-width:560px){
+  .card-grid-2col{grid-template-columns:1fr;}
+  .side-timer{flex-direction:column;text-align:center;}
+}
+.info-card{
+  background:rgba(255,255,255,0.55);border:1px solid rgba(31,58,26,0.10);border-radius:var(--radius);
+  padding:16px 17px;transition:all .25s ease;
+}
+.info-card:hover{border-color:var(--gold);box-shadow:var(--shadow-soft);transform:translateY(-3px);}
+.info-card .icn{width:26px;height:26px;color:var(--green-mid);margin-bottom:10px;}
+.info-card h4{font-family:var(--font-ui);font-size:14.5px;color:var(--green-deep);margin-bottom:6px;}
+.info-card p{font-size:14.5px;line-height:1.5;color:var(--ink);opacity:.85;}
+.info-card .badge{
+  display:inline-block;margin-top:9px;font-family:var(--font-ui);font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--rust);background:rgba(232,185,74,0.25);padding:3px 9px;border-radius:6px;
+}
+
+/* ===== Algorithm ring (signature element) ===== */
+.ring-wrap{display:flex;gap:26px;align-items:center;flex-wrap:wrap;margin-bottom:22px;}
+.ring-outer{position:relative;width:280px;height:280px;flex:0 0 auto;}
+.ring-svg{position:absolute;inset:0;width:100%;height:100%;}
+.ring-svg path,.ring-svg line{stroke:var(--gold);stroke-width:.6;fill:none;opacity:.55;}
+.ring-node{
+  position:absolute;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;
+  background:var(--cream);border:2px solid var(--green-mid);display:flex;align-items:center;justify-content:center;
+  flex-direction:column;box-shadow:var(--shadow-soft);transition:all .25s ease;cursor:default;
+}
+.ring-node:hover{border-color:var(--gold);transform:translate(-50%,-50%) scale(1.08);box-shadow:var(--shadow-lift);}
+.ring-node .icn{width:20px;height:20px;color:var(--green-deep);}
+.ring-node .num{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--grad-gold);color:var(--ink);font-family:var(--font-ui);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.ring-center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;
+  background:var(--grad-brand);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--cream);
+  box-shadow:0 0 0 6px rgba(232,185,74,0.18), var(--shadow-lift);
+}
+.ring-center .cd{font-family:var(--font-display);font-size:22px;font-variant-numeric:tabular-nums;}
+.ring-center .cd-label{font-family:var(--font-ui);font-size:8px;letter-spacing:.08em;text-transform:uppercase;opacity:.85;margin-top:2px;text-align:center;line-height:1.2;}
+
+.ring-legend{flex:1;min-width:240px;display:flex;flex-direction:column;gap:10px;}
+.ring-legend .leg-item{display:flex;gap:10px;align-items:flex-start;font-size:14px;}
+.ring-legend .leg-num{
+  width:20px;height:20px;border-radius:50%;background:rgba(61,107,46,0.14);color:var(--green-deep);
+  font-family:var(--font-ui);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:2px;
+}
+.ring-legend b{color:var(--green-deep);font-family:var(--font-ui);font-size:13.5px;}
+.ring-legend span.tech{color:var(--rust);font-family:var(--font-ui);font-size:10px;letter-spacing:.04em;text-transform:uppercase;}
+
+/* numbered review steps */
+.step-list{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.step-list li{
+  display:flex;gap:14px;align-items:flex-start;padding:12px 4px;border-bottom:1px dashed rgba(31,58,26,0.15);
+}
+.step-list li:last-child{border-bottom:none;}
+.step-list .n{
+  font-family:var(--font-display);font-size:15px;color:var(--gold);flex:0 0 auto;width:26px;
+}
+.step-list .t{font-family:var(--font-ui);font-size:14px;color:var(--green-deep);display:block;margin-bottom:2px;}
+.step-list .d{font-size:14.5px;color:var(--ink);opacity:.82;line-height:1.5;}
+
+/* disclaimer */
+.disclaimer-card{
+  background:linear-gradient(180deg,rgba(232,185,74,0.16),rgba(232,185,74,0.05));
+  border:1.5px solid var(--gold);border-radius:var(--radius);padding:22px 24px;margin-bottom:18px;
+}
+.disclaimer-card .head{display:flex;gap:12px;align-items:center;margin-bottom:10px;}
+.disclaimer-card .head .icn{width:26px;height:26px;color:var(--rust);flex:0 0 auto;}
+.disclaimer-card p{font-size:16px;line-height:1.65;color:var(--ink);}
+.bullet-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+.bullet-list li{display:flex;gap:9px;font-size:14px;line-height:1.5;color:var(--ink);}
+.bullet-list .icn{width:17px;height:17px;color:var(--green-mid);flex:0 0 auto;margin-top:2px;}
+
+/* ============ FOOTER DISCLAIMER BAR ============ */
+.footer-bar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;
+  padding:12px 20px;background:var(--green-deep);color:var(--cream);z-index:30;
+}
+.footer-bar .icn{width:16px;height:16px;color:var(--gold-light);flex:0 0 auto;}
+.footer-bar p{font-family:var(--font-ui);font-size:12.5px;letter-spacing:.01em;opacity:.95;}
+.footer-bar button{
+  font-family:var(--font-ui);font-size:11.5px;color:var(--green-deep);background:var(--gold-light);
+  border:none;padding:6px 13px;border-radius:999px;transition:all .2s ease;
+}
+.footer-bar button:hover{background:var(--gold);color:var(--cream);}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1000px){
+  .layout-grid{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
+  .trust-panel{border-right:none;border-bottom:1px solid rgba(31,58,26,0.10);padding:24px 26px;gap:16px;}
+  .stat-grid{grid-template-columns:repeat(4,1fr);}
+  .mandala{width:80vw;height:80vw;transform:translateX(-30%);}
+  .detail-panel{padding:22px 24px 18px;}
+}
+@media (max-width:760px){
+  .nav-tabs{display:none;}
+  .tabs-toggle{display:inline-flex;align-items:center;gap:6px;}
+  .nav-status .lbl{display:none;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .ring-outer{width:230px;height:230px;}
+  .ring-node{width:52px;height:52px;}
+  .ring-center{width:80px;height:80px;}
+  .footer-bar{text-align:center;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="navbar">
+<style>@keyframes spinSlow { to { transform: rotate(360deg); } }</style>
+<a href="/static/home.html" class="brand" style="text-decoration:none;cursor:pointer;">
+    <svg viewBox="0 0 100 100" style="width:42px;height:42px;flex:0 0 auto;animation:spinSlow 30s linear infinite;">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div class="brand-text">
+      <span class="name" style="font-family:'Cinzel',serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,#1f3a1a 0%,#d4871c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;line-height:1;">AyurPedia</span>
+      <span class="tag" style="font-size:0.55rem;color:#a0522d;letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-family:'Philosopher',sans-serif;line-height:1;">Ancient Wisdom · Modern Search</span>
+    </div>
+</a>
+<div aria-label="Methodology sections" class="nav-tabs" id="navTabs" role="tablist">
+<button aria-selected="true" class="nav-tab active" data-tab="overview" role="tab">Overview</button>
+<button aria-selected="false" class="nav-tab" data-tab="algorithm" role="tab">The Algorithm</button>
+<button aria-selected="false" class="nav-tab" data-tab="data" role="tab">Data &amp; Review</button>
+<button aria-selected="false" class="nav-tab" data-tab="disclaimer" role="tab">Disclaimer</button>
+</div>
+<div style="display:flex;align-items:center;gap:10px;">
+<button aria-label="Change section" class="tabs-toggle" id="tabsToggle">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"></path></svg>
+</button>
+<div class="nav-status">
+<span class="status-dot"></span>
+<span class="lbl">Live demo · next verification pass</span>
+<span class="countdown-num" id="navCountdown">12</span>s
+      </div>
+</div>
+</nav>
+<!-- ============ MAIN ============ -->
+<main class="main-content">
+<div aria-hidden="true" class="mandala-wrap">
+<svg class="mandala" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+<g fill="none" stroke="#1f3a1a" stroke-width="1">
+<circle cx="200" cy="200" r="180"></circle>
+<circle cx="200" cy="200" r="150"></circle>
+<circle cx="200" cy="200" r="110"></circle>
+<circle cx="200" cy="200" r="70"></circle>
+<circle cx="200" cy="200" r="30"></circle>
+</g>
+<g fill="none" stroke="#d4871c" stroke-width="1">
+<g id="petals"><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(0 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(22.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(45 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(67.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(90 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(112.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(135 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(157.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(180 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(202.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(225 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(247.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(270 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(292.5 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(315 200 200)"></path><path d="M200 40 Q210 70 200 90 Q190 70 200 40 Z" transform="rotate(337.5 200 200)"></path></g>
+</g>
+</svg>
+</div>
+<svg aria-hidden="true" class="herb herb-1" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+<path d="M30 85 C28 55 28 30 30 5" fill="none" stroke="#3d6b2e" stroke-width="2"></path>
+<path d="M30 20c10-8 20-6 24 2-10 6-19 4-24-2z" fill="#3d6b2e"></path>
+<path d="M30 40c-10-8-20-6-24 2 10 6 19 4 24-2z" fill="#3d6b2e"></path>
+<path d="M30 60c10-6 18-4 21 3-9 5-17 3-21-3z" fill="#3d6b2e"></path>
+</svg>
+<svg aria-hidden="true" class="herb herb-2" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+<path d="M30 85 C28 55 28 30 30 5" fill="none" stroke="#a0522d" stroke-width="2"></path>
+<path d="M30 24c-9-8-18-5-21 3 9 5 17 3 21-3z" fill="#a0522d"></path>
+<path d="M30 46c9-7 18-4 21 4-9 5-17 2-21-4z" fill="#a0522d"></path>
+</svg>
+<svg aria-hidden="true" class="herb herb-3" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+<path d="M30 85 C28 55 28 30 30 5" fill="none" stroke="#3d6b2e" stroke-width="2"></path>
+<path d="M30 18c8-7 16-5 19 2-8 5-15 3-19-2z" fill="#3d6b2e"></path>
+<path d="M30 34c-8-7-16-5-19 2 8 5 15 3 19-2z" fill="#3d6b2e"></path>
+</svg>
+<div class="layout-grid">
+<!-- ===== TRUST PANEL ===== -->
+<aside class="trust-panel scroll-y">
+<span class="eyebrow"><span class="line"></span>Trust Zone</span>
+<h1 class="">The reasoning behind every recommendation, made visible.</h1>
+<div class="sanskrit-quote">
+          स्वस्थस्य स्वास्थ्यरक्षणं आतुरस्य विकारप्रशमनं च
+          <span class="translit">svasthasya svāsthya-rakṣaṇaṁ āturasya vikāra-praśamanaṁ ca</span>
+<span class="en">"To preserve the health of the healthy, and to ease the disorder of the unwell." — Charaka Saṁhitā, Sūtrasthāna 30.26</span>
+</div>
+<p class="trust-lede">
+          AyurPedia AI blends centuries of documented Ayurvedic knowledge with machine learning, AI-assisted analysis,
+          and live verification APIs — then puts every step of that process on the record. This page explains it.
+        </p>
+<div class="cta-row">
+
+<button class="btn-ghost" data-jump="algorithm">See how matching works →</button>
+</div>
+<div class="stat-grid" id="statGrid">
+<div class="stat-card"><div class="stat-num"><span class="count" data-target="48">48</span></div><div class="stat-label">Classical texts indexed</div></div>
+<div class="stat-card"><div class="stat-num"><span class="count" data-target="1200">1200</span>+</div><div class="stat-label">Herb–symptom relationships mapped</div></div>
+<div class="stat-card"><div class="stat-num"><span class="count" data-target="96">96</span>%</div><div class="stat-label">Practitioner credentials verified</div></div>
+<div class="stat-card"><div class="stat-num"><span class="count" data-target="3">3</span></div><div class="stat-label">Independent review layers</div></div>
+</div>
+</aside>
+<!-- ===== DETAIL PANEL ===== -->
+<section class="detail-panel">
+<div class="panel-toolbar">
+<div class="search-wrap">
+<svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--rust); pointer-events: none; display: flex; align-items: center; justify-content: center;"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3" stroke-linecap="round"></path></svg>
+<input autocomplete="off" class="search-input" id="searchInput" placeholder="Search the methodology — try &quot;data sources&quot; or &quot;algorithm&quot;" type="text">
+<div class="search-suggestions">
+<button class="chip" data-jump="algorithm">How matching works</button>
+<button class="chip" data-jump="data">Data &amp; review process</button>
+<button class="chip" data-jump="disclaimer">Is this a diagnosis?</button>
+<button class="chip" data-jump="data">Herb safety checks</button>
+<button class="chip" data-jump="overview">Who reviews this</button>
+</div>
+</div>
+</div>
+<div class="tab-content scroll-y" id="tabContent">
+<!-- OVERVIEW -->
+<div class="panel active" data-panel="overview">
+<span class="sub">Trust Zone · 01</span>
+<h2 class="">Ancient wisdom, rigorously verified</h2>
+<p class="lede">
+              AyurPedia AI exists to connect people with Ayurvedic guidance responsibly. Every match you see has passed
+              through a documented pipeline that combines classical scholarship, machine learning, and independent
+              human review — not a black box, and not a substitute for a clinician.
+            </p>
+<div class="overview-wrap">
+<div class="card-grid card-grid-2col">
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+<h4 class="">Source-grounded</h4>
+<p class="">Every recommendation traces back to a classical text, a peer-reviewed study, or both — with citations you can inspect.</p>
+<span class="badge">Transparent</span>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 2l2.5 5.5L20 9l-5.5 2.5L12 17l-2.5-5.5L4 9l5.5-1.5z"></path></svg>
+<h4 class="">AI-assisted, human-governed</h4>
+<p class="">Machine learning ranks possibilities quickly; a standing panel of clinicians decides what stays published.</p>
+<span class="badge">Reviewed weekly</span>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"></path></svg>
+<h4 class="">Safety checked live</h4>
+<p class="">Before display, matches are cross-checked against interaction and credential APIs in real time.</p>
+<span class="badge">API-verified</span>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 20c-4-3-8-6-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5-4 8-8 11z"></path></svg>
+<h4 class="">Never a diagnosis</h4>
+<p class="">Outputs are educational and probabilistic. They support, but never replace, a licensed clinician.</p>
+<span class="badge">See disclaimer</span>
+</div>
+</div>
+<div class="side-timer flex flex-col items-center text-center gap-4">
+<div class="side-timer-ring">
+<svg height="150" viewBox="0 0 140 140" width="150">
+<circle cx="70" cy="70" fill="none" r="60" stroke="rgba(31,58,26,0.10)" stroke-width="6"></circle>
+<circle cx="70" cy="70" fill="none" id="overviewRingTrack" r="60" stroke="url(#sideRingGrad)" stroke-linecap="round" stroke-width="6" transform="rotate(-90 70 70)" style="stroke-dashoffset: 226.2;"></circle>
+<defs>
+<linearGradient id="sideRingGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#e8b94a"></stop>
+<stop offset="100%" stop-color="#a0522d"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="side-timer-num" style="align-items: center;"><span id="overviewCountdown" class="">12</span><small>s</small></div>
+</div>
+<span class="side-timer-title">Live Verification Cycle</span>
+<p class="side-timer-desc">Illustrative cadence at which matches are re-checked against safety &amp; credential APIs before anything is shown to you.</p>
+<button class="btn-ghost" id="skipVerification" style="opacity: 1; cursor: pointer; padding: 6px 12px; font-size: 12px;">Skip Verification</button>
+</div>
+</div>
+</div>
+<!-- ALGORITHM -->
+<div class="panel" data-panel="algorithm">
+<span class="sub">Trust Zone · 02</span>
+<h2 class="">How the matching engine works</h2>
+<p class="lede">Five stages, each auditable. The ring below mirrors the live pipeline your assessment moves through — the centre timer illustrates the cadence at which results are re-verified.</p>
+<div class="ring-wrap">
+<div class="ring-outer">
+<svg class="ring-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<path d="M50 8 L89.9 37 L74.7 84 L25.3 84 L10.1 37 Z"></path>
+<line x1="50" x2="50" y1="8" y2="50"></line>
+<line x1="89.9" x2="50" y1="37" y2="50"></line>
+<line x1="74.7" x2="50" y1="84" y2="50"></line>
+<line x1="25.3" x2="50" y1="84" y2="50"></line>
+<line x1="10.1" x2="50" y1="37" y2="50"></line>
+</svg>
+<div class="ring-node" style="left:50%;top:8%;">
+<span class="num">1</span>
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M9 4h6a2 2 0 0 1 2 2v14H7V6a2 2 0 0 1 2-2z"></path><path d="M9 9h6M9 13h6"></path></svg>
+</div>
+<div class="ring-node" style="left:89.9%;top:37%;">
+<span class="num">2</span>
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 0-5 5c0 2 1 3 1 5v2h8v-2c0-2 1-3 1-5a5 5 0 0 0-5-5z"></path><path d="M10 19h4M11 22h2"></path></svg>
+</div>
+<div class="ring-node" style="left:74.7%;top:84%;">
+<span class="num">3</span>
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20V13" stroke-linecap="round"></path></svg>
+</div>
+<div class="ring-node" style="left:25.3%;top:84%;">
+<span class="num">4</span>
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="7" cy="12" r="3"></circle><circle cx="17" cy="12" r="3"></circle><path d="M10 12h4"></path></svg>
+</div>
+<div class="ring-node" style="left:10.1%;top:37%;">
+<span class="num">5</span>
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+</div>
+<div class="ring-center">
+<span class="cd" id="ringCountdown">12</span>
+<span class="cd-label">verification<br>cycle (demo)</span>
+</div>
+</div>
+<div class="ring-legend">
+<div class="leg-item"><span class="leg-num">1</span><div class=""><b>Intake — Prakriti Profile.</b> <span class="tech">Structured input</span><br>A questionnaire captures constitution, symptoms, and lifestyle context.</div></div>
+<div class="leg-item"><span class="leg-num">2</span><div class=""><b>AI pattern analysis.</b> <span class="tech">AI model</span><br>A model trained on annotated classical and clinical text pairs scores likely constitutional patterns.</div></div>
+<div class="leg-item"><span class="leg-num">3</span><div class=""><b>Machine learning ranking.</b> <span class="tech">ML ranking</span><br>An ML model weighs herb–symptom associations and contraindication risk to shortlist candidates.</div></div>
+<div class="leg-item"><span class="leg-num">4</span><div class=""><b>Live API verification.</b> <span class="tech">External APIs</span><br>Every shortlist is cross-checked in real time against interaction, allergen, and practitioner-license APIs.</div></div>
+<div class="leg-item"><span class="leg-num">5</span><div class=""><b>Scholarly human review.</b> <span class="tech">Manual audit</span><br>Registered practitioners and researchers audit outputs weekly and can remove any recommendation.</div></div>
+</div>
+</div>
+</div>
+<!-- DATA & REVIEW -->
+<div class="panel" data-panel="data">
+<span class="sub">Trust Zone · 03</span>
+<h2 class="">What we draw from, and who checks it</h2>
+<p class="lede">Nothing enters the matching index without a documented origin and a named reviewer.</p>
+<div class="card-grid">
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+<h4 class="">Classical texts</h4>
+<p class="">Charaka Saṁhitā, Suśruta Saṁhitā, and Aṣṭāṅga Hṛdayam, digitized and cross-checked against certified translations.</p>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M9 2v6L4 20a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2L15 8V2"></path><path d="M9 2h6"></path></svg>
+<h4 class="">Peer-reviewed research</h4>
+<p class="">Herb safety and efficacy signals pulled via a biomedical literature API and tagged for clinical relevance.</p>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect height="16" rx="2" width="16" x="4" y="4"></rect><path d="M8 10h8M8 14h5"></path></svg>
+<h4 class="">Practitioner registries</h4>
+<p class="">Credentials and licenses confirmed against regional registry APIs before any practitioner is listed.</p>
+</div>
+<div class="info-card">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20V13" stroke-linecap="round"></path></svg>
+<h4 class="">Anonymized outcomes</h4>
+<p class="">Aggregated, de-identified user feedback refines ranking quality. It never overrides safety checks.</p>
+</div>
+</div>
+<ol class="step-list">
+<li class=""><span class="n">01</span><div><span class="t">Source ingestion &amp; digitization</span><span class="d">Texts and studies are catalogued with full provenance metadata.</span></div></li>
+<li class=""><span class="n">02</span><div><span class="t">Dual-translation cross-check</span><span class="d">A Sanskrit scholar and a registered Ayurvedic physician independently verify meaning.</span></div></li>
+<li class=""><span class="n">03</span><div><span class="t">Biomedical relevance tagging</span><span class="d">Findings are tagged against modern safety and interaction data.</span></div></li>
+<li class=""><span class="n">04</span><div><span class="t">Committee sign-off</span><span class="d">A standing review board approves entries before they reach the matching index.</span></div></li>
+<li class=""><span class="n">05</span><div><span class="t">Quarterly re-audit</span><span class="d">Live recommendations are re-examined every quarter and revised as evidence evolves.</span></div></li>
+</ol>
+</div>
+<!-- DISCLAIMER -->
+<div class="panel" data-panel="disclaimer">
+<span class="sub">Trust Zone · 04</span>
+<h2 class="">What this tool is — and isn't</h2>
+<div class="disclaimer-card">
+<div class="head">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>
+<h4 style="font-family:var(--font-ui);color:var(--green-deep);font-size:15px;" class="">Read this before acting on any match</h4>
+</div>
+<p class="">
+                AyurPedia AI's matching engine is a decision-support and educational tool. It surfaces traditional and
+                research-informed possibilities based on patterns in verified sources. It does not diagnose, prescribe,
+                or replace the judgment of a licensed physician or registered Ayurvedic practitioner. Always consult a
+                qualified clinician before beginning, changing, or stopping any treatment — herbal or otherwise —
+                especially if you are pregnant, nursing, on medication, or managing a chronic condition.
+              </p>
+</div>
+<ul class="bullet-list">
+<li class=""><svg class="icn" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>Not for emergencies — call local emergency services for urgent symptoms.</li>
+<li class=""><svg class="icn" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>Herb–drug interactions can be serious — always disclose all medications to your clinician.</li>
+<li class=""><svg class="icn" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>Matches are probabilistic guidance, not a definitive diagnosis.</li>
+<li class=""><svg class="icn" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>Practitioner listings are verified for credentials, not personally endorsed by AyurPedia AI.</li>
+</ul>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- ============ FOOTER DISCLAIMER BAR ============ -->
+<footer class="footer-bar">
+<svg class="icn" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 1 21h22L12 2z"></path><path d="M12 9v5M12 17h.01"></path></svg>
+<p class="">Educational tool only — this platform supports, but never replaces, professional clinical judgment.</p>
+<button id="footerSkipBtn" style="font-family: var(--font-ui); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink); background: var(--grad-gold); border-width: medium; border-style: none; border-color: currentcolor; border-image: none; padding: 8px 16px; border-radius: 999px; box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 12px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; transform: translateY(0px);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)';" class="">Skip Verification</button>
+</footer>
+</div>
+<div class="toast" id="toast">This would begin your assessment on the main platform.</div>
+<script>
+(function(){
+  // ---------- mandala petals ----------
+  var petalsGroup = document.getElementById('petals');
+  var petalCount = 16;
+  for (var i = 0; i < petalCount; i++){
+    var angle = (360 / petalCount) * i;
+    var petal = document.createElementNS('http://www.w3.org/2000/svg','path');
+    petal.setAttribute('d','M200 40 Q210 70 200 90 Q190 70 200 40 Z');
+    petal.setAttribute('transform','rotate(' + angle + ' 200 200)');
+    petalsGroup.appendChild(petal);
+  }
+
+  // ---------- tab switching ----------
+  var tabs = document.querySelectorAll('.nav-tab');
+  var panels = document.querySelectorAll('.panel');
+  function switchTab(id){
+    tabs.forEach(function(t){
+      var active = t.getAttribute('data-tab') === id;
+      t.classList.toggle('active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    panels.forEach(function(p){
+      p.classList.toggle('active', p.getAttribute('data-panel') === id);
+    });
+    var content = document.getElementById('tabContent');
+    content.scrollTop = 0;
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ switchTab(t.getAttribute('data-tab')); });
+  });
+  document.querySelectorAll('[data-jump]').forEach(function(el){
+    el.addEventListener('click', function(){ switchTab(el.getAttribute('data-jump')); });
+  });
+
+  // mobile tabs toggle: cycle through sections
+  var order = ['overview','algorithm','data','disclaimer'];
+  var idx = 0;
+  document.getElementById('tabsToggle').addEventListener('click', function(){
+    idx = (idx + 1) % order.length;
+    switchTab(order[idx]);
+  });
+
+  // ---------- search: keyword -> tab ----------
+  var searchInput = document.getElementById('searchInput');
+  var keywordMap = [
+    { words: ['algorithm','match','ml','ai','ranking','api'], tab: 'algorithm' },
+    { words: ['data','source','review','text','research','audit'], tab: 'data' },
+    { words: ['disclaimer','diagnos','safe','replace','clinical'], tab: 'disclaimer' },
+    { words: ['overview','trust','about','who'], tab: 'overview' }
+  ];
+  searchInput.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') return;
+    var q = searchInput.value.toLowerCase();
+    for (var i = 0; i < keywordMap.length; i++){
+      if (keywordMap[i].words.some(function(w){ return q.indexOf(w) !== -1; })){
+        switchTab(keywordMap[i].tab);
+        return;
+      }
+    }
+    showToast('No section matched — try "algorithm" or "data sources".');
+  });
+
+  // ---------- toast ----------
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+  var ctaBtn = document.getElementById('ctaAssessment');
+  if(ctaBtn) {
+    ctaBtn.addEventListener('click', function(){
+      window.location.href = '/static/result.html';
+    });
+  }
+
+  // ---------- scroll-based nav styling ----------
+  var navbar = document.getElementById('navbar');
+  var tabContent = document.getElementById('tabContent');
+  tabContent.addEventListener('scroll', function(){
+    navbar.classList.toggle('is-scrolled', tabContent.scrollTop > 4);
+  });
+
+  // ---------- counter animation ----------
+  function animateCounters(){
+    document.querySelectorAll('.count').forEach(function(el){
+      var target = parseInt(el.getAttribute('data-target'), 10);
+      var start = 0;
+      var duration = 1400;
+      var startTime = null;
+      function step(ts){
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  animateCounters();
+
+  // ---------- live 30s countdown (illustrative demo of verification cadence) ----------
+  var count = 30;
+  var navCd = document.getElementById('navCountdown');
+  var ringCd = document.getElementById('ringCountdown');
+  var overviewCd = document.getElementById('overviewCountdown');
+  var overviewRing = document.getElementById('overviewRingTrack');
+  var skipBtn = document.getElementById('skipVerification');
+  var ringCircumference = 377;
+  
+  if(skipBtn) {
+    skipBtn.addEventListener('click', function(){
+      window.location.href = '/static/result.html';
+    });
+  }
+  var footerSkipBtn = document.getElementById('footerSkipBtn');
+  if(footerSkipBtn) {
+    footerSkipBtn.addEventListener('click', function(){
+      window.location.href = '/static/result.html';
+    });
+  }
+
+  function tick(){
+    if(navCd) navCd.textContent = count;
+    if(ringCd) ringCd.textContent = count;
+    if(overviewCd) overviewCd.textContent = count;
+    if(overviewRing) overviewRing.style.strokeDashoffset = ringCircumference * (1 - count / 30);
+    
+    if(skipBtn) {
+      if (count <= 20) {
+        skipBtn.style.opacity = '1';
+        skipBtn.style.cursor = 'pointer';
+        skipBtn.disabled = false;
+      } else {
+        skipBtn.style.opacity = '0.5';
+        skipBtn.style.cursor = 'not-allowed';
+        skipBtn.disabled = true;
+      }
+    }
+
+    count = count === 0 ? 30 : count - 1;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+
+
+</body></html>

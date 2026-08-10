@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Case Studies & Community — AyurPedia Learning Zone</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Philosopher:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --forest:#1f3a1a;
+  --forest-deep:#0f1f0c;
+  --leaf:#3d6b2e;
+  --saffron:#d4871c;
+  --gold:#e8b94a;
+  --gold-bright:#f5cf5a;
+  --terracotta:#a0522d;
+  --parchment:#f4e8d0;
+  --parchment-dark:#e8d9b3;
+  --ink:#2a1810;
+  --cream:#fbf5e6;
+}
+body{
+  font-family:'Cormorant Garamond',serif;
+  background:var(--cream);
+  color:var(--ink);
+  line-height:1.6;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(212,135,28,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(61,107,46,0.08) 0%,transparent 40%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ---- NAV (same system as main site) ---- */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  padding:1rem 4%;
+  display:flex;justify-content:space-between;align-items:center;
+  z-index:100;
+  background:rgba(251,245,230,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(212,135,28,0.2);
+}
+.logo{display:flex;align-items:center;gap:0.7rem;cursor:pointer}
+.logo-icon{width:44px;height:44px}
+.logo-text{
+  font-family:'Cinzel',serif;font-weight:900;font-size:1.5rem;
+  background:linear-gradient(135deg,var(--forest) 0%,var(--saffron) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo-sub{font-size:0.62rem;color:var(--terracotta);letter-spacing:3px;text-transform:uppercase;margin-top:-4px;font-family:'Philosopher',sans-serif}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{text-decoration:none;color:var(--forest);font-family:'Philosopher',sans-serif;font-weight:700;font-size:1rem;position:relative}
+.nav-links a.active{color:var(--saffron)}
+.nav-links a::after{content:"";position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--saffron);transition:width 0.3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+@media (max-width:900px){.nav-links{display:none}}
+
+/* ---- PAGE HEADER ---- */
+.page-header{
+  position:relative;z-index:2;
+  padding:9rem 4% 3rem;
+  text-align:center;
+  max-width:900px;margin:0 auto;
+}
+.sanskrit-tag{
+  font-family:'Noto Serif Devanagari',serif;color:var(--terracotta);
+  font-size:1.15rem;letter-spacing:3px;margin-bottom:0.8rem;opacity:0.85;
+}
+.page-header h1{
+  font-family:'Cinzel',serif;font-size:clamp(2.2rem,5vw,3.6rem);font-weight:900;
+  color:var(--forest);margin-bottom:1rem;line-height:1.15;
+}
+.page-header h1 .italic{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;color:var(--saffron);
+}
+.page-header p{font-size:1.2rem;font-style:italic;opacity:0.85;max-width:640px;margin:0 auto}
+
+/* ---- STICKY SUBNAV / FILTER BAR ---- */
+.subnav{
+  position:sticky;top:74px;z-index:50;
+  background:rgba(251,245,230,0.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px dashed rgba(212,135,28,0.3);
+  padding:1rem 4%;
+  display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap;
+}
+.chip{
+  background:rgba(255,255,255,0.7);
+  border:1px solid rgba(61,107,46,0.25);
+  color:var(--forest);
+  padding:0.4rem 1.1rem;border-radius:20px;
+  font-family:'Philosopher',sans-serif;font-size:0.9rem;
+  cursor:pointer;transition:all 0.25s;
+}
+.chip:hover{background:rgba(61,107,46,0.1)}
+.chip.active{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+
+section{position:relative;z-index:2;padding:3.5rem 4% 4.5rem;max-width:1300px;margin:0 auto}
+.section-eyebrow{font-family:'Philosopher',sans-serif;color:var(--saffron);letter-spacing:4px;text-transform:uppercase;font-size:0.85rem;margin-bottom:0.5rem;text-align:center}
+.section-title{font-family:'Cinzel',serif;font-size:clamp(1.7rem,3.2vw,2.4rem);font-weight:900;color:var(--forest);text-align:center;margin-bottom:0.6rem}
+.section-title .italic{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;color:var(--saffron)}
+.section-sub{max-width:680px;margin:0 auto 2.8rem;text-align:center;opacity:0.8;font-size:1.05rem;font-style:italic}
+
+/* ---- VIGNETTE CARDS ---- */
+.vignette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.8rem}
+.vignette{
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(212,135,28,0.25);
+  border-radius:18px;
+  padding:1.8rem;
+  position:relative;
+  transition:box-shadow 0.3s,transform 0.3s;
+}
+.vignette:hover{box-shadow:0 15px 40px rgba(31,58,26,0.12);transform:translateY(-3px)}
+.vignette-top{display:flex;justify-content:space-between;align-items:flex-start;gap:0.8rem;margin-bottom:0.6rem}
+.vignette-num{
+  font-family:'Cinzel',serif;color:var(--terracotta);font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;
+}
+.bookmark-btn{
+  background:none;border:none;cursor:pointer;color:var(--gold);
+  width:30px;height:30px;flex-shrink:0;transition:transform 0.25s;
+}
+.bookmark-btn:hover{transform:scale(1.15)}
+.bookmark-btn svg{width:100%;height:100%}
+.bookmark-btn.saved svg{fill:var(--saffron);stroke:var(--saffron)}
+.vignette h3{font-family:'Cinzel',serif;color:var(--forest);font-size:1.25rem;margin-bottom:0.6rem}
+.vignette .presentation{font-size:1.02rem;margin-bottom:0.9rem}
+.vignette .tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.1rem}
+.vignette .tags span{background:rgba(61,107,46,0.1);color:var(--forest);padding:0.2rem 0.7rem;border-radius:15px;font-size:0.78rem;font-family:'Philosopher',sans-serif}
+
+.propose-label{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--terracotta);font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem}
+.option-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.9rem}
+.option-chip{
+  border:1.5px solid rgba(61,107,46,0.3);background:transparent;color:var(--forest);
+  padding:0.35rem 0.9rem;border-radius:16px;font-family:'Philosopher',sans-serif;font-size:0.88rem;
+  cursor:pointer;transition:all 0.2s;
+}
+.option-chip.picked{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+textarea.reasoning{
+  width:100%;border:1px solid rgba(212,135,28,0.35);border-radius:12px;
+  padding:0.7rem 0.9rem;font-family:'Cormorant Garamond',serif;font-size:1rem;
+  background:rgba(255,255,255,0.6);resize:vertical;min-height:60px;margin-bottom:0.9rem;
+}
+textarea.reasoning:focus{outline:none;border-color:var(--saffron)}
+.compare-btn{
+  background:linear-gradient(135deg,var(--saffron),var(--gold));color:var(--cream);border:none;
+  padding:0.6rem 1.4rem;border-radius:24px;font-family:'Philosopher',sans-serif;font-weight:700;
+  font-size:0.92rem;cursor:pointer;letter-spacing:0.5px;transition:all 0.25s;
+}
+.compare-btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(212,135,28,0.35)}
+
+.reference{
+  margin-top:1.1rem;padding:1.1rem;border-radius:14px;
+  background:var(--cream);border:1px solid rgba(61,107,46,0.2);
+  display:none;
+}
+.reference.shown{display:block;animation:fadeIn 0.4s both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.reference-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
+.reference-head strong{font-family:'Cinzel',serif;color:var(--forest);font-size:1.05rem}
+.match-badge{
+  font-family:'Philosopher',sans-serif;font-size:0.78rem;font-weight:700;padding:0.2rem 0.7rem;border-radius:14px;
+}
+.match-high{background:rgba(61,107,46,0.15);color:var(--forest)}
+.match-mid{background:rgba(212,135,28,0.15);color:var(--terracotta)}
+.match-low{background:rgba(160,82,45,0.12);color:var(--terracotta)}
+.reference p{font-size:0.98rem;margin-bottom:0.5rem}
+.reference .cite{font-size:0.85rem;font-style:italic;color:var(--terracotta)}
+
+/* ---- CUSTOMER STORIES ---- */
+.story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.8rem}
+.story-card{
+  background:rgba(255,255,255,0.85);
+  border:1px solid rgba(212,135,28,0.25);
+  border-radius:18px;
+  padding:1.7rem;
+  position:relative;
+  transition:box-shadow 0.3s,transform 0.3s;
+}
+.story-card:hover{box-shadow:0 15px 40px rgba(31,58,26,0.12);transform:translateY(-3px)}
+.story-top{display:flex;align-items:center;gap:0.9rem;margin-bottom:0.9rem}
+.story-avatar{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--forest),var(--leaf));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold-bright);font-family:'Cinzel',serif;font-weight:700;font-size:1.05rem;
+}
+.story-name{font-family:'Cinzel',serif;color:var(--forest);font-size:1.1rem}
+.story-case{font-size:0.78rem;color:var(--terracotta);font-family:'Philosopher',sans-serif;text-transform:uppercase;letter-spacing:1px}
+.story-row{margin-bottom:0.7rem}
+.story-label{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--terracotta);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:0.25rem}
+.story-row p{font-size:0.98rem}
+.story-result{
+  background:var(--cream);border-left:3px solid var(--gold);
+  padding:0.6rem 0.9rem;border-radius:0 10px 10px 0;font-size:0.95rem;margin:0.8rem 0 1rem;
+}
+.star-rating{display:flex;align-items:center;gap:0.35rem}
+.star-rating .stars{color:var(--gold);letter-spacing:2px;font-size:1.1rem}
+.star-rating .score{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.9rem}
+
+/* ---- DISCUSSION THREADS ---- */
+.thread-list{display:flex;flex-direction:column;gap:1.4rem;max-width:820px;margin:0 auto}
+.thread{
+  background:rgba(255,255,255,0.8);border:1px solid rgba(212,135,28,0.2);
+  border-radius:16px;padding:1.4rem 1.6rem;
+}
+.thread-head{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.6rem}
+.avatar{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--forest),var(--leaf));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold-bright);font-family:'Cinzel',serif;font-weight:700;font-size:0.95rem;
+}
+.thread-meta{display:flex;flex-direction:column}
+.thread-author{font-family:'Philosopher',sans-serif;font-weight:700;color:var(--forest);font-size:0.95rem}
+.thread-role{font-size:0.75rem;color:var(--terracotta);font-family:'Philosopher',sans-serif;text-transform:uppercase;letter-spacing:1px}
+.thread-body{font-size:1.02rem;margin-bottom:0.8rem}
+.thread-footer{display:flex;align-items:center;gap:1.2rem;font-family:'Philosopher',sans-serif;font-size:0.85rem;color:var(--forest);opacity:0.8}
+.upvote{display:flex;align-items:center;gap:0.3rem;cursor:pointer;background:none;border:none;color:inherit;font:inherit}
+.upvote svg{width:16px;height:16px}
+.replies{margin-top:1rem;padding-left:1.2rem;border-left:2px dashed rgba(212,135,28,0.3);display:flex;flex-direction:column;gap:0.8rem}
+.reply .thread-head{margin-bottom:0.3rem}
+.reply .avatar{width:30px;height:30px;font-size:0.78rem}
+.reply-input-row{display:flex;gap:0.6rem;margin-top:1rem}
+.reply-input-row input{
+  flex:1;border:1px solid rgba(212,135,28,0.3);border-radius:20px;padding:0.5rem 1rem;
+  font-family:'Cormorant Garamond',serif;font-size:0.98rem;background:rgba(255,255,255,0.7);
+}
+.reply-input-row input:focus{outline:none;border-color:var(--saffron)}
+.reply-input-row button{
+  background:var(--forest);color:var(--cream);border:none;padding:0.5rem 1.2rem;border-radius:20px;
+  font-family:'Philosopher',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;
+}
+
+/* ---- NOTES / BOOKMARKS DRAWER ---- */
+.drawer-toggle{
+  position:fixed;bottom:2rem;right:2rem;z-index:200;
+  background:linear-gradient(135deg,var(--forest),var(--leaf));color:var(--cream);
+  border:none;border-radius:50px;padding:0.9rem 1.4rem;display:flex;align-items:center;gap:0.6rem;
+  font-family:'Philosopher',sans-serif;font-weight:700;cursor:pointer;
+  box-shadow:0 10px 30px rgba(31,58,26,0.35);transition:transform 0.25s;
+}
+.drawer-toggle:hover{transform:translateY(-3px)}
+.drawer-toggle svg{width:20px;height:20px}
+.drawer-badge{
+  background:var(--saffron);color:var(--cream);border-radius:50%;
+  min-width:20px;height:20px;font-size:0.7rem;display:flex;align-items:center;justify-content:center;
+  font-family:'Philosopher',sans-serif;padding:0 4px;
+}
+.drawer{
+  position:fixed;top:0;right:-420px;width:400px;max-width:90vw;height:100%;
+  background:var(--cream);z-index:300;box-shadow:-10px 0 40px rgba(31,58,26,0.2);
+  transition:right 0.4s ease;padding:2rem 1.6rem;overflow-y:auto;
+}
+.drawer.open{right:0}
+.drawer-close{position:absolute;top:1.3rem;right:1.3rem;background:none;border:none;font-size:1.5rem;color:var(--terracotta);cursor:pointer}
+.drawer h2{font-family:'Cinzel',serif;color:var(--forest);font-size:1.3rem;margin-bottom:1.2rem}
+.drawer h4{font-family:'Philosopher',sans-serif;color:var(--terracotta);letter-spacing:1px;text-transform:uppercase;font-size:0.85rem;margin:1.5rem 0 0.7rem}
+.bookmark-item{
+  background:rgba(255,255,255,0.7);border:1px solid rgba(212,135,28,0.2);border-radius:10px;
+  padding:0.6rem 0.9rem;margin-bottom:0.6rem;font-size:0.95rem;display:flex;justify-content:space-between;align-items:center;gap:0.5rem;
+}
+.bookmark-item button{background:none;border:none;color:var(--terracotta);cursor:pointer;font-size:0.85rem;font-family:'Philosopher',sans-serif}
+.empty-note{font-style:italic;opacity:0.6;font-size:0.92rem}
+textarea.personal-note{
+  width:100%;min-height:90px;border:1px solid rgba(212,135,28,0.3);border-radius:10px;
+  padding:0.7rem;font-family:'Cormorant Garamond',serif;font-size:1rem;background:rgba(255,255,255,0.7);
+  resize:vertical;margin-bottom:0.6rem;
+}
+.save-note-btn{
+  background:var(--saffron);color:var(--cream);border:none;padding:0.45rem 1.2rem;border-radius:18px;
+  font-family:'Philosopher',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;
+}
+.note-entry{background:rgba(255,255,255,0.7);border-left:3px solid var(--gold);padding:0.5rem 0.8rem;margin-bottom:0.6rem;font-size:0.92rem;border-radius:0 8px 8px 0}
+.note-entry .note-tag{display:block;font-family:'Philosopher',sans-serif;color:var(--terracotta);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.2rem}
+.overlay{position:fixed;inset:0;background:rgba(15,31,12,0.35);z-index:290;display:none}
+.overlay.open{display:block}
+
+footer{background:var(--forest-deep);color:var(--parchment);padding:2.5rem 4% 1.3rem;text-align:center;margin-top:2rem}
+.footer-sanskrit{font-family:'Noto Serif Devanagari',serif;color:var(--gold);font-size:1rem;margin-bottom:0.4rem}
+footer p{opacity:0.7;font-size:0.9rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#d4871c" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="#1f3a1a" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="#1f3a1a"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="#1f3a1a"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="#d4871c"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="#d4871c"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div class="logo-text">AyurPedia</div>
+      <div class="logo-sub">Ancient Wisdom · Modern Search</div>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">Features</a></li>
+    <li><a href="#vignettes" class="active">Case Studies</a></li>
+    <li><a href="#stories">Customer Stories</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <div class="sanskrit-tag">ॐ विद्या ददाति विनयम् ॥</div>
+  <h1>The Learning Zone —<br/><span class="italic">Case Studies & Community</span></h1>
+  <p>Reason through real symptom pictures, test your formulation against the textual reference, and learn alongside a community of fellow students and practitioners.</p>
+</header>
+
+<div class="subnav">
+  <button class="chip active" data-filter="all">All Cases</button>
+  <button class="chip" data-filter="jvara">Jvara</button>
+  <button class="chip" data-filter="kasa">Respiratory</button>
+  <button class="chip" data-filter="agni">Agni & Digestion</button>
+  <button class="chip" data-filter="tvak">Skin (Tvak)</button>
+</div>
+
+<!-- ================= PRACTICE VIGNETTES ================= -->
+<section id="vignettes">
+  <div class="section-eyebrow">Test Yourself</div>
+  <h2 class="section-title">Practice <span class="italic">Vignettes</span></h2>
+  <p class="section-sub">Read the presentation, pick your formulation and reasoning, then reveal the tagged reference answer to see how your thinking compares.</p>
+
+  <div class="vignette-grid" id="vignetteGrid">
+
+    <!-- Vignette 1 -->
+    <div class="vignette" data-cat="jvara kasa" data-id="v1">
+      <div class="vignette-top">
+        <span class="vignette-num">Case 001 · Jvara</span>
+        <button class="bookmark-btn" onclick="toggleBookmark(this,'Case 001 — Persistent Jvara with Kasa')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+      <h3>Persistent Jvara with Kasa</h3>
+      <p class="presentation">Low-grade fever for 5 days, worse in the evenings, with a dry cough and mild throat irritation. Appetite (Agni) is reduced. Prakriti is Kapha-Pitta.</p>
+      <div class="tags"><span>Jvara (Fever)</span><span>Kasa (Cough)</span><span>Kapha-Pitta (Constitution)</span><span>Aruchi (Loss of Appetite)</span></div>
+
+      <div class="propose-label">Your Proposed Formulation</div>
+      <div class="option-row" id="opts-v1">
+        <button class="option-chip" data-tag="Punarnavadi Kashaya">Punarnavadi Kashaya</button>
+        <button class="option-chip" data-tag="Vyaghryadi Kashaya">Vyaghryadi Kashaya</button>
+        <button class="option-chip" data-tag="Sitopaladi Churna">Sitopaladi Churna</button>
+        <button class="option-chip" data-tag="Tribhuvankirti Rasa">Tribhuvankirti Rasa</button>
+      </div>
+      <textarea class="reasoning" placeholder="Why this formulation? Note the samprapti (pathogenesis) as you see it..."></textarea>
+      <button class="compare-btn" onclick="compare('v1',['Vyaghryadi Kashaya','Tribhuvankirti Rasa'])">Compare with Reference</button>
+
+      <div class="reference" id="ref-v1">
+        <div class="reference-head"><strong>✦ Reference Answer</strong><span class="match-badge" id="match-v1"></span></div>
+        <p>Vyaghryadi Kashaya, combined with Tribhuvankirti Rasa for the febrile component, is preferred here because the presentation is a localized respiratory Jvara-Kasa rather than a systemic inflammatory pattern — the evening-predominant low grade fever and dry cough point to Kapha-Avarana of Pittaja Jvara.</p>
+        <p class="cite">— Bhaishajya Ratnavali, Jvara Chikitsa Prakarana; cross-referenced in Yogaratnakara.</p>
+      </div>
+    </div>
+
+    <!-- Vignette 2 -->
+    <div class="vignette" data-cat="agni" data-id="v2">
+      <div class="vignette-top">
+        <span class="vignette-num">Case 002 · Agnimandya</span>
+        <button class="bookmark-btn" onclick="toggleBookmark(this,'Case 002 — Agnimandya with Bloating')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+      <h3>Agnimandya with Bloating</h3>
+      <p class="presentation">Weak digestive fire, post-meal heaviness and bloating (Adhmana), irregular bowel habit, coating on the tongue. Vata-Kapha prakriti, sedentary occupation.</p>
+      <div class="tags"><span>Agnimandya (Weak Digestion)</span><span>Adhmana (Bloating)</span><span>Vata-Kapha (Constitution)</span></div>
+
+      <div class="propose-label">Your Proposed Formulation</div>
+      <div class="option-row" id="opts-v2">
+        <button class="option-chip" data-tag="Hingvashtak Churna">Hingvashtak Churna</button>
+        <button class="option-chip" data-tag="Chitrakadi Vati">Chitrakadi Vati</button>
+        <button class="option-chip" data-tag="Lashunadi Vati">Lashunadi Vati</button>
+        <button class="option-chip" data-tag="Avipattikar Churna">Avipattikar Churna</button>
+      </div>
+      <textarea class="reasoning" placeholder="Why this formulation? Note the samprapti (pathogenesis) as you see it..."></textarea>
+      <button class="compare-btn" onclick="compare('v2',['Hingvashtak Churna','Chitrakadi Vati'])">Compare with Reference</button>
+
+      <div class="reference" id="ref-v2">
+        <div class="reference-head"><strong>✦ Reference Answer</strong><span class="match-badge" id="match-v2"></span></div>
+        <p>Hingvashtak Churna is the classical first line for Vata-predominant Agnimandya with Adhmana; Chitrakadi Vati is a suitable alternative where Kapha-Avarana of Agni dominates. Avipattikar is reserved for Pitta-type digestive complaints, which this case does not show.</p>
+        <p class="cite">— Sharangdhara Samhita, Madhyama Khanda.</p>
+      </div>
+    </div>
+
+    <!-- Vignette 3 -->
+    <div class="vignette" data-cat="tvak" data-id="v3">
+      <div class="vignette-top">
+        <span class="vignette-num">Case 003 · Kushtha</span>
+        <button class="bookmark-btn" onclick="toggleBookmark(this,'Case 003 — Chronic Kushtha, Pitta-Kapha')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+      </div>
+      <h3>Chronic Kushtha, Pitta-Kapha</h3>
+      <p class="presentation">Recurring, itchy, discolored skin patches for over a year, worse with dairy and jaggery. Mild oozing on scratching. Pitta-Kapha prakriti, diabetic history in the family.</p>
+      <div class="tags"><span>Kushtha (Skin Disorder)</span><span>Kandu (Itching)</span><span>Pitta-Kapha (Constitution)</span></div>
+
+      <div class="propose-label">Your Proposed Formulation</div>
+      <div class="option-row" id="opts-v3">
+        <button class="option-chip" data-tag="Khadirarishta">Khadirarishta</button>
+        <button class="option-chip" data-tag="Mahatiktaka Ghrita">Mahatiktaka Ghrita</button>
+        <button class="option-chip" data-tag="Panchatikta Ghrita Guggulu">Panchatikta Ghrita Guggulu</button>
+        <button class="option-chip" data-tag="Gandhaka Rasayana">Gandhaka Rasayana</button>
+      </div>
+      <textarea class="reasoning" placeholder="Why this formulation? Note the samprapti (pathogenesis) as you see it, and any contraindication to flag..."></textarea>
+      <button class="compare-btn" onclick="compare('v3',['Panchatikta Ghrita Guggulu','Gandhaka Rasayana'])">Compare with Reference</button>
+
+      <div class="reference" id="ref-v3">
+        <div class="reference-head"><strong>✦ Reference Answer</strong><span class="match-badge" id="match-v3"></span></div>
+        <p>Panchatikta Ghrita Guggulu paired with Gandhaka Rasayana is favoured for chronic Kushtha with Kandu. Note the safety flag: given the family history of diabetes, any anupana or adjunct containing jaggery should be avoided and replaced with warm water.</p>
+        <p class="cite">— Charaka Samhita, Chikitsa Sthana, Kushtha Chikitsa.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= CUSTOMER STORIES ================= -->
+<section id="stories">
+  <div class="section-eyebrow">Real Outcomes</div>
+  <h2 class="section-title">Customer <span class="italic">Stories</span></h2>
+  <p class="section-sub">A look at how classical formulations played out for real people — symptoms faced, the prescription given, and the result.</p>
+
+  <div class="story-grid">
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">MJ</div>
+        <div><div class="story-name">Meera Joshi</div><div class="story-case">Jvara & Kasa</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Recurring low-grade fever, dry cough, body ache, poor appetite.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Vyaghryadi Kashaya + Tribhuvankirti Rasa</p></div>
+      <div class="story-result">Fever and cough resolved within 5 days; appetite returned to normal by day 7.</div>
+      <div class="star-rating"><span class="stars">★★★★★</span><span class="score">5/5 — Meera Joshi</span></div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">RD</div>
+        <div><div class="story-name">Rohan Deshpande</div><div class="story-case">Agnimandya</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Bloating, heaviness after meals, irregular bowel movements.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Hingvashtak Churna before meals with warm water</p></div>
+      <div class="story-result">Digestion improved noticeably within 2 weeks; bloating reduced by over 80%.</div>
+      <div class="star-rating"><span class="stars">★★★★☆</span><span class="score">4/5 — Rohan Deshpande</span></div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">AV</div>
+        <div><div class="story-name">Ananya Verma</div><div class="story-case">Kushtha</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Chronic itchy skin patches, occasional oozing, worse with dairy.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Panchatikta Ghrita Guggulu + dietary correction (avoided dairy/jaggery)</p></div>
+      <div class="story-result">Skin patches faded significantly over 6 weeks with no new flare-ups.</div>
+      <div class="star-rating"><span class="stars">★★★★★</span><span class="score">5/5 — Ananya Verma</span></div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">VN</div>
+        <div><div class="story-name">Vikram Nair</div><div class="story-case">Sandhivata</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Joint stiffness, pain worse in cold weather, reduced mobility.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Maharasnadi Kwath + Sahacharadi Taila for local massage</p></div>
+      <div class="story-result">Stiffness eased within 3 weeks; mobility improved enough to resume daily walks.</div>
+      <div class="star-rating"><span class="stars">★★★★☆</span><span class="score">4/5 — Vikram Nair</span></div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">PK</div>
+        <div><div class="story-name">Priya Kulkarni</div><div class="story-case">Anidra</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Insomnia, anxiety, restlessness before sleep.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Ashwagandha Churna with warm milk at night + Brahmi Ghrita</p></div>
+      <div class="story-result">Sleep quality improved within 10 days; reported feeling calmer during the day.</div>
+      <div class="star-rating"><span class="stars">★★★★★</span><span class="score">5/5 — Priya Kulkarni</span></div>
+    </div>
+
+    <div class="story-card">
+      <div class="story-top">
+        <div class="story-avatar">SI</div>
+        <div><div class="story-name">Sanjay Iyer</div><div class="story-case">Amlapitta</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Symptoms Faced</span><p>Acidity, burning sensation in chest, sour belching.</p></div>
+      <div class="story-row"><span class="story-label">Prescription Given</span><p>Avipattikar Churna after meals</p></div>
+      <div class="story-result">Acid reflux symptoms reduced substantially within a week.</div>
+      <div class="star-rating"><span class="stars">★★★★☆</span><span class="score">4/5 — Sanjay Iyer</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= DISCUSSION THREADS ================= -->
+<section id="discussion" style="background:linear-gradient(180deg,transparent,rgba(31,58,26,0.03),transparent)">
+  <div class="section-eyebrow">Talk It Through</div>
+  <h2 class="section-title">Discussion <span class="italic">Threads</span></h2>
+  <p class="section-sub">Ask questions, compare interpretations, and learn from how others read the same case.</p>
+
+  <div class="thread-list" id="threadList">
+
+    <div class="thread">
+      <div class="thread-head">
+        <div class="avatar">RS</div>
+        <div class="thread-meta">
+          <span class="thread-author">Riya S.</span>
+          <span class="thread-role">Student · re: Case 001</span>
+        </div>
+      </div>
+      <p class="thread-body">I picked Sitopaladi Churna because of the cough, but the reference points to Vyaghryadi instead. Is the deciding factor the evening-predominant fever pattern, or the Kapha-Avarana specifically?</p>
+      <div class="thread-footer">
+        <button class="upvote" onclick="upvote(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>14</span></button>
+        <span>3 replies</span>
+      </div>
+      <div class="replies">
+        <div class="reply">
+          <div class="thread-head">
+            <div class="avatar">DK</div>
+            <div class="thread-meta"><span class="thread-author">Dr. Kavita M.</span><span class="thread-role">Practitioner</span></div>
+          </div>
+          <p class="thread-body">Both, but weighted toward Kapha-Avarana here — Sitopaladi is a fine adjunct for the cough itself, it just isn't the primary Jvara-directed formulation in this samprapti.</p>
+        </div>
+      </div>
+      <div class="reply-input-row">
+        <input type="text" placeholder="Add a reply..." id="replyInput-t1"/>
+        <button onclick="addReply('t1')">Reply</button>
+      </div>
+    </div>
+
+    <div class="thread">
+      <div class="thread-head">
+        <div class="avatar">AN</div>
+        <div class="thread-meta">
+          <span class="thread-author">Arjun N.</span>
+          <span class="thread-role">Student · re: Case 003</span>
+        </div>
+      </div>
+      <p class="thread-body">Good catch on the jaggery flag in Case 003 — I completely missed the diabetic family history while I was focused on the skin presentation. Reminder to always scan the full history before proposing an anupana.</p>
+      <div class="thread-footer">
+        <button class="upvote" onclick="upvote(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg><span>9</span></button>
+        <span>1 reply</span>
+      </div>
+      <div class="reply-input-row">
+        <input type="text" placeholder="Add a reply..." id="replyInput-t2"/>
+        <button onclick="addReply('t2')">Reply</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-sanskrit">ॐ सर्वे भवन्तु सुखिनः ॥</div>
+  <p>© 2026 AyurPedia · Preserving Tradition, Empowering Practice</p>
+</footer>
+
+<!-- ================= NOTES & BOOKMARKS DRAWER ================= -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<button class="drawer-toggle" onclick="openDrawer()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+  My Notes
+  <span class="drawer-badge" id="bookmarkCount">0</span>
+</button>
+
+<div class="drawer" id="drawer">
+  <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  <h2>My Learning Space</h2>
+
+  <h4>Bookmarked</h4>
+  <div id="bookmarkList"><p class="empty-note">Nothing saved yet — tap the ribbon on any case to bookmark it.</p></div>
+
+  <h4>Add a Personal Note</h4>
+  <textarea class="personal-note" id="noteInput" placeholder="Jot down a takeaway, a question for your mentor, or a pattern you noticed..."></textarea>
+  <button class="save-note-btn" onclick="saveNote()">Save Note</button>
+
+  <h4>Your Notes</h4>
+  <div id="notesList"><p class="empty-note">No notes yet.</p></div>
+</div>
+
+<script>
+/* ---- Vignette filtering ---- */
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const f = chip.dataset.filter;
+    document.querySelectorAll('.vignette').forEach(v=>{
+      const cats = v.dataset.cat.split(' ');
+      v.style.display = (f==='all' || cats.includes(f)) ? '' : 'none';
+    });
+  });
+});
+
+/* ---- Option chip picking (multi-select per vignette) ---- */
+document.querySelectorAll('.option-row').forEach(row=>{
+  row.querySelectorAll('.option-chip').forEach(chip=>{
+    chip.addEventListener('click',()=>chip.classList.toggle('picked'));
+  });
+});
+
+/* ---- Compare proposal vs reference ---- */
+function compare(id, referenceTags){
+  const row = document.getElementById('opts-'+id);
+  const picked = [...row.querySelectorAll('.option-chip.picked')].map(c=>c.dataset.tag);
+  const ref = document.getElementById('ref-'+id);
+  const matchEl = document.getElementById('match-'+id);
+
+  let overlap = picked.filter(p=>referenceTags.includes(p)).length;
+  let score = referenceTags.length ? overlap/referenceTags.length : 0;
+
+  let label, cls;
+  if(picked.length===0){ label='No selection made'; cls='match-low'; }
+  else if(score>=1){ label='Strong match'; cls='match-high'; }
+  else if(score>0){ label='Partial match'; cls='match-mid'; }
+  else{ label='Different approach'; cls='match-low'; }
+
+  matchEl.textContent = label;
+  matchEl.className = 'match-badge ' + cls;
+  ref.classList.add('shown');
+  ref.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ---- Bookmarks (in-memory, no browser storage) ---- */
+const bookmarks = new Map();
+function toggleBookmark(btn, label){
+  const key = label;
+  if(bookmarks.has(key)){
+    bookmarks.delete(key);
+    btn.classList.remove('saved');
+  } else {
+    bookmarks.set(key, true);
+    btn.classList.add('saved');
+  }
+  renderBookmarks();
+}
+function renderBookmarks(){
+  const list = document.getElementById('bookmarkList');
+  document.getElementById('bookmarkCount').textContent = bookmarks.size;
+  if(bookmarks.size===0){
+    list.innerHTML = '<p class="empty-note">Nothing saved yet — tap the ribbon on any case to bookmark it.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  bookmarks.forEach((_,key)=>{
+    const div = document.createElement('div');
+    div.className = 'bookmark-item';
+    div.innerHTML = `<span>${key}</span><button onclick="removeBookmark('${key.replace(/'/g,"\\'")}')">Remove</button>`;
+    list.appendChild(div);
+  });
+}
+function removeBookmark(key){
+  bookmarks.delete(key);
+  document.querySelectorAll('.bookmark-btn.saved').forEach(b=>{
+    if(b.getAttribute('onclick').includes(key)) b.classList.remove('saved');
+  });
+  renderBookmarks();
+}
+
+/* ---- Personal notes (in-memory, no browser storage) ---- */
+const notes = [];
+function saveNote(){
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if(!text) return;
+  notes.unshift({text, time: new Date().toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})});
+  input.value = '';
+  renderNotes();
+}
+function renderNotes(){
+  const list = document.getElementById('notesList');
+  if(notes.length===0){
+    list.innerHTML = '<p class="empty-note">No notes yet.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  notes.forEach(n=>{
+    const div = document.createElement('div');
+    div.className = 'note-entry';
+    div.innerHTML = `<span class="note-tag">${n.time}</span>${n.text}`;
+    list.appendChild(div);
+  });
+}
+
+/* ---- Drawer open/close ---- */
+function openDrawer(){
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+/* ---- Threads: upvote + reply (in-memory) ---- */
+function upvote(btn){
+  const span = btn.querySelector('span');
+  span.textContent = parseInt(span.textContent) + 1;
+  btn.style.color = 'var(--saffron)';
+}
+function addReply(threadKey){
+  const input = document.getElementById('replyInput-'+threadKey);
+  const text = input.value.trim();
+  if(!text) return;
+  const thread = input.closest('.thread');
+  let repliesBox = thread.querySelector('.replies');
+  if(!repliesBox){
+    repliesBox = document.createElement('div');
+    repliesBox.className = 'replies';
+    thread.querySelector('.reply-input-row').before(repliesBox);
+  }
+  const reply = document.createElement('div');
+  reply.className = 'reply';
+  reply.innerHTML = `
+    <div class="thread-head">
+      <div class="avatar">You</div>
+      <div class="thread-meta"><span class="thread-author">You</span><span class="thread-role">Just now</span></div>
+    </div>
+    <p class="thread-body">${text}</p>`;
+  repliesBox.appendChild(reply);
+  input.value = '';
+}
+
+/* ---- Load Reviews from Local Storage ---- */
+(function loadLocalReviews() {
+  const reviews = JSON.parse(localStorage.getItem('ayurpedia_reviews') || '[]');
+  const grid = document.querySelector('.story-grid');
+  if (!grid || reviews.length === 0) return;
+  
+  reviews.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'story-card';
+    const initial = r.name ? r.name.charAt(0).toUpperCase() : 'U';
+    
+    // Generate stars
+    const starCount = r.overallRating || 5;
+    let starsHtml = '★'.repeat(starCount) + '☆'.repeat(5 - starCount);
+    const stepsText = (r.stepsExplored && r.stepsExplored.length > 0) ? r.stepsExplored.join(', ') : 'None specified';
+    const feedbackText = r.aboutResult || r.suggestion || 'No detailed feedback provided.';
+
+    card.innerHTML = `
+      <div class="story-top">
+        <div class="story-avatar">${initial}</div>
+        <div><div class="story-name">${r.name || 'Anonymous'}</div><div class="story-case">${r.condition || 'General Feedback'}</div></div>
+      </div>
+      <div class="story-row"><span class="story-label">Steps Explored</span><p>${stepsText}</p></div>
+      <div class="story-row"><span class="story-label">Feedback</span><p>${feedbackText}</p></div>
+      <div class="story-result">Rated ${starCount}/5 overall.</div>
+      <div class="star-rating"><span class="stars">${starsHtml}</span><span class="score">${starCount}/5 — ${r.name || 'Anonymous'}</span></div>
+    `;
+    grid.prepend(card); // Add new reviews to the start
+  });
+})();
+</script>
+</body>
+</html>

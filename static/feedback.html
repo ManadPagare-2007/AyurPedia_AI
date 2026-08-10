@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Feedback — AyurPedia | Ayurvedic Knowledge Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Philosopher:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --forest:#1f3a1a;
+  --forest-deep:#0f1f0c;
+  --leaf:#3d6b2e;
+  --saffron:#d4871c;
+  --gold:#e8b94a;
+  --gold-bright:#f5cf5a;
+  --terracotta:#a0522d;
+  --parchment:#f4e8d0;
+  --parchment-dark:#e8d9b3;
+  --ink:#2a1810;
+  --cream:#fbf5e6;
+}
+body{
+  font-family:'Cormorant Garamond',serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ============ BACKGROUND TEXTURE ============ */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(212,135,28,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(61,107,46,0.08) 0%,transparent 40%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><path d='M30 5 Q35 15 30 25 Q25 15 30 5 Z' fill='%23d4871c' opacity='0.04'/></svg>");
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ============ NAVIGATION ============ */
+nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  padding:1rem 4%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:100;
+  background:rgba(251,245,230,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(212,135,28,0.2);
+  transition:all 0.3s;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:0.7rem;
+  cursor:pointer;
+}
+.logo-icon{
+  width:48px;height:48px;
+  position:relative;
+  animation:spinSlow 30s linear infinite;
+}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+.logo-text{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:1.6rem;
+  background:linear-gradient(135deg,var(--forest) 0%,var(--saffron) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+.logo-sub{
+  font-size:0.65rem;
+  color:var(--terracotta);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-top:-4px;
+  font-family:'Philosopher',sans-serif;
+}
+.nav-links{
+  display:flex;
+  gap:2rem;
+  list-style:none;
+  align-items:center;
+}
+.nav-links a{
+  text-decoration:none;
+  color:var(--forest);
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  position:relative;
+  transition:color 0.3s;
+}
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  bottom:-4px;left:0;
+  width:0;height:2px;
+  background:var(--saffron);
+  transition:width 0.3s;
+}
+.nav-links a:hover{color:var(--saffron)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  background:linear-gradient(135deg,var(--forest) 0%,var(--leaf) 100%);
+  color:var(--cream)!important;
+  padding:0.6rem 1.4rem;
+  border-radius:30px;
+  box-shadow:0 4px 15px rgba(31,58,26,0.3);
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(31,58,26,0.4)}
+.nav-cta::after{display:none}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ============ SECTION HEADERS ============ */
+section{position:relative;z-index:2;padding:5rem 4%}
+.page-hero{padding-top:9rem}
+.section-header{
+  text-align:center;
+  margin-bottom:3.5rem;
+}
+.section-eyebrow{
+  font-family:'Philosopher',sans-serif;
+  color:var(--saffron);
+  letter-spacing:5px;
+  text-transform:uppercase;
+  font-size:0.9rem;
+  margin-bottom:0.8rem;
+}
+.section-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:900;
+  color:var(--forest);
+  margin-bottom:1rem;
+}
+.section-title .italic{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  color:var(--saffron);
+}
+.section-sub{
+  max-width:700px;
+  margin:0 auto;
+  color:var(--ink);
+  opacity:0.8;
+  font-size:1.15rem;
+  font-style:italic;
+}
+
+/* ============ FEEDBACK FORM ============ */
+.feedback-section{
+  background:linear-gradient(180deg,rgba(244,232,208,0.3),rgba(31,58,26,0.04));
+  min-height:calc(100vh - 120px);
+}
+.feedback-box{
+  max-width:820px;
+  margin:0 auto;
+  background:rgba(255,255,255,0.75);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(212,135,28,0.25);
+  border-radius:25px;
+  padding:3rem 2.5rem;
+  box-shadow:0 20px 60px rgba(31,58,26,0.12);
+  position:relative;
+  overflow:hidden;
+}
+.feedback-box::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,var(--forest),var(--saffron),var(--gold));
+}
+.form-group{margin-bottom:1.8rem}
+.form-group:last-of-type{margin-bottom:0}
+.form-group label{
+  display:block;
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  color:var(--forest);
+  margin-bottom:0.7rem;
+  font-size:1.05rem;
+  letter-spacing:0.5px;
+}
+.form-group input[type="text"],
+.form-group textarea{
+  width:100%;
+  padding:0.9rem 1.2rem;
+  border:2px solid rgba(212,135,28,0.25);
+  border-radius:14px;
+  background:rgba(255,255,255,0.9);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;
+  color:var(--ink);
+  transition:all 0.3s;
+  outline:none;
+}
+.form-group input[type="text"]:focus,
+.form-group textarea:focus{
+  border-color:var(--saffron);
+  box-shadow:0 0 0 3px rgba(212,135,28,0.15);
+}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:#8a7a5a;font-style:italic}
+
+.step-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.7rem;
+}
+.step-pill{
+  background:rgba(61,107,46,0.08);
+  border:1.5px solid rgba(61,107,46,0.25);
+  color:var(--forest);
+  padding:0.55rem 1.2rem;
+  border-radius:25px;
+  font-family:'Philosopher',sans-serif;
+  font-size:0.95rem;
+  cursor:pointer;
+  transition:all 0.3s;
+  user-select:none;
+}
+.step-pill:hover{border-color:var(--saffron);transform:translateY(-2px)}
+.step-pill.selected{
+  background:linear-gradient(135deg,var(--forest),var(--leaf));
+  color:var(--cream);
+  border-color:var(--forest);
+}
+
+.star-rating{display:flex;gap:0.4rem;font-size:2rem;line-height:1}
+.star-rating .star{
+  color:rgba(212,135,28,0.25);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.star-rating .star.active{
+  color:var(--saffron);
+  text-shadow:0 0 12px rgba(212,135,28,0.5);
+}
+.star-rating .star:hover{transform:scale(1.15)}
+.rating-hint{
+  font-family:'Philosopher',sans-serif;
+  font-size:0.9rem;
+  color:var(--terracotta);
+  margin-top:0.4rem;
+  min-height:1.2em;
+}
+
+.feedback-submit-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:0.7rem;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  color:var(--forest-deep);
+  border:none;
+  padding:1rem 2.5rem;
+  border-radius:50px;
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1.1rem;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:all 0.3s;
+  box-shadow:0 10px 30px rgba(212,135,28,0.4);
+  margin-top:0.5rem;
+}
+.feedback-submit-btn:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 15px 40px rgba(212,135,28,0.6);
+}
+.feedback-submit-btn svg{width:20px;height:20px}
+
+.feedback-success{
+  display:none;
+  text-align:center;
+  margin-top:1.8rem;
+  padding:1.2rem 1.5rem;
+  background:rgba(61,107,46,0.1);
+  border:1px solid var(--leaf);
+  border-radius:15px;
+  color:var(--forest);
+  font-family:'Philosopher',sans-serif;
+  font-size:1.05rem;
+}
+.feedback-success.show{display:block;animation:fadeUp 0.5s both}
+
+/* ============ FOOTER ============ */
+footer{
+  background:var(--forest-deep);
+  color:var(--parchment);
+  padding:3rem 4% 1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+footer::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,var(--forest),var(--saffron),var(--gold),var(--saffron),var(--forest));
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:3rem;
+  max-width:1300px;
+  margin:0 auto 2rem;
+}
+.footer-brand p{
+  opacity:0.8;
+  margin-top:1rem;
+  max-width:350px;
+  font-style:italic;
+}
+.footer-col h4{
+  font-family:'Cinzel',serif;
+  color:var(--gold);
+  margin-bottom:1rem;
+  font-size:1.1rem;
+}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:0.5rem}
+.footer-col a{
+  color:var(--parchment);
+  text-decoration:none;
+  opacity:0.75;
+  transition:opacity 0.3s,color 0.3s;
+  font-family:'Philosopher',sans-serif;
+}
+.footer-col a:hover{opacity:1;color:var(--gold)}
+.footer-bottom{
+  text-align:center;
+  padding-top:1.5rem;
+  border-top:1px solid rgba(232,185,74,0.2);
+  opacity:0.7;
+  font-size:0.9rem;
+}
+.footer-sanskrit{
+  font-family:'Noto Serif Devanagari',serif;
+  color:var(--gold);
+  font-size:1rem;
+  margin-bottom:0.5rem;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:768px){
+  .nav-links{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  section{padding:3.5rem 4%}
+  .page-hero{padding-top:7rem}
+  .feedback-box{padding:2rem 1.5rem}
+  .star-rating{font-size:1.6rem}
+}
+@media (max-width:480px){
+  .footer-grid{grid-template-columns:1fr}
+  .feedback-box{padding:1.5rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<nav>
+  <div class="logo" onclick="window.location.href='AyurPedia_landing.html'">
+    <svg class="logo-icon" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div class="logo-text">AyurPedia</div>
+      <div class="logo-sub">Ancient Wisdom · Modern Search</div>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="AyurPedia_landing.html">Home</a></li>
+    <li><a href="AyurPedia_landing.html#roles">For You</a></li>
+    <li><a href="AyurPedia_landing.html#features">Features</a></li>
+    <li><a href="AyurPedia_landing.html#about">About</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+    <li><a href="AyurPedia_landing.html" class="nav-cta">Begin Journey</a></li>
+  </ul>
+</nav>
+
+<!-- ============ FEEDBACK ============ -->
+<section class="feedback-section page-hero" id="feedback">
+  <div class="section-header">
+    <div class="section-eyebrow">Share Your Experience</div>
+    <h2 class="section-title">Your <span class="italic">Voice</span> Shapes Our Path</h2>
+    <p class="section-sub">Every reflection helps us refine the wisdom we offer — tell us how your journey went.</p>
+  </div>
+  <div class="feedback-box">
+    <form id="feedbackForm">
+      <div class="form-group">
+        <label for="fbName">Your Name</label>
+        <input type="text" id="fbName" placeholder="e.g. Ananya Sharma" required>
+      </div>
+
+      <div class="form-group">
+        <label>Which process step did you explore?</label>
+        <div class="step-options" id="stepOptions">
+          <div class="step-pill" data-step="Symptom Search">🔍 Symptom Search</div>
+          <div class="step-pill" data-step="Formulation Review">📜 Formulation Review</div>
+          <div class="step-pill" data-step="Safety Check">🛡️ Safety Check</div>
+          <div class="step-pill" data-step="Textual Reference">📚 Textual Reference</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>How would you rate that step?</label>
+        <div class="star-rating" id="stepRating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <div class="rating-hint" id="stepRatingHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="fbDisease">What health condition or symptoms did you search for?</label>
+        <input type="text" id="fbDisease" placeholder="e.g. Jvara (Fever), Kasa (Cough), joint pain...">
+      </div>
+
+      <div class="form-group">
+        <label for="fbResult">What result or recommendation did AyurPedia give you?</label>
+        <textarea id="fbResult" placeholder="Tell us which formulation or recommendation you received..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Overall Rating</label>
+        <div class="star-rating" id="overallRating">
+          <span class="star" data-value="1">★</span>
+          <span class="star" data-value="2">★</span>
+          <span class="star" data-value="3">★</span>
+          <span class="star" data-value="4">★</span>
+          <span class="star" data-value="5">★</span>
+        </div>
+        <div class="rating-hint" id="overallRatingHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="fbSuggestion">Suggestions for Improvement</label>
+        <textarea id="fbSuggestion" placeholder="What could we do better? We'd love to hear your ideas..."></textarea>
+      </div>
+
+      <button type="submit" class="feedback-submit-btn">
+        Submit Feedback
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </form>
+    <div id="feedbackSuccess" class="feedback-success">🌿 Thank you, <span id="fbSuccessName">friend</span>! Your feedback has been received with gratitude.</div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#e8b94a" stroke-width="2"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#e8b94a" stroke-width="1.5"/>
+          <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="#e8b94a"/>
+          <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="#e8b94a"/>
+          <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="#e8b94a"/>
+          <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="#e8b94a"/>
+          <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+        </svg>
+        <div>
+          <div class="logo-text" style="background:linear-gradient(135deg,#e8b94a,#d4871c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">AyurPedia</div>
+          <div class="logo-sub" style="color:#e8b94a">Ancient Wisdom · Modern Search</div>
+        </div>
+      </div>
+      <p>Bridging millennia of Ayurvedic knowledge with contemporary technology — for students, practitioners, and researchers worldwide.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#">Formulations</a></li>
+        <li><a href="#">Single Herbs</a></li>
+        <li><a href="#">Classical Texts</a></li>
+        <li><a href="#">Disease Index</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">API Access</a></li>
+        <li><a href="#">Research Papers</a></li>
+        <li><a href="#">Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-sanskrit">ॐ सर्वे भवन्तु सुखिनः ॥</div>
+    <div>© 2026 AyurPedia · Preserving Tradition, Empowering Practice</div>
+  </div>
+</footer>
+
+<script>
+/* ============ NAVBAR SCROLL EFFECT ============ */
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 50) {
+    nav.style.boxShadow = '0 5px 20px rgba(31,58,26,0.1)';
+    nav.style.padding = '0.7rem 4%';
+  } else {
+    nav.style.boxShadow = 'none';
+    nav.style.padding = '1rem 4%';
+  }
+});
+
+/* ============ FEEDBACK FORM ============ */
+(function(){
+  const stepOptions = document.getElementById('stepOptions');
+  const selectedSteps = new Set();
+  if (stepOptions) {
+    stepOptions.querySelectorAll('.step-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        pill.classList.toggle('selected');
+        const step = pill.dataset.step;
+        if (pill.classList.contains('selected')) {
+          selectedSteps.add(step);
+        } else {
+          selectedSteps.delete(step);
+        }
+      });
+    });
+  }
+
+  const ratingLabels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+  function setupStarRating(containerId, hintId) {
+    const container = document.getElementById(containerId);
+    if (!container) return { getValue: () => 0 };
+    const hint = document.getElementById(hintId);
+    const stars = Array.from(container.querySelectorAll('.star'));
+    let value = 0;
+
+    function paint(v) {
+      stars.forEach(s => {
+        s.classList.toggle('active', +s.dataset.value <= v);
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('mouseenter', () => paint(+star.dataset.value));
+      star.addEventListener('mouseleave', () => paint(value));
+      star.addEventListener('click', () => {
+        value = +star.dataset.value;
+        paint(value);
+        if (hint) hint.textContent = `${value} / 5 — ${ratingLabels[value]}`;
+        container.dataset.value = value;
+      });
+    });
+
+    return { getValue: () => value };
+  }
+
+  const stepRating = setupStarRating('stepRating', 'stepRatingHint');
+  const overallRating = setupStarRating('overallRating', 'overallRatingHint');
+
+  const feedbackForm = document.getElementById('feedbackForm');
+  const feedbackSuccess = document.getElementById('feedbackSuccess');
+  const fbSuccessName = document.getElementById('fbSuccessName');
+
+  if (feedbackForm) {
+    feedbackForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('fbName').value.trim();
+      if (!name) {
+        alert('Please share your name so we know whom to thank 🙏');
+        return;
+      }
+      if (overallRating.getValue() === 0) {
+        alert('Please give an overall rating before submitting.');
+        return;
+      }
+
+      const feedbackData = {
+        name,
+        stepsExplored: Array.from(selectedSteps),
+        stepRating: stepRating.getValue(),
+        condition: document.getElementById('fbDisease').value.trim(),
+        aboutResult: document.getElementById('fbResult').value.trim(),
+        overallRating: overallRating.getValue(),
+        suggestion: document.getElementById('fbSuggestion').value.trim(),
+        submittedAt: new Date().toISOString()
+      };
+
+      // In production, this would be sent to a server/API
+      const existingReviews = JSON.parse(localStorage.getItem('ayurpedia_reviews') || '[]');
+      existingReviews.unshift(feedbackData);
+      localStorage.setItem('ayurpedia_reviews', JSON.stringify(existingReviews));
+      console.log('AyurPedia Feedback Submitted and saved to Local Storage:', feedbackData);
+
+      fbSuccessName.textContent = name;
+      feedbackSuccess.classList.add('show');
+      feedbackSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      feedbackForm.reset();
+      selectedSteps.clear();
+      stepOptions.querySelectorAll('.step-pill.selected').forEach(p => p.classList.remove('selected'));
+      document.querySelectorAll('.star-rating .star').forEach(s => s.classList.remove('active'));
+      document.getElementById('stepRatingHint').textContent = '';
+      document.getElementById('overallRatingHint').textContent = '';
+      document.getElementById('stepRating').dataset.value = 0;
+      document.getElementById('overallRating').dataset.value = 0;
+
+      setTimeout(() => feedbackSuccess.classList.remove('show'), 6000);
+    });
+  }
+})();
+</script>
+</body>
+</html>

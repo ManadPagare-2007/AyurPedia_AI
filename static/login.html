@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AyurPedia AI — Sign In</title>
+
+<!-- Fonts (fontsource CDN) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cinzel@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cinzel@5/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5/400-italic.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/philosopher@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/philosopher@5/700.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-devanagari@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-devanagari@5/600.css">
+
+<style>
+/* ============================================================
+   AYURPEDIA AI · AUTH EXPERIENCE
+   ============================================================ */
+:root{
+  --parchment:#fbf5e6;
+  --cream:#f4e8d0;
+  --deep-green:#1f3a1a;
+  --green:#3d6b2e;
+  --green-soft:#5a8a45;
+  --gold:#d4871c;
+  --saffron:#e8b94a;
+  --sienna:#a0522d;
+  --ink:#2a1810;
+  --ink-soft:rgba(42,24,16,.72);
+  --card:#fffdf5;
+  --line:rgba(31,58,26,.18);
+  --gold-line:rgba(212,135,28,.35);
+  --shadow-soft:0 10px 30px rgba(31,58,26,.10);
+  --shadow-lift:0 22px 55px rgba(31,58,26,.18);
+  --grad-brand:linear-gradient(135deg,#1f3a1a 0%,#3d6b2e 60%,#5a8a45 100%);
+  --grad-gold:linear-gradient(135deg,#e8b94a 0%,#d4871c 55%,#a0522d 100%);
+  --grad-page:radial-gradient(1200px 700px at 85% -10%,rgba(232,185,74,.22),transparent 60%),
+              radial-gradient(900px 600px at -10% 100%,rgba(61,107,46,.14),transparent 55%),
+              linear-gradient(175deg,#fbf5e6 0%,#f4e8d0 100%);
+  --f-display:'Cinzel',serif;
+  --f-body:'Cormorant Garamond',serif;
+  --f-ui:'Philosopher',sans-serif;
+  --f-dev:'Noto Serif Devanagari',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--f-body);
+  color:var(--ink);
+  background:var(--grad-page);
+  min-height:100vh;
+  overflow-x:hidden;
+  font-size:18px;
+  line-height:1.55;
+}
+::selection{background:rgba(232,185,74,.5);color:var(--deep-green)}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15}
+a{color:var(--sienna);text-decoration:none;transition:color .25s ease}
+a:hover{color:var(--gold)}
+button{font-family:var(--f-ui);cursor:pointer;border:none;background:none}
+input{font-family:var(--f-ui)}
+.devanagari{font-family:var(--f-dev)}
+.ui{font-family:var(--f-ui)}
+
+/* ---------- Background mandalas & herbs ---------- */
+.mandala{position:fixed;z-index:0;pointer-events:none;will-change:transform}
+.mandala svg{display:block}
+#mandalaA{top:-220px;right:-220px;opacity:.55;animation:spinCW 160s linear infinite}
+#mandalaB{bottom:-260px;left:-240px;opacity:.42;animation:spinCCW 210s linear infinite}
+@keyframes spinCW{to{transform:rotate(360deg)}}
+@keyframes spinCCW{to{transform:rotate(-360deg)}}
+
+.herb{position:fixed;z-index:0;pointer-events:none;opacity:.22}
+.herb svg{display:block;width:100%;height:100%}
+#herbSprig{top:16%;left:4%;width:120px;height:170px;animation:floatA 9s ease-in-out infinite alternate}
+#herbLotus{bottom:8%;right:5%;width:190px;height:120px;animation:floatB 12s ease-in-out infinite alternate}
+#herbLeaf{top:55%;right:12%;width:90px;height:120px;animation:floatA 11s 1.5s ease-in-out infinite alternate}
+@keyframes floatA{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-22px) rotate(5deg)}}
+@keyframes floatB{from{transform:translateY(0) rotate(2deg)}to{transform:translateY(-16px) rotate(-4deg)}}
+
+/* ---------- Navigation ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 5vw;
+  background:rgba(251,245,230,.55);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;
+  transition:background .35s ease,box-shadow .35s ease,border-color .35s ease,padding .35s ease;
+}
+.nav.scrolled{
+  background:rgba(251,245,230,.92);
+  border-bottom:1px solid var(--gold-line);
+  box-shadow:0 8px 30px rgba(31,58,26,.10);
+  padding:9px 5vw;
+}
+.brand{display:flex;align-items:center;gap:13px;cursor:pointer}
+.brand-logo{width:46px;height:46px;filter:drop-shadow(0 4px 10px rgba(212,135,28,.35));transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.brand:hover .brand-logo{transform:rotate(18deg) scale(1.06)}
+.brand-name{font-family:var(--f-display);font-weight:700;font-size:1.32rem;color:var(--deep-green);letter-spacing:.5px}
+.brand-name em{font-style:normal;color:var(--gold)}
+.brand-sub{font-family:var(--f-dev);font-size:.74rem;color:var(--sienna);letter-spacing:2px;display:block;line-height:1.1;margin-top:2px}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-link{
+  font-family:var(--f-ui);font-size:.98rem;color:var(--deep-green);
+  position:relative;padding:6px 2px;letter-spacing:.4px;
+}
+.nav-link::after{
+  content:"";position:absolute;left:0;bottom:0;height:2px;width:0;
+  background:var(--grad-gold);border-radius:2px;transition:width .3s ease;
+}
+.nav-link:hover::after,.nav-link.active::after{width:100%}
+.nav-link.active{color:var(--sienna)}
+.burger{display:none;flex-direction:column;gap:5px;padding:8px}
+.burger span{width:24px;height:2px;background:var(--deep-green);border-radius:2px;transition:.3s}
+
+/* ---------- Buttons ---------- */
+.btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--f-ui);font-weight:700;letter-spacing:.8px;
+  border-radius:14px;transition:transform .28s ease,box-shadow .28s ease,background .28s ease,color .28s ease,border-color .28s ease;
+}
+.btn-primary{
+  background:var(--grad-gold);color:#fff8ea;
+  padding:15px 22px;font-size:1.02rem;
+  box-shadow:0 10px 26px rgba(212,135,28,.35);
+  overflow:hidden;
+}
+.btn-primary::before{ /* shimmer */
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,248,234,.35) 50%,transparent 70%);
+  transform:translateX(-110%);transition:transform .7s ease;
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 18px 38px rgba(160,82,45,.42)}
+.btn-primary:hover::before{transform:translateX(110%)}
+.btn-primary:active{transform:translateY(-1px)}
+.btn-primary .pulse-dot{
+  width:9px;height:9px;border-radius:50%;background:#fff8ea;position:relative;flex:none;
+}
+.btn-primary .pulse-dot::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;
+  border:2px solid rgba(255,248,234,.85);
+  animation:pulseRing 1.8s ease-out infinite;
+}
+@keyframes pulseRing{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.7);opacity:0}}
+.btn-ghost{
+  background:transparent;border:1.5px solid var(--green);color:var(--green);
+  padding:10px 20px;font-size:.92rem;border-radius:12px;
+}
+.btn-ghost:hover{background:var(--deep-green);border-color:var(--deep-green);color:var(--parchment);transform:translateY(-2px);box-shadow:0 12px 26px rgba(31,58,26,.25)}
+.btn-block{width:100%}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* ---------- Layout ---------- */
+.page{position:relative;z-index:1;padding:128px 5vw 60px;min-height:100vh;display:flex;flex-direction:column}
+.view{display:none;flex:1}
+.view.active{display:block;animation:viewIn .55s cubic-bezier(.22,1,.36,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+.auth-grid{
+  display:grid;grid-template-columns:1.08fr .96fr;gap:56px;align-items:center;
+  max-width:1220px;margin:0 auto;width:100%;
+}
+.auth-grid.reverse{grid-template-columns:.96fr 1.08fr}
+.ornament{display:flex;align-items:center;gap:12px;color:var(--gold);margin:14px 0 4px}
+.ornament::before,.ornament::after{content:"";height:1px;flex:1;max-width:70px;background:linear-gradient(90deg,transparent,var(--gold-line));}
+.ornament::after{background:linear-gradient(90deg,var(--gold-line),transparent)}
+.ornament svg{width:16px;height:16px}
+
+/* ---------- Hero (login left) ---------- */
+.hero-overline{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--f-ui);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--sienna);border:1px solid var(--gold-line);border-radius:999px;
+  padding:7px 16px;background:rgba(232,185,74,.12);margin-bottom:20px;
+}
+.hero-title{font-size:clamp(2.1rem,4.2vw,3.4rem);color:var(--deep-green)}
+.hero-title .gold-word{
+  background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-shloka{font-family:var(--f-dev);font-size:1.18rem;color:var(--sienna);margin-top:14px}
+.hero-shloka small{display:block;font-family:var(--f-body);font-style:italic;font-size:.98rem;color:var(--ink-soft);margin-top:4px}
+.hero-copy{font-size:1.14rem;color:var(--ink-soft);margin-top:16px;max-width:52ch}
+
+/* search */
+.search-wrap{position:relative;margin-top:28px;max-width:520px}
+.search-bar{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,253,245,.9);border:1.5px solid var(--line);
+  border-radius:16px;padding:8px 8px 8px 16px;
+  box-shadow:var(--shadow-soft);transition:border-color .3s,box-shadow .3s;
+}
+.search-bar:focus-within{border-color:var(--saffron);box-shadow:0 0 0 5px rgba(232,185,74,.22),var(--shadow-soft)}
+.search-bar svg{width:20px;height:20px;color:var(--green);flex:none}
+.search-bar input{flex:1;border:none;outline:none;background:transparent;font-size:1rem;color:var(--ink);padding:9px 0}
+.search-bar input::placeholder{color:rgba(42,24,16,.42)}
+.search-btn{
+  background:var(--grad-brand);color:var(--parchment);border-radius:11px;
+  padding:10px 20px;font-weight:700;letter-spacing:.6px;font-size:.9rem;
+  transition:transform .25s,box-shadow .25s;
+}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(31,58,26,.3)}
+.suggest{
+  display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:13px;
+  opacity:.85;transition:opacity .3s;
+}
+.search-wrap:focus-within .suggest{opacity:1}
+.suggest-label{font-family:var(--f-ui);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft)}
+.chip{
+  font-family:var(--f-ui);font-size:.86rem;color:var(--green);
+  border:1px solid var(--line);background:rgba(255,253,245,.75);
+  padding:6px 14px;border-radius:999px;transition:all .25s ease;
+}
+.chip:hover{background:var(--deep-green);color:var(--parchment);border-color:var(--deep-green);transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,58,26,.22)}
+
+/* stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,auto);gap:34px;margin-top:36px}
+.stat-num{font-family:var(--f-display);font-size:2rem;font-weight:700;color:var(--deep-green)}
+.stat-num .suffix{color:var(--gold)}
+.stat-label{font-family:var(--f-ui);font-size:.84rem;letter-spacing:.6px;color:var(--ink-soft);margin-top:3px;max-width:150px}
+.badge-row{display:flex;align-items:center;gap:10px;margin-top:30px;font-family:var(--f-ui);font-size:.9rem;color:var(--green)}
+.badge-row .dot{width:9px;height:9px;border-radius:50%;background:var(--green);position:relative}
+.badge-row .dot::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(61,107,46,.5);animation:pulseRing 2.2s ease-out infinite}
+
+/* ---------- Cards ---------- */
+.card{
+  position:relative;background:linear-gradient(180deg,rgba(255,253,245,.94),rgba(251,245,230,.9));
+  border:1px solid var(--gold-line);border-radius:24px;
+  box-shadow:var(--shadow-lift);padding:42px 40px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.card::before{
+  content:"";position:absolute;top:0;left:24px;right:24px;height:3px;border-radius:0 0 6px 6px;
+  background:var(--grad-gold);opacity:.85;
+}
+.card-overline{font-family:var(--f-ui);font-size:.78rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.card-title{font-size:clamp(1.6rem,2.6vw,2.1rem);color:var(--deep-green)}
+.card-sub{color:var(--ink-soft);font-size:1.05rem;margin-top:8px;margin-bottom:24px}
+
+.banner{
+  display:none;align-items:flex-start;gap:10px;border-radius:12px;
+  padding:12px 15px;font-family:var(--f-ui);font-size:.92rem;margin-bottom:18px;
+  animation:viewIn .4s ease;border:1px solid;
+}
+.banner.show{display:flex}
+.banner.error{background:rgba(160,82,45,.1);border-color:rgba(160,82,45,.4);color:#7c3a18}
+.banner.success{background:rgba(61,107,46,.1);border-color:rgba(61,107,46,.4);color:var(--deep-green)}
+.banner svg{width:17px;height:17px;flex:none;margin-top:2px}
+
+.tip-banner{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(232,185,74,.14);border:1px dashed var(--gold);
+  border-radius:12px;padding:12px 14px;margin-bottom:22px;
+  font-size:.94rem;color:var(--sienna);font-style:italic;
+}
+.tip-banner svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--gold)}
+
+/* ---------- Role tabs ---------- */
+.role-tabs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+.role-tab{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  border:1.5px solid var(--line);border-radius:14px;padding:13px 10px;
+  font-family:var(--f-ui);font-weight:700;font-size:.95rem;color:var(--ink-soft);
+  background:rgba(255,253,245,.6);transition:all .28s ease;letter-spacing:.4px;
+}
+.role-tab svg{width:18px;height:18px}
+.role-tab:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px);box-shadow:0 8px 18px rgba(31,58,26,.12)}
+.role-tab.active{
+  background:var(--grad-brand);color:var(--parchment);border-color:var(--deep-green);
+  box-shadow:0 10px 24px rgba(31,58,26,.28);
+}
+
+/* ---------- Form fields ---------- */
+.field{margin-bottom:17px}
+.field label{
+  display:block;font-family:var(--f-ui);font-size:.82rem;font-weight:700;
+  letter-spacing:1.6px;text-transform:uppercase;color:var(--green);margin-bottom:7px;
+}
+.input-wrap{position:relative}
+.input-wrap .lead-ico{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;color:var(--sienna);pointer-events:none;transition:color .25s;
+}
+.input-wrap input{
+  width:100%;padding:13px 46px 13px 44px;font-size:1rem;color:var(--ink);
+  background:rgba(255,253,245,.85);border:1.5px solid var(--line);border-radius:13px;
+  outline:none;transition:border-color .28s,box-shadow .28s,background .28s;
+}
+.input-wrap input::placeholder{color:rgba(42,24,16,.38);font-style:italic;font-family:var(--f-body)}
+.input-wrap input:focus{border-color:var(--saffron);background:#fffef9;box-shadow:0 0 0 4px rgba(232,185,74,.2)}
+.input-wrap input:focus ~ .lead-ico,.input-wrap:focus-within .lead-ico{color:var(--gold)}
+.eye-btn{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:9px;color:var(--ink-soft);transition:color .25s,background .25s;
+}
+.eye-btn:hover{color:var(--gold);background:rgba(232,185,74,.15)}
+.eye-btn svg{width:19px;height:19px}
+.eye-btn .ico-off{display:none}
+.eye-btn.showing .ico-on{display:none}
+.eye-btn.showing .ico-off{display:block}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* strength meter */
+.meter{display:flex;align-items:center;gap:10px;margin-top:9px}
+.meter-bars{display:flex;gap:5px;flex:1}
+.meter-bars span{height:5px;flex:1;border-radius:3px;background:rgba(31,58,26,.12);transition:background .35s}
+.meter-label{font-family:var(--f-ui);font-size:.76rem;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);min-width:64px;text-align:right}
+.meter.s1 .meter-bars span:nth-child(-n+1){background:#b0562f}
+.meter.s2 .meter-bars span:nth-child(-n+2){background:#d4871c}
+.meter.s3 .meter-bars span:nth-child(-n+3){background:#e8b94a}
+.meter.s4 .meter-bars span{background:var(--green)}
+
+/* checkbox */
+.check-row{display:flex;gap:11px;align-items:flex-start;margin:6px 0 20px;cursor:pointer}
+.check-row input{width:19px;height:19px;accent-color:var(--green);margin-top:3px;flex:none;cursor:pointer}
+.check-row span{font-size:.98rem;color:var(--ink-soft);line-height:1.45}
+.check-row a{text-decoration:underline;text-underline-offset:3px}
+
+.form-foot{margin-top:20px;text-align:center;font-family:var(--f-ui);font-size:.95rem;color:var(--ink-soft)}
+.form-foot a{font-weight:700}
+.link-row{display:flex;justify-content:space-between;align-items:center;margin:2px 0 18px;font-family:var(--f-ui);font-size:.9rem}
+
+/* ---------- Side panels (steps / tips) ---------- */
+.side-panel h3{font-size:1.35rem;color:var(--deep-green);margin-bottom:6px}
+.side-tag{font-family:var(--f-ui);font-size:.78rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.step-grid{display:grid;gap:16px;margin-top:22px}
+.step-card{
+  display:flex;gap:16px;align-items:flex-start;
+  background:rgba(255,253,245,.75);border:1px solid var(--line);border-radius:16px;
+  padding:17px 18px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+}
+.step-card:hover{transform:translateY(-4px) translateX(4px);box-shadow:var(--shadow-soft);border-color:var(--gold)}
+.step-num{
+  flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-display);font-weight:700;color:#fff8ea;background:var(--grad-gold);
+  box-shadow:0 6px 14px rgba(212,135,28,.35);
+}
+.step-card h4{font-family:var(--f-display);font-size:1.02rem;color:var(--deep-green);margin-bottom:3px}
+.step-card p{font-size:.98rem;color:var(--ink-soft)}
+.privacy-note{
+  margin-top:22px;display:flex;gap:12px;align-items:flex-start;
+  border-left:3px solid var(--green);background:rgba(61,107,46,.08);
+  border-radius:0 12px 12px 0;padding:14px 16px;font-size:.98rem;color:var(--deep-green);
+}
+.privacy-note svg{width:20px;height:20px;flex:none;margin-top:2px}
+
+/* ---------- Footer ---------- */
+.site-foot{
+  position:relative;z-index:1;text-align:center;padding:34px 5vw 26px;
+  font-family:var(--f-ui);font-size:.86rem;color:var(--ink-soft);letter-spacing:.5px;
+}
+.site-foot .devanagari{color:var(--sienna);font-size:.95rem;display:block;margin-bottom:6px}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);z-index:99;
+  background:var(--grad-brand);color:var(--parchment);
+  border:1px solid rgba(232,185,74,.5);border-radius:14px;
+  padding:14px 26px;font-family:var(--f-ui);font-size:.96rem;letter-spacing:.4px;
+  box-shadow:0 18px 40px rgba(31,58,26,.35);
+  opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;
+  max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .devanagari{color:var(--saffron)}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1024px){
+  .auth-grid,.auth-grid.reverse{grid-template-columns:1fr;gap:44px;max-width:640px}
+  .hero-copy{max-width:none}
+  #herbLeaf{display:none}
+}
+@media (max-width:720px){
+  body{font-size:17px}
+  .nav-links{
+    position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;
+    background:rgba(251,245,230,.97);border-bottom:1px solid var(--gold-line);
+    box-shadow:0 20px 40px rgba(31,58,26,.15);padding:10px 0 16px;
+    display:none;
+  }
+  .nav-links.open{display:flex}
+  .nav-links .nav-link{padding:13px 6vw;width:100%;text-align:left}
+  .nav-links .btn-ghost{margin:8px 6vw 0;width:calc(100% - 12vw)}
+  .burger{display:flex}
+  .card{padding:32px 24px}
+  .field-row{grid-template-columns:1fr}
+  .stats-row{gap:20px}
+  .stat-num{font-size:1.6rem}
+  .page{padding-top:112px}
+  #herbSprig{width:80px;height:115px}
+  #herbLotus{width:130px;height:85px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== SVG ICON SPRITE ===================== -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <defs>
+    <symbol id="i-envelope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5 12 13l8.5-6.5"/>
+    </symbol>
+    <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8" cy="14" r="4.2"/><path d="M11 11 20 3m-4 1 3 3m-6 0 2 2"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/><circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.4 7-5.4s6.2 1.8 7 5.4"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l7 2.6v5.2c0 4.6-3 7.9-7 9.6-4-1.7-7-5-7-9.6V5.6z"/><path d="M9 11.6l2.1 2.1L15.4 9"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.5 12S6 5.8 12 5.8c1.6 0 3 .4 4.3 1.1M21.5 12s-3.5 6.2-9.5 6.2c-1.6 0-3-.4-4.3-1.1"/><path d="M4 4l16 16"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12h15m-6-6 6 6-6 6"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 12H5m6 6-6-6 6-6"/>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 20C6 8 12 4 20 4c0 8-4 14-12 14"/><path d="M4 20c3-5 7-8 12-10"/>
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5 21 19H3z"/><path d="M12 10v4"/><circle cx="12" cy="16.6" r=".4" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4.5 12.5 10 18 19.5 6.5"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><circle cx="12" cy="8" r=".4" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+      <path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ===================== AMBIENT MANDALAS ===================== -->
+<div class="mandala" id="mandalaA" aria-hidden="true"></div>
+<div class="mandala" id="mandalaB" aria-hidden="true"></div>
+
+<!-- ===================== FLOATING HERBS ===================== -->
+<div class="herb" id="herbSprig" aria-hidden="true">
+  <svg viewBox="0 0 120 170" fill="none" stroke="#3d6b2e" stroke-width="2" stroke-linecap="round">
+    <path d="M60 165 C 56 120 64 75 60 15"/>
+    <path d="M59 130 C 30 128 16 108 18 88 C 46 92 58 110 59 130 Z"/>
+    <path d="M61 130 C 90 128 104 108 102 88 C 74 92 62 110 61 130 Z"/>
+    <path d="M59 92 C 36 90 25 74 27 58 C 49 62 58 76 59 92 Z"/>
+    <path d="M61 92 C 84 90 95 74 93 58 C 71 62 62 76 61 92 Z"/>
+    <path d="M60 52 C 48 48 42 38 44 28 C 56 31 60 41 60 52 Z"/>
+    <path d="M60 52 C 72 48 78 38 76 28 C 64 31 60 41 60 52 Z"/>
+  </svg>
+</div>
+<div class="herb" id="herbLotus" aria-hidden="true">
+  <svg viewBox="0 0 200 120" fill="none" stroke="#a0522d" stroke-width="2" stroke-linecap="round">
+    <path d="M100 112 C 86 78 86 44 100 12 C 114 44 114 78 100 112 Z"/>
+    <path d="M100 112 C 68 96 52 68 58 34 C 84 52 98 80 100 112 Z"/>
+    <path d="M100 112 C 132 96 148 68 142 34 C 116 52 102 80 100 112 Z"/>
+    <path d="M100 112 C 44 104 20 82 14 52 C 52 58 84 82 100 112 Z"/>
+    <path d="M100 112 C 156 104 180 82 186 52 C 148 58 116 82 100 112 Z"/>
+    <path d="M20 114 Q 100 132 180 114" stroke="#3d6b2e"/>
+  </svg>
+</div>
+<div class="herb" id="herbLeaf" aria-hidden="true">
+  <svg viewBox="0 0 90 120" fill="none" stroke="#3d6b2e" stroke-width="2" stroke-linecap="round">
+    <path d="M45 115 C 45 70 30 45 45 8 C 62 45 48 70 45 115 Z"/>
+    <path d="M45 95 C 35 78 33 62 40 46"/><path d="M45 95 C 55 78 57 62 50 46"/>
+  </svg>
+</div>
+
+<!-- ===================== NAVIGATION ===================== -->
+<nav class="nav" id="mainNav">
+  <style>
+    @keyframes spinSlowBrand{to{transform:rotate(360deg)}}
+  </style>
+  <a href="/static/home.html" style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;text-decoration:none;">
+    <svg viewBox="0 0 100 100" style="width:48px;height:48px;animation:spinSlowBrand 30s linear infinite;">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div style="font-family:'Cinzel',serif;font-weight:900;font-size:1.6rem;background:linear-gradient(135deg,#1f3a1a 0%,#d4871c 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;line-height:1.2;">AyurPedia</div>
+      <div style="font-size:0.65rem;color:#a0522d;letter-spacing:3px;text-transform:uppercase;margin-top:-4px;font-family:'Philosopher',sans-serif;">Ancient Wisdom · Modern Search</div>
+    </div>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="home.html" class="nav-link" style="font-weight: bold;">Home</a>
+  </div>
+  <button class="burger" id="burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page">
+
+<!-- ============================================================
+     VIEW · LOGIN
+     ============================================================ -->
+<section class="view" id="view-login">
+  <div class="auth-grid">
+    <div class="hero">
+      <span class="hero-overline"><svg width="14" height="14"><use href="#i-sparkle"/></svg> AI-Guided Ayurvedic Wellness</span>
+      <h1 class="hero-title">Be truly <span class="gold-word">well</span>.<br>Be truly <span class="gold-word">present</span>.</h1>
+      <p class="hero-shloka devanagari">शरीरमाद्यं खलु धर्मसाधनम्
+        <small>“The body is the first instrument of one's purpose.” — Kalidasa</small>
+      </p>
+      <p class="hero-copy">AyurPedia AI learns your constitution, your rhythms and your habits — then gently guides you with dosha-aware rituals, herb wisdom and daily routines. On-device intelligence, rooted in a 5,000-year-old science.</p>
+
+      <div class="ornament"><svg><use href="#i-leaf"/></svg></div>
+
+      <!-- Search -->
+      <form class="search-wrap" id="searchForm" autocomplete="off">
+        <div class="search-bar">
+          <svg><use href="#i-search"/></svg>
+          <input type="text" id="herbSearch" placeholder="Search herbs, doshas, daily routines…" aria-label="Search AyurPedia">
+          <button type="submit" class="search-btn">Search</button>
+        </div>
+        <div class="suggest" id="herbSuggest">
+          <span class="suggest-label">Popular:</span>
+          <button type="button" class="chip">Ashwagandha</button>
+          <button type="button" class="chip">Dosha Quiz</button>
+          <button type="button" class="chip">Triphala</button>
+          <button type="button" class="chip">Pranayama</button>
+          <button type="button" class="chip">Panchakarma</button>
+        </div>
+      </form>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div><div class="stat-num"><span class="stat-val" data-target="87">0</span><span class="suffix">%</span></div><div class="stat-label">report deeper sleep in 30 days</div></div>
+        <div><div class="stat-num"><span class="stat-val" data-target="45">0</span><span class="suffix">+</span></div><div class="stat-label">dosha-personalised rituals</div></div>
+        <div><div class="stat-num"><span class="stat-val" data-target="12">0</span><span class="suffix">k+</span></div><div class="stat-label">mindful seekers onboard</div></div>
+      </div>
+      <div class="badge-row"><span class="dot"></span> On-device ML — zero personal data leaves your phone</div>
+    </div>
+
+    <!-- Login card -->
+    <div class="card">
+      <p class="card-overline">स्वागतम् · Welcome back</p>
+      <h2 class="card-title">Sign in to your account</h2>
+      <p class="card-sub">Choose your role and enter your credentials</p>
+
+      <div class="banner" id="loginBanner" role="alert"></div>
+
+      <div class="role-tabs" role="tablist" aria-label="Choose role">
+        <button type="button" class="role-tab active" data-form="login" data-role="admin"><svg><use href="#i-shield"/></svg> Admin</button>
+        <button type="button" class="role-tab" data-form="login" data-role="user"><svg><use href="#i-user"/></svg> User</button>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginEmail">Email address</label>
+          <div class="input-wrap">
+            <input type="email" id="loginEmail" placeholder="you@example.com" required>
+            <svg class="lead-ico"><use href="#i-envelope"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <label for="loginPass">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="loginPass" placeholder="••••••••" required>
+            <svg class="lead-ico"><use href="#i-key"/></svg>
+            <button type="button" class="eye-btn" data-for="loginPass" aria-label="Show password">
+              <svg class="ico-on"><use href="#i-eye"/></svg>
+              <svg class="ico-off"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="link-row">
+          <span></span>
+          <a href="#forgot">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="pulse-dot"></span> Sign in <svg><use href="#i-arrow"/></svg>
+        </button><br><br>
+        <button type="submit" class="btn btn-primary btn-block">
+          <svg> <img src="https://w7.pngwing.com/pngs/326/85/png-transparent-google-logo-google-text-trademark-logo.png" alt="" height="20px" width="20px"><use href="#i-google"/></svg> Continue with Google <svg><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <p class="form-foot">No account? <a href="#signup">Create one</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIEW · SIGNUP
+     ============================================================ -->
+<section class="view" id="view-signup">
+  <div class="auth-grid">
+    <div class="card">
+      <p class="card-overline">नूतन आरम्भ · Get started</p>
+      <h2 class="card-title">Create your account</h2>
+      <p class="card-sub">Choose your role and set up your credentials</p>
+
+      <div class="banner" id="signupBanner" role="alert"></div>
+
+      <div class="role-tabs" role="tablist" aria-label="Choose role">
+        <button type="button" class="role-tab active" data-form="signup" data-role="admin"><svg><use href="#i-shield"/></svg> Practitioner</button>
+        <button type="button" class="role-tab" data-form="signup" data-role="user"><svg><use href="#i-user"/></svg> Seeker</button>
+      </div>
+
+      <form id="signupForm" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="suFirst">First name</label>
+            <div class="input-wrap">
+              <input type="text" id="suFirst" placeholder="Aarav" required>
+              <svg class="lead-ico"><use href="#i-user"/></svg>
+            </div>
+          </div>
+          <div class="field">
+            <label for="suLast">Last name</label>
+            <div class="input-wrap">
+              <input type="text" id="suLast" placeholder="Sharma" required>
+              <svg class="lead-ico"><use href="#i-user"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="suEmail">Email address</label>
+          <div class="input-wrap">
+            <input type="email" id="suEmail" placeholder="you@example.com" required>
+            <svg class="lead-ico"><use href="#i-envelope"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <label for="suPass">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="suPass" placeholder="Enter a password" required>
+            <svg class="lead-ico"><use href="#i-key"/></svg>
+            <button type="button" class="eye-btn" data-for="suPass" aria-label="Show password">
+              <svg class="ico-on"><use href="#i-eye"/></svg>
+              <svg class="ico-off"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+          <div class="meter" id="suMeter">
+            <div class="meter-bars"><span></span><span></span><span></span><span></span></div>
+            <div class="meter-label" id="suMeterLabel">—</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="suConfirm">Confirm password</label>
+          <div class="input-wrap">
+            <input type="password" id="suConfirm" placeholder="Enter a password" required>
+            <svg class="lead-ico"><use href="#i-lock"/></svg>
+            <button type="button" class="eye-btn" data-for="suConfirm" aria-label="Show password">
+              <svg class="ico-on"><use href="#i-eye"/></svg>
+              <svg class="ico-off"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+        </div>
+        <label class="check-row">
+          <input type="checkbox" id="suTerms">
+          <span>I agree to the <a href="#" onclick="event.preventDefault();showToast('Terms of Service — demo document')">Terms of Service</a> and <a href="#" onclick="event.preventDefault();showToast('Privacy Policy — demo document')">Privacy Policy</a>. I understand that AyurPedia AI processes wellness data on-device only.</span>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span class="pulse-dot"></span> Create account <svg><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <p class="form-foot">Already have an account? <a href="#login">Sign in</a></p>
+    </div>
+
+    <div class="side-panel">
+      <p class="side-tag">Start your journey today</p>
+      <h3 class="devanagari" style="font-size:1.5rem;color:var(--deep-green)">आयुर्वेदस्य मार्गः</h3>
+      <div class="step-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div><h4>Create your account</h4><p>Set your role and secure credentials to access your personal wellness sanctuary.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div><h4>Discover your dosha</h4><p>On-device AI reads your habits and constitution to reveal your Vata–Pitta–Kapha balance.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div><h4>Receive daily wisdom</h4><p>Context-aware rituals, herb suggestions and meal guidance — nudged, never nagged.</p></div>
+        </div>
+      </div>
+      <div class="privacy-note">
+        <svg><use href="#i-shield"/></svg>
+        <div><strong>Privacy first.</strong> All your wellness data stays on your device. Only anonymised model improvements are shared — never raw data.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     VIEW · FORGOT PASSWORD
+     ============================================================ -->
+<section class="view" id="view-forgot">
+  <div class="auth-grid">
+    <div class="card">
+      <p class="card-overline">पुनःप्राप्ति · Account recovery</p>
+      <h2 class="card-title">Reset your password</h2>
+      <p class="card-sub">Enter your email and choose a new secure password below.</p>
+
+      <div class="banner" id="forgotBanner" role="alert"></div>
+
+      <div class="tip-banner">
+        <svg><use href="#i-info"/></svg>
+        <span><strong>Production tip:</strong> in a live app, replace this form with an email-token reset flow for security. This direct reset is for development only.</span>
+      </div>
+
+      <form id="forgotForm" novalidate>
+        <div class="field">
+          <label for="fpEmail">Email address</label>
+          <div class="input-wrap">
+            <input type="email" id="fpEmail" placeholder="you@example.com" required>
+            <svg class="lead-ico"><use href="#i-envelope"/></svg>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fpPass">New password</label>
+          <div class="input-wrap">
+            <input type="password" id="fpPass" placeholder="Enter a password" required>
+            <svg class="lead-ico"><use href="#i-key"/></svg>
+            <button type="button" class="eye-btn" data-for="fpPass" aria-label="Show password">
+              <svg class="ico-on"><use href="#i-eye"/></svg>
+              <svg class="ico-off"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+          <div class="meter" id="fpMeter">
+            <div class="meter-bars"><span></span><span></span><span></span><span></span></div>
+            <div class="meter-label" id="fpMeterLabel">—</div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fpConfirm">Confirm new password</label>
+          <div class="input-wrap">
+            <input type="password" id="fpConfirm" placeholder="Enter a password" required>
+            <svg class="lead-ico"><use href="#i-lock"/></svg>
+            <button type="button" class="eye-btn" data-for="fpConfirm" aria-label="Show password">
+              <svg class="ico-on"><use href="#i-eye"/></svg>
+              <svg class="ico-off"><use href="#i-eye-off"/></svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:6px">
+          <span class="pulse-dot"></span> Reset password <svg><use href="#i-arrow"/></svg>
+        </button>
+      </form>
+
+      <p class="form-foot"><a href="#login">← Back to sign in</a></p>
+    </div>
+
+    <div class="side-panel">
+      <p class="side-tag">Keep your account secure</p>
+      <h3>A strong password protects your wellness data and personal insights.</h3>
+      <div class="step-grid">
+        <div class="step-card">
+          <div class="step-num" style="font-size:1.05rem">🔤</div>
+          <div><h4>Use a passphrase</h4><p>3–4 random words strung together are easier to remember and harder to crack.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num" style="font-size:1.05rem">🔢</div>
+          <div><h4>Mix it up</h4><p>Add numbers and symbols to boost strength from medium to strong instantly.</p></div>
+        </div>
+        <div class="step-card">
+          <div class="step-num" style="font-size:1.05rem">🚫</div>
+          <div><h4>Don't reuse passwords</h4><p>Each service should have a unique password. Use a password manager if needed.</p></div>
+        </div>
+      </div>
+      <div class="privacy-note">
+        <svg><use href="#i-leaf"/></svg>
+        <div><strong>Privacy reminder.</strong> Your wellness data and behavioural patterns are stored on-device only — resetting your password does not affect your local data.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <span class="devanagari">सर्वे भवन्तु सुखिनः · May all beings be well</span>
+  © 2026 AyurPedia AI · Privacy-first Ayurvedic intelligence · Data stays on your device
+</footer>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============================================================
+   AYURPEDIA AI · SCRIPTS
+   ============================================================ */
+
+/* ---------- Mandala generator ---------- */
+function buildMandala(host, petals, size){
+  const NS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(NS,'svg');
+  const R=size/2;
+  svg.setAttribute('viewBox',(-R)+' '+(-R)+' '+size+' '+size);
+  svg.setAttribute('width',size);svg.setAttribute('height',size);
+  const green='rgba(61,107,46,.5)', gold='rgba(212,135,28,.55)', faint='rgba(160,82,45,.35)';
+  const circle=(r,stroke,w,dash)=>{const c=document.createElementNS(NS,'circle');c.setAttribute('r',r);c.setAttribute('fill','none');c.setAttribute('stroke',stroke);c.setAttribute('stroke-width',w);if(dash)c.setAttribute('stroke-dasharray',dash);svg.appendChild(c);};
+  circle(R*.97,green,1.2);
+  circle(R*.82,gold,1,'4 7');
+  circle(R*.47,green,1);
+  circle(R*.24,gold,1.2,'2 5');
+  // outer petals
+  for(let i=0;i<petals;i++){
+    const p=document.createElementNS(NS,'path');
+    p.setAttribute('d','M0 '+(-R*.94)+' C '+(R*.11)+' '+(-R*.76)+' '+(R*.11)+' '+(-R*.58)+' 0 '+(-R*.47)+' C '+(-R*.11)+' '+(-R*.58)+' '+(-R*.11)+' '+(-R*.76)+' 0 '+(-R*.94)+' Z');
+    p.setAttribute('transform','rotate('+(i*360/petals)+')');
+    p.setAttribute('fill','rgba(232,185,74,.05)');
+    p.setAttribute('stroke',i%2?gold:green);
+    p.setAttribute('stroke-width','1');
+    svg.appendChild(p);
+  }
+  // inner petals
+  const ip=Math.max(8,petals/2);
+  for(let i=0;i<ip;i++){
+    const p=document.createElementNS(NS,'path');
+    p.setAttribute('d','M0 '+(-R*.42)+' C '+(R*.07)+' '+(-R*.33)+' '+(R*.07)+' '+(-R*.28)+' 0 '+(-R*.24)+' C '+(-R*.07)+' '+(-R*.28)+' '+(-R*.07)+' '+(-R*.33)+' 0 '+(-R*.42)+' Z');
+    p.setAttribute('transform','rotate('+(i*360/ip+360/ip/2)+')');
+    p.setAttribute('fill','none');
+    p.setAttribute('stroke',faint);
+    p.setAttribute('stroke-width','1');
+    svg.appendChild(p);
+  }
+  // dots
+  for(let i=0;i<petals;i++){
+    const a=i*2*Math.PI/petals, d=document.createElementNS(NS,'circle');
+    d.setAttribute('cx',Math.cos(a)*R*.82);d.setAttribute('cy',Math.sin(a)*R*.82);
+    d.setAttribute('r',2);d.setAttribute('fill',i%2?'rgba(212,135,28,.7)':'rgba(61,107,46,.7)');
+    svg.appendChild(d);
+  }
+  host.appendChild(svg);
+}
+buildMandala(document.getElementById('mandalaA'),16,640);
+buildMandala(document.getElementById('mandalaB'),12,700);
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function showToast(html){
+  const t=document.getElementById('toast');
+  t.innerHTML=html;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ---------- Router ---------- */
+const ROUTES=['login','signup','forgot'];
+const TITLES={login:'AyurPedia AI — Sign In',signup:'AyurPedia AI — Create Account',forgot:'AyurPedia AI — Reset Password'};
+function navigate(name){
+  if(!ROUTES.includes(name)) name='login';
+  ROUTES.forEach(r=>{
+    document.getElementById('view-'+r).classList.toggle('active',r===name);
+    document.querySelectorAll('[data-nav="'+r+'"]').forEach(a=>a.classList.toggle('active',r===name));
+  });
+  document.title=TITLES[name];
+  if(location.hash!=='#'+name) history.replaceState(null,'','#'+name);
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(name==='login') setTimeout(runCounters,350);
+}
+window.addEventListener('hashchange',()=>navigate(location.hash.replace('#','')));
+
+/* ---------- Counters ---------- */
+let countersDone=false;
+function runCounters(){
+  document.querySelectorAll('#view-login .stat-val').forEach(el=>{
+    const target=+el.dataset.target, dur=1600, start=performance.now();
+    const tick=now=>{
+      const p=Math.min(1,(now-start)/dur);
+      const eased=1-Math.pow(1-p,3);
+      el.textContent=Math.round(target*eased);
+      if(p<1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+/* ---------- Nav scroll + burger ---------- */
+const nav=document.getElementById('mainNav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>24),{passive:true});
+document.getElementById('burger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+
+/* ---------- Role tabs ---------- */
+const chosenRole={login:'admin',signup:'admin'};
+document.querySelectorAll('.role-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const form=btn.dataset.form;
+    chosenRole[form]=btn.dataset.role;
+    document.querySelectorAll('.role-tab[data-form="'+form+'"]').forEach(b=>b.classList.toggle('active',b===btn));
+  });
+});
+
+/* ---------- Password visibility ---------- */
+document.querySelectorAll('.eye-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const input=document.getElementById(btn.dataset.for);
+    const show=input.type==='password';
+    input.type=show?'text':'password';
+    btn.classList.toggle('showing',show);
+    btn.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+});
+
+/* ---------- Strength meter ---------- */
+function scorePassword(pw){
+  let s=0;
+  if(pw.length>=8)s++;
+  if(pw.length>=12)s++;
+  if(/[A-Z]/.test(pw)&&/[a-z]/.test(pw))s++;
+  if(/\d/.test(pw)||/[^A-Za-z0-9]/.test(pw))s++;
+  return Math.min(4,s);
+}
+function wireStrength(inputId,meterId,labelId){
+  const input=document.getElementById(inputId),meter=document.getElementById(meterId),label=document.getElementById(labelId);
+  const words=['—','Weak','Fair','Good','Strong'];
+  input.addEventListener('input',()=>{
+    const v=input.value, s=v?Math.max(1,scorePassword(v)):0;
+    meter.className='meter'+(v?' s'+s:'');
+    label.textContent=words[s];
+    label.style.color=s<=1?'#b0562f':s===2?'#d4871c':s===3?'#a0522d':'#3d6b2e';
+  });
+}
+wireStrength('suPass','suMeter','suMeterLabel');
+wireStrength('fpPass','fpMeter','fpMeterLabel');
+
+/* ---------- Banners & validation helpers ---------- */
+function setBanner(id,type,msg){
+  const b=document.getElementById(id);
+  b.className='banner show '+type;
+  b.innerHTML='<svg><use href="#i-'+(type==='error'?'alert':'check')+'"/></svg><span>'+msg+'</span>';
+}
+function clearBanner(id){document.getElementById(id).className='banner';}
+const emailOk=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+/* ---------- Login submit ---------- */
+document.getElementById('loginForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const em=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPass').value;
+  if(!emailOk(em)) return setBanner('loginBanner','error','Please enter a valid email address.');
+  if(!pw) return setBanner('loginBanner','error','Please enter your password.');
+  const role = chosenRole.login === 'admin' ? 'admin' : 'user';
+  
+  try {
+    const res = await fetch('/api/login/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: em, password: pw, role: role })
+    });
+    const data = await res.json();
+    if(data.success) {
+      setBanner('loginBanner','success','Namaste! ' + data.message + ' – opening your wellness dashboard…');
+      showToast('<span class="devanagari">नमस्ते</span> Welcome back to AyurPedia AI');
+      setTimeout(() => { window.location.href = '/query/'; }, 1200);
+    } else {
+      setBanner('loginBanner','error', data.error || 'Login failed.');
+    }
+  } catch(err) {
+    setBanner('loginBanner','error', 'Network error — please check your connection and try again.');
+  }
+});
+
+/* ---------- Signup submit ---------- */
+document.getElementById('signupForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f=document.getElementById('suFirst').value.trim();
+  const l=document.getElementById('suLast').value.trim();
+  const em=document.getElementById('suEmail').value.trim();
+  const pw=document.getElementById('suPass').value;
+  const cf=document.getElementById('suConfirm').value;
+  const ok=document.getElementById('suTerms').checked;
+  if(!f||!l) return setBanner('signupBanner','error','Please enter your first and last name.');
+  if(!emailOk(em)) return setBanner('signupBanner','error','Please enter a valid email address.');
+  if(pw.length<8) return setBanner('signupBanner','error','Password must be at least 8 characters long.');
+  if(scorePassword(pw)<2) return setBanner('signupBanner','error','Password is too weak – add numbers, symbols or length.');
+  if(pw!==cf) return setBanner('signupBanner','error','Passwords do not match.');
+  if(!ok) return setBanner('signupBanner','error','Please accept the Terms of Service and Privacy Policy.');
+  clearBanner('signupBanner');
+  const role = chosenRole.signup === 'admin' ? 'admin' : 'user';
+  
+  try {
+    const res = await fetch('/api/signup/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: f, last_name: l, email: em, password: pw, role: role })
+    });
+    const data = await res.json();
+    if(data.success) {
+      setBanner('signupBanner','success','Account created, '+f+'! <a href="#login" style="font-weight:700">Sign in now ✨</a>');
+      showToast('<span class="devanagari">शुभम्</span> Your AyurPedia journey begins');
+      e.target.reset();
+      document.getElementById('suMeter').className='meter';
+      document.getElementById('suMeterLabel').textContent='—';
+    } else {
+      setBanner('signupBanner','error', data.error || 'Signup failed.');
+    }
+  } catch (err) {
+    setBanner('signupBanner','error', 'Network error.');
+  }
+});
+
+/* ---------- Forgot submit ---------- */
+document.getElementById('forgotForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const em=document.getElementById('fpEmail').value.trim();
+  const pw=document.getElementById('fpPass').value;
+  const cf=document.getElementById('fpConfirm').value;
+  if(!emailOk(em)) return setBanner('forgotBanner','error','Please enter a valid email address.');
+  if(pw.length<8) return setBanner('forgotBanner','error','New password must be at least 8 characters long.');
+  if(scorePassword(pw)<2) return setBanner('forgotBanner','error','Password is too weak – add numbers, symbols or length.');
+  if(pw!==cf) return setBanner('forgotBanner','error','Passwords do not match.');
+  clearBanner('forgotBanner');
+  
+  try {
+    const res = await fetch('/api/forgot/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: em, password: pw })
+    });
+    const data = await res.json();
+    if(data.success) {
+      setBanner('forgotBanner','success','Password updated. <a href="#login" style="font-weight:700">Sign in with your new password ✨</a>');
+      showToast('<span class="devanagari">शान्ति</span> Password reset successfully');
+      e.target.reset();
+      document.getElementById('fpMeter').className='meter';
+      document.getElementById('fpMeterLabel').textContent='—';
+    } else {
+      setBanner('forgotBanner','error', data.error || 'Password reset failed.');
+    }
+  } catch (err) {
+    setBanner('forgotBanner','error', 'Network error.');
+  }
+});
+
+/* ---------- Search ---------- */
+const herbInput=document.getElementById('herbSearch');
+document.querySelectorAll('#herbSuggest .chip').forEach(ch=>{
+  ch.addEventListener('click',()=>{herbInput.value=ch.textContent;herbInput.focus();});
+});
+document.getElementById('searchForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const q=herbInput.value.trim();
+  showToast(q?('Searching “'+q.replace(/</g,'&lt;')+'” — sign in to explore full wisdom 🌿'):'Type a herb or topic to search');
+});
+
+/* ---------- Boot ---------- */
+navigate(location.hash.replace('#','')||'login');
+</script>
+</body>
+</html>

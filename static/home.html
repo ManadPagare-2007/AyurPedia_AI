@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AyurPedia — 150+ Texts, One Search | Ayurvedic Knowledge Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Philosopher:wght@400;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --forest:#1f3a1a;
+  --forest-deep:#0f1f0c;
+  --leaf:#3d6b2e;
+  --saffron:#d4871c;
+  --gold:#e8b94a;
+  --gold-bright:#f5cf5a;
+  --terracotta:#a0522d;
+  --parchment:#f4e8d0;
+  --parchment-dark:#e8d9b3;
+  --ink:#2a1810;
+  --cream:#fbf5e6;
+}
+body{
+  font-family:'Cormorant Garamond',serif;
+  background:var(--cream);
+  color:var(--ink);
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ============ BACKGROUND TEXTURE ============ */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(212,135,28,0.08) 0%,transparent 40%),
+    radial-gradient(circle at 80% 70%,rgba(61,107,46,0.08) 0%,transparent 40%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><path d='M30 5 Q35 15 30 25 Q25 15 30 5 Z' fill='%23d4871c' opacity='0.04'/></svg>");
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ============ NAVIGATION ============ */
+nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  padding:1rem 4%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:100;
+  background:rgba(251,245,230,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(212,135,28,0.2);
+  transition:all 0.3s;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:0.7rem;
+  cursor:pointer;
+}
+.logo-icon{
+  width:48px;height:48px;
+  position:relative;
+  animation:spinSlow 30s linear infinite;
+}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+.logo-text{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:1.6rem;
+  background:linear-gradient(135deg,var(--forest) 0%,var(--saffron) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+.logo-sub{
+  font-size:0.65rem;
+  color:var(--terracotta);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-top:-4px;
+  font-family:'Philosopher',sans-serif;
+}
+.nav-links{
+  display:flex;
+  gap:2rem;
+  list-style:none;
+  align-items:center;
+}
+.nav-links a{
+  text-decoration:none;
+  color:var(--forest);
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  position:relative;
+  transition:color 0.3s;
+}
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  bottom:-4px;left:0;
+  width:0;height:2px;
+  background:var(--saffron);
+  transition:width 0.3s;
+}
+.nav-links a:hover{color:var(--saffron)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  background:linear-gradient(135deg,var(--forest) 0%,var(--leaf) 100%);
+  color:var(--cream)!important;
+  padding:0.6rem 1.4rem;
+  border-radius:30px;
+  box-shadow:0 4px 15px rgba(31,58,26,0.3);
+  transition:transform 0.3s,box-shadow 0.3s;
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(31,58,26,0.4)}
+.nav-cta::after{display:none}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100vh;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8rem 4% 4rem;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;
+  inset:0;
+  z-index:0;
+}
+.mandala{
+  position:absolute;
+  width:900px;height:900px;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  opacity:0.08;
+  animation:spinSlow 120s linear infinite;
+}
+.floating-herb{
+  position:absolute;
+  opacity:0.6;
+  animation:floatHerb 8s ease-in-out infinite;
+}
+.floating-herb:nth-child(1){top:15%;left:8%;animation-delay:0s}
+.floating-herb:nth-child(2){top:25%;right:10%;animation-delay:1.5s}
+.floating-herb:nth-child(3){bottom:20%;left:12%;animation-delay:3s}
+.floating-herb:nth-child(4){bottom:30%;right:8%;animation-delay:4.5s}
+.floating-herb:nth-child(5){top:50%;left:5%;animation-delay:2s}
+.floating-herb:nth-child(6){top:60%;right:5%;animation-delay:5s}
+@keyframes floatHerb{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-25px) rotate(8deg)}
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  max-width:1100px;
+}
+.sanskrit-tag{
+  font-family:'Noto Serif Devanagari',serif;
+  color:var(--terracotta);
+  font-size:1.3rem;
+  letter-spacing:4px;
+  margin-bottom:1rem;
+  opacity:0.85;
+  animation:fadeUp 1s 0.2s both;
+}
+.hero h1{
+  font-family:'Cinzel',serif;
+  font-size:clamp(2.5rem,6vw,5rem);
+  font-weight:900;
+  line-height:1.1;
+  margin-bottom:1.5rem;
+  background:linear-gradient(135deg,var(--forest-deep) 0%,var(--forest) 40%,var(--saffron) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:fadeUp 1s 0.4s both;
+}
+.hero h1 .accent{
+  font-style:italic;
+  font-family:'Cormorant Garamond',serif;
+  font-weight:600;
+  color:var(--saffron);
+  -webkit-text-fill-color:var(--saffron);
+}
+.hero-subtitle{
+  font-size:clamp(1.1rem,2vw,1.5rem);
+  color:var(--ink);
+  max-width:750px;
+  margin:0 auto 2.5rem;
+  font-style:italic;
+  opacity:0.85;
+  animation:fadeUp 1s 0.6s both;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ============ SEARCH BAR ============ */
+.search-wrap{
+  position:relative;
+  max-width:780px;
+  margin:0 auto 2rem;
+  animation:fadeUp 1s 0.8s both;
+}
+.search-bar{
+  display:flex;
+  align-items:center;
+  background:rgba(255,255,255,0.9);
+  border:2px solid var(--gold);
+  border-radius:60px;
+  padding:0.5rem 0.5rem 0.5rem 1.8rem;
+  box-shadow:
+    0 10px 40px rgba(31,58,26,0.15),
+    0 0 0 1px rgba(232,185,74,0.3) inset;
+  transition:all 0.3s;
+}
+.search-bar:focus-within{
+  border-color:var(--saffron);
+  box-shadow:0 15px 50px rgba(212,135,28,0.25),0 0 0 1px var(--saffron) inset;
+  transform:translateY(-2px);
+}
+.search-icon{
+  width:28px;height:28px;
+  color:var(--saffron);
+  flex-shrink:0;
+}
+.search-bar input{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  padding:1rem 1rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;
+  color:var(--ink);
+}
+.search-bar input::placeholder{color:#8a7a5a;font-style:italic}
+.search-btn{
+  background:linear-gradient(135deg,var(--saffron) 0%,var(--gold) 100%);
+  color:var(--cream);
+  border:none;
+  padding:1rem 2rem;
+  border-radius:50px;
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1.05rem;
+  cursor:pointer;
+  letter-spacing:1px;
+  transition:all 0.3s;
+  box-shadow:0 4px 15px rgba(212,135,28,0.4);
+}
+.search-btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 6px 20px rgba(212,135,28,0.6);
+}
+.search-tags{
+  display:flex;
+  gap:0.6rem;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:1rem;
+  font-size:0.9rem;
+}
+.search-tags span{
+  color:var(--forest);
+  opacity:0.7;
+}
+.search-tags a{
+  background:rgba(255,255,255,0.6);
+  color:var(--forest);
+  padding:0.3rem 0.9rem;
+  border-radius:20px;
+  text-decoration:none;
+  font-family:'Philosopher',sans-serif;
+  border:1px solid rgba(61,107,46,0.2);
+  transition:all 0.3s;
+  cursor:pointer;
+}
+.search-tags a:hover{
+  background:var(--forest);
+  color:var(--cream);
+  border-color:var(--forest);
+}
+
+/* ============ DEMO BUTTON ============ */
+.demo-wrap{
+  animation:fadeUp 1s 1s both;
+  margin-bottom:3rem;
+}
+.demo-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:0.7rem;
+  background:transparent;
+  border:2px dashed var(--saffron);
+  color:var(--forest);
+  padding:0.8rem 1.8rem;
+  border-radius:50px;
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1rem;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+.demo-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  opacity:0;
+  transition:opacity 0.3s;
+  z-index:-1;
+}
+.demo-btn:hover{color:var(--cream);border-style:solid}
+.demo-btn:hover::before{opacity:1}
+.demo-btn svg{width:20px;height:20px}
+.pulse-dot{
+  width:10px;height:10px;
+  background:var(--saffron);
+  border-radius:50%;
+  position:relative;
+}
+.pulse-dot::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  border:2px solid var(--saffron);
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);opacity:1}
+  100%{transform:scale(2);opacity:0}
+}
+
+/* ============ TRUST INDICATORS ============ */
+.trust-bar{
+  display:flex;
+  justify-content:center;
+  gap:3rem;
+  flex-wrap:wrap;
+  margin-top:2rem;
+  animation:fadeUp 1s 1.2s both;
+}
+.trust-item{
+  text-align:center;
+  position:relative;
+}
+.trust-item::after{
+  content:"";
+  position:absolute;
+  right:-1.5rem;top:50%;
+  transform:translateY(-50%);
+  width:1px;height:40px;
+  background:linear-gradient(to bottom,transparent,var(--saffron),transparent);
+}
+.trust-item:last-child::after{display:none}
+.trust-num{
+  font-family:'Cinzel',serif;
+  font-size:2.5rem;
+  font-weight:900;
+  color:var(--forest);
+  line-height:1;
+}
+.trust-num .plus{color:var(--saffron)}
+.trust-label{
+  font-family:'Philosopher',sans-serif;
+  color:var(--terracotta);
+  font-size:0.95rem;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-top:0.3rem;
+}
+
+/* ============ DEMO PREVIEW ============ */
+.demo-preview{
+  max-width:1000px;
+  margin:4rem auto 0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(244,232,208,0.95));
+  border:1px solid rgba(212,135,28,0.3);
+  border-radius:20px;
+  padding:2rem;
+  box-shadow:0 20px 60px rgba(31,58,26,0.15);
+  position:relative;
+  overflow:hidden;
+  display:none;
+}
+.demo-preview.active{display:block;animation:fadeUp 0.6s both}
+.demo-preview::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,var(--forest),var(--saffron),var(--gold));
+}
+.demo-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:1.5rem;
+  padding-bottom:1rem;
+  border-bottom:1px dashed rgba(212,135,28,0.3);
+}
+.demo-title{
+  font-family:'Cinzel',serif;
+  color:var(--forest);
+  font-size:1.3rem;
+}
+.demo-close{
+  background:none;
+  border:none;
+  font-size:1.5rem;
+  color:var(--terracotta);
+  cursor:pointer;
+}
+.demo-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.5rem;
+}
+.formulation-card{
+  background:var(--cream);
+  border-radius:15px;
+  padding:1.5rem;
+  border:1px solid rgba(61,107,46,0.2);
+  position:relative;
+  transition:transform 0.3s;
+}
+.formulation-card:hover{transform:translateY(-5px)}
+.formulation-card.best{
+  border-color:var(--saffron);
+  box-shadow:0 10px 30px rgba(212,135,28,0.2);
+}
+.best-badge{
+  position:absolute;
+  top:-10px;right:15px;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  color:var(--cream);
+  padding:0.3rem 0.8rem;
+  border-radius:20px;
+  font-family:'Philosopher',sans-serif;
+  font-size:0.75rem;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.form-name{
+  font-family:'Cinzel',serif;
+  color:var(--forest);
+  font-size:1.2rem;
+  margin-bottom:0.5rem;
+}
+.form-type{
+  color:var(--terracotta);
+  font-style:italic;
+  font-size:0.9rem;
+  margin-bottom:1rem;
+}
+.form-desc{
+  font-size:0.95rem;
+  color:var(--ink);
+  margin-bottom:1rem;
+}
+.form-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+}
+.form-tags span{
+  background:rgba(61,107,46,0.1);
+  color:var(--forest);
+  padding:0.2rem 0.7rem;
+  border-radius:15px;
+  font-size:0.8rem;
+  font-family:'Philosopher',sans-serif;
+}
+
+/* ============ SECTION HEADERS ============ */
+section{position:relative;z-index:2;padding:5rem 4%}
+.section-header{
+  text-align:center;
+  margin-bottom:3.5rem;
+}
+.section-eyebrow{
+  font-family:'Philosopher',sans-serif;
+  color:var(--saffron);
+  letter-spacing:5px;
+  text-transform:uppercase;
+  font-size:0.9rem;
+  margin-bottom:0.8rem;
+}
+.section-title{
+  font-family:'Cinzel',serif;
+  font-size:clamp(2rem,4vw,3.2rem);
+  font-weight:900;
+  color:var(--forest);
+  margin-bottom:1rem;
+}
+.section-title .italic{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;
+  font-weight:600;
+  color:var(--saffron);
+}
+.section-sub{
+  max-width:700px;
+  margin:0 auto;
+  color:var(--ink);
+  opacity:0.8;
+  font-size:1.15rem;
+  font-style:italic;
+}
+
+/* ============ ROLE PICKER ============ */
+.roles{
+  background:linear-gradient(180deg,transparent,rgba(31,58,26,0.03),transparent);
+}
+.roles-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
+  max-width:1200px;
+  margin:0 auto;
+}
+.role-card{
+  background:var(--cream);
+  border:1px solid rgba(212,135,28,0.2);
+  border-radius:20px;
+  padding:2.5rem 2rem;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.4s;
+}
+.role-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:-100%;
+  width:100%;height:100%;
+  background:linear-gradient(135deg,rgba(212,135,28,0.1),rgba(61,107,46,0.1));
+  transition:left 0.6s;
+}
+.role-card:hover::before{left:0}
+.role-card:hover{
+  transform:translateY(-10px);
+  border-color:var(--saffron);
+  box-shadow:0 20px 50px rgba(31,58,26,0.15);
+}
+.role-icon{
+  width:90px;height:90px;
+  margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,var(--forest),var(--leaf));
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  transition:transform 0.4s;
+}
+.role-card:hover .role-icon{transform:rotate(10deg) scale(1.05)}
+.role-icon::after{
+  content:"";
+  position:absolute;
+  inset:-6px;
+  border:2px dashed var(--gold);
+  border-radius:50%;
+  animation:spinSlow 20s linear infinite;
+}
+.role-icon svg{width:45px;height:45px;color:var(--gold-bright)}
+.role-title{
+  font-family:'Cinzel',serif;
+  font-size:1.5rem;
+  color:var(--forest);
+  margin-bottom:0.5rem;
+  position:relative;
+}
+.role-desc{
+  color:var(--ink);
+  opacity:0.8;
+  font-size:1.05rem;
+  font-style:italic;
+  margin-bottom:1.5rem;
+  position:relative;
+}
+.role-features{
+  list-style:none;
+  text-align:left;
+  position:relative;
+}
+.role-features li{
+  padding:0.4rem 0;
+  color:var(--forest);
+  font-family:'Philosopher',sans-serif;
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  font-size:0.95rem;
+}
+.role-features li::before{
+  content:"❋";
+  color:var(--saffron);
+  font-size:1rem;
+}
+
+/* ============ FEATURES ============ */
+.features{
+  background:linear-gradient(180deg,rgba(31,58,26,0.04),rgba(244,232,208,0.3));
+}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:1.5rem;
+  max-width:1300px;
+  margin:0 auto;
+}
+.feature{
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(10px);
+  padding:2rem 1.5rem;
+  border-radius:15px;
+  border:1px solid rgba(212,135,28,0.15);
+  transition:all 0.3s;
+  position:relative;
+}
+.feature:hover{
+  background:rgba(255,255,255,0.95);
+  transform:translateY(-5px);
+  border-color:var(--saffron);
+}
+.feature-icon{
+  width:55px;height:55px;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:1.2rem;
+  box-shadow:0 8px 20px rgba(212,135,28,0.3);
+}
+.feature-icon svg{width:28px;height:28px;color:var(--cream)}
+.feature h3{
+  font-family:'Cinzel',serif;
+  color:var(--forest);
+  font-size:1.2rem;
+  margin-bottom:0.6rem;
+}
+.feature p{
+  color:var(--ink);
+  opacity:0.85;
+  font-size:1rem;
+}
+
+/* ============ CTA SECTION ============ */
+.cta-section{
+  text-align:center;
+  padding:6rem 4%;
+  position:relative;
+  overflow:hidden;
+}
+.cta-box{
+  max-width:900px;
+  margin:0 auto;
+  background:linear-gradient(135deg,var(--forest-deep),var(--forest));
+  border-radius:30px;
+  padding:4rem 3rem;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(31,58,26,0.3);
+}
+.cta-box::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='none' stroke='%23d4871c' stroke-width='0.5' opacity='0.2'/><circle cx='50' cy='50' r='25' fill='none' stroke='%23e8b94a' stroke-width='0.5' opacity='0.2'/></svg>");
+  opacity:0.3;
+}
+.cta-box h2{
+  font-family:'Cinzel',serif;
+  color:var(--cream);
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  margin-bottom:1rem;
+  position:relative;
+}
+.cta-box p{
+  color:var(--parchment);
+  font-size:1.2rem;
+  font-style:italic;
+  margin-bottom:2rem;
+  max-width:600px;
+  margin-left:auto;
+  margin-right:auto;
+  position:relative;
+}
+.cta-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:0.7rem;
+  background:linear-gradient(135deg,var(--saffron),var(--gold));
+  color:var(--forest-deep);
+  padding:1rem 2.5rem;
+  border-radius:50px;
+  text-decoration:none;
+  font-family:'Philosopher',sans-serif;
+  font-weight:700;
+  font-size:1.1rem;
+  letter-spacing:1px;
+  transition:all 0.3s;
+  position:relative;
+  box-shadow:0 10px 30px rgba(212,135,28,0.4);
+}
+.cta-btn:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 15px 40px rgba(212,135,28,0.6);
+}
+
+/* ============ FOOTER ============ */
+footer{
+  background:var(--forest-deep);
+  color:var(--parchment);
+  padding:3rem 4% 1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+footer::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,var(--forest),var(--saffron),var(--gold),var(--saffron),var(--forest));
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:3rem;
+  max-width:1300px;
+  margin:0 auto 2rem;
+}
+.footer-brand p{
+  opacity:0.8;
+  margin-top:1rem;
+  max-width:350px;
+  font-style:italic;
+}
+.footer-col h4{
+  font-family:'Cinzel',serif;
+  color:var(--gold);
+  margin-bottom:1rem;
+  font-size:1.1rem;
+}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:0.5rem}
+.footer-col a{
+  color:var(--parchment);
+  text-decoration:none;
+  opacity:0.75;
+  transition:opacity 0.3s,color 0.3s;
+  font-family:'Philosopher',sans-serif;
+}
+.footer-col a:hover{opacity:1;color:var(--gold)}
+.footer-bottom{
+  text-align:center;
+  padding-top:1.5rem;
+  border-top:1px solid rgba(232,185,74,0.2);
+  opacity:0.7;
+  font-size:0.9rem;
+}
+.footer-sanskrit{
+  font-family:'Noto Serif Devanagari',serif;
+  color:var(--gold);
+  font-size:1rem;
+  margin-bottom:0.5rem;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:768px){
+  .nav-links{display:none}
+  .trust-bar{gap:1.5rem}
+  .trust-item::after{display:none}
+  .demo-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  .cta-box{padding:3rem 1.5rem}
+  section{padding:3.5rem 4%}
+}
+@media (max-width:480px){
+  .footer-grid{grid-template-columns:1fr}
+  .search-btn{padding:0.8rem 1.2rem;font-size:0.9rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<nav>
+  <div class="logo">
+    <svg class="logo-icon" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1f3a1a"/>
+          <stop offset="100%" stop-color="#d4871c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="2"/>
+      <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGrad)" stroke-width="1.5"/>
+      <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="url(#logoGrad)"/>
+      <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="url(#logoGrad)"/>
+      <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="url(#logoGrad)"/>
+      <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="url(#logoGrad)"/>
+      <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+    </svg>
+    <div>
+      <div class="logo-text">AyurPedia</div>
+      <div class="logo-sub">Ancient Wisdom · Modern Search</div>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="/static/home.html">Home</a></li>
+    <li><a href="/static/library.html">Library</a></li>
+    <li><a href="#roles">For You</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="/reviews/">Reviews</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="/static/login.html" class="nav-cta">Begin Journey</a></li>
+  </ul>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="hero-bg">
+    <!-- Mandala -->
+    <svg class="mandala" viewBox="0 0 400 400">
+      <g fill="none" stroke="#d4871c" stroke-width="0.5">
+        <circle cx="200" cy="200" r="190"/>
+        <circle cx="200" cy="200" r="170"/>
+        <circle cx="200" cy="200" r="150"/>
+        <circle cx="200" cy="200" r="130"/>
+        <circle cx="200" cy="200" r="110"/>
+        <circle cx="200" cy="200" r="90"/>
+        <circle cx="200" cy="200" r="70"/>
+        <g id="petals">
+          <path d="M200 20 Q215 100 200 200 Q185 100 200 20 Z"/>
+        </g>
+        <use href="#petals" transform="rotate(30 200 200)"/>
+        <use href="#petals" transform="rotate(60 200 200)"/>
+        <use href="#petals" transform="rotate(90 200 200)"/>
+        <use href="#petals" transform="rotate(120 200 200)"/>
+        <use href="#petals" transform="rotate(150 200 200)"/>
+        <use href="#petals" transform="rotate(180 200 200)"/>
+        <use href="#petals" transform="rotate(210 200 200)"/>
+        <use href="#petals" transform="rotate(240 200 200)"/>
+        <use href="#petals" transform="rotate(270 200 200)"/>
+        <use href="#petals" transform="rotate(300 200 200)"/>
+        <use href="#petals" transform="rotate(330 200 200)"/>
+      </g>
+    </svg>
+
+    <!-- Floating herbs -->
+    <svg class="floating-herb" width="80" height="80" viewBox="0 0 100 100">
+      <path d="M50 10 Q70 30 70 50 Q70 70 50 90 Q30 70 30 50 Q30 30 50 10 Z" fill="#3d6b2e" opacity="0.7"/>
+      <path d="M50 15 L50 85" stroke="#1f3a1a" stroke-width="1.5"/>
+      <path d="M50 30 Q60 35 65 45" stroke="#1f3a1a" stroke-width="1" fill="none"/>
+      <path d="M50 50 Q40 55 35 65" stroke="#1f3a1a" stroke-width="1" fill="none"/>
+    </svg>
+    <svg class="floating-herb" width="70" height="70" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="30" fill="#d4871c" opacity="0.6"/>
+      <circle cx="50" cy="50" r="20" fill="#e8b94a" opacity="0.7"/>
+      <circle cx="50" cy="50" r="10" fill="#a0522d" opacity="0.8"/>
+      <g stroke="#1f3a1a" stroke-width="1" fill="none">
+        <path d="M50 20 Q55 35 50 50"/>
+        <path d="M80 50 Q65 55 50 50"/>
+        <path d="M50 80 Q45 65 50 50"/>
+        <path d="M20 50 Q35 45 50 50"/>
+      </g>
+    </svg>
+    <svg class="floating-herb" width="90" height="90" viewBox="0 0 100 100">
+      <path d="M50 10 Q65 25 65 50 Q65 75 50 90 Q35 75 35 50 Q35 25 50 10 Z" fill="#3d6b2e" opacity="0.6"/>
+      <path d="M50 10 Q55 30 50 50 Q45 30 50 10 Z" fill="#1f3a1a" opacity="0.4"/>
+      <path d="M50 90 Q55 70 50 50 Q45 70 50 90 Z" fill="#1f3a1a" opacity="0.4"/>
+    </svg>
+    <svg class="floating-herb" width="60" height="60" viewBox="0 0 100 100">
+      <path d="M50 20 C70 30 70 70 50 80 C30 70 30 30 50 20 Z" fill="#a0522d" opacity="0.5"/>
+      <path d="M50 25 L50 75" stroke="#1f3a1a" stroke-width="1.5"/>
+    </svg>
+    <svg class="floating-herb" width="75" height="75" viewBox="0 0 100 100">
+      <g fill="#3d6b2e" opacity="0.6">
+        <ellipse cx="50" cy="30" rx="8" ry="15"/>
+        <ellipse cx="35" cy="50" rx="8" ry="15" transform="rotate(-60 35 50)"/>
+        <ellipse cx="65" cy="50" rx="8" ry="15" transform="rotate(60 65 50)"/>
+        <ellipse cx="40" cy="70" rx="8" ry="15" transform="rotate(-30 40 70)"/>
+        <ellipse cx="60" cy="70" rx="8" ry="15" transform="rotate(30 60 70)"/>
+      </g>
+      <circle cx="50" cy="50" r="5" fill="#d4871c"/>
+    </svg>
+    <svg class="floating-herb" width="65" height="65" viewBox="0 0 100 100">
+      <path d="M50 15 Q60 40 50 85 Q40 40 50 15 Z" fill="#d4871c" opacity="0.6"/>
+      <path d="M50 20 L50 80" stroke="#1f3a1a" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="sanskrit-tag">ॐ आयुर्वेदः ॥</div>
+    <h1>150+ Ancient Texts,<br/><span class="accent">One Intelligent Search</span></h1>
+    <p class="hero-subtitle">
+      The definitive Ayurvedic knowledge engine — surfacing the perfect formulation for every constellation of symptoms, grounded in centuries of textual wisdom.
+    </p>
+
+    <!-- Search Bar -->
+    <div class="search-wrap">
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search symptoms, herbs, or formulations (e.g., Jvara, Kasa, Punarnava)..."/>
+        <button class="search-btn">Explore</button>
+      </div>
+      <div class="search-tags">
+        <span>Popular:</span>
+        <a onclick="fillSearch('Jvara')">Jvara (Fever)</a>
+        <a onclick="fillSearch('Kasa')">Kasa (Cough)</a>
+        <a onclick="fillSearch('Punarnava')">Punarnava</a>
+        <a onclick="fillSearch('Pinasa')">Pinasa (Cold)</a>
+      </div>
+    </div>
+
+    <!-- Demo Button -->
+    <div class="demo-wrap">
+      <button class="demo-btn" onclick="showDemo()">
+        <span class="pulse-dot"></span>
+        Try a live demo query
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Trust Indicators -->
+    <div class="trust-bar">
+      <div class="trust-item">
+        <div class="trust-num"><span class="counter" data-target="150">0</span><span class="plus">+</span></div>
+        <div class="trust-label">Classical Texts</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num"><span class="counter" data-target="12500">0</span><span class="plus">+</span></div>
+        <div class="trust-label">Formulations</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num"><span class="counter" data-target="3200">0</span><span class="plus">+</span></div>
+        <div class="trust-label">Single Herbs</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num"><span class="counter" data-target="48">0</span><span class="plus">+</span></div>
+        <div class="trust-label">Languages Indexed</div>
+      </div>
+    </div>
+
+    <!-- Demo Preview -->
+    <div class="demo-preview" id="demoPreview">
+      <div class="demo-header">
+        <div class="demo-title">🔍 Demo Query: <em>Jvara + Kasa</em></div>
+        <button class="demo-close" onclick="hideDemo()">✕</button>
+      </div>
+      <div class="demo-grid">
+        <div class="formulation-card">
+          <div class="form-name">Punarnavadi Kashaya</div>
+          <div class="form-type">Decoction · Anti-inflammatory</div>
+          <div class="form-desc">Best suited for conditions with systemic inflammatory changes across the body. Addresses Jvara and Kasa with widespread involvement.</div>
+          <div class="form-tags">
+            <span>Jvara</span><span>Kasa</span><span>Shotha</span><span>Inflammation</span>
+          </div>
+        </div>
+        <div class="formulation-card best">
+          <div class="best-badge">✦ RECOMMENDED</div>
+          <div class="form-name">Vyaghryadi Kashaya</div>
+          <div class="form-type">Decoction · Respiratory Specialist</div>
+          <div class="form-desc">Ideal for upper respiratory tract infections like common cold (Pinasa). Targets localized respiratory Jvara and Kasa effectively.</div>
+          <div class="form-tags">
+            <span>Jvara</span><span>Kasa</span><span>Pinasa</span><span>URI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROLE PICKER ============ -->
+<section class="roles" id="roles">
+  <div class="section-header">
+    <div class="section-eyebrow">Tailored For You</div>
+    <h2 class="section-title">Choose Your <span class="italic">Path</span></h2>
+    <p class="section-sub">Whether you're decoding ancient manuscripts or diagnosing modern patients, AyurPedia adapts to your journey.</p>
+  </div>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+      </div>
+      <h3 class="role-title">Student</h3>
+      <p class="role-desc">Immerse yourself in classical knowledge with guided learning paths.</p>
+      <ul class="role-features">
+        <li>Contextual text references</li>
+        <li>Synonym explorer</li>
+        <li>Rasa-Guna-Virya profiles</li>
+        <li>Learning flashcards</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>
+        </svg>
+      </div>
+      <h3 class="role-title">Practitioner</h3>
+      <p class="role-desc">Clinical decision support at the speed of thought.</p>
+      <ul class="role-features">
+        <li>Symptom constellation matcher</li>
+        <li>Contraindication alerts</li>
+        <li>Patient-specific filters</li>
+        <li>Dosage & Anupana guide</li>
+      </ul>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 2v7.31"/>
+          <path d="M14 9.3V2"/>
+          <path d="M8.5 2h7"/>
+          <path d="M14 9.3a6.5 6.5 0 1 1-4 0"/>
+        </svg>
+      </div>
+      <h3 class="role-title">Researcher</h3>
+      <p class="role-desc">Cross-reference manuscripts and mine textual patterns.</p>
+      <ul class="role-features">
+        <li>Multi-text comparison</li>
+        <li>Exportable citations</li>
+        <li>Script & language filters</li>
+        <li>API access for studies</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features" id="features">
+  <div class="section-header">
+    <div class="section-eyebrow">Core Capabilities</div>
+    <h2 class="section-title">Built on <span class="italic">Wisdom</span>, Powered by Precision</h2>
+    <p class="section-sub">Every feature designed to honor the depth of Ayurvedic tradition while embracing modern intelligence.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+      </div>
+      <h3>Smart Symptom Search</h3>
+      <p>Input a constellation of symptoms — receive the most appropriate formulation with textual justification.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h3>Synonym Intelligence</h3>
+      <p>Jvara = Santapa. Abhaya changes meaning by context. Our engine understands every alias across texts.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h3>Safety Guardrails</h3>
+      <p>Automatic alerts for contraindications — jaggery for diabetics, fermented mediums where unsuitable.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+      </div>
+      <h3>Textual References</h3>
+      <p>Every recommendation cites its source manuscript — Sharrngadhara Samhita, Bhaishajya Ratnavali, and more.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 7h-9M14 17H5"/>
+          <circle cx="17" cy="17" r="3"/>
+          <circle cx="7" cy="7" r="3"/>
+        </svg>
+      </div>
+      <h3>Rasa-Guna-Virya</h3>
+      <p>Complete pharmacological profiles — taste, potency, post-digestive effect — for single drugs and compounds.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <h3>Multi-Script Support</h3>
+      <p>Search in Devanagari, Sanskrit romanization, or regional languages — the engine understands them all.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-section">
+  <div class="cta-box">
+    <h2>Begin Your Journey Through<br/>Ancient Healing Wisdom</h2>
+    <p>Join thousands of students, practitioners, and researchers unlocking the treasures of Ayurvedic literature.</p>
+    <a href="/static/login.html" class="cta-btn">
+      Enter AyurPedia
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#e8b94a" stroke-width="2"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#e8b94a" stroke-width="1.5"/>
+          <path d="M50 20 Q55 35 50 50 Q45 35 50 20 Z" fill="#e8b94a"/>
+          <path d="M50 80 Q55 65 50 50 Q45 65 50 80 Z" fill="#e8b94a"/>
+          <path d="M20 50 Q35 55 50 50 Q35 45 20 50 Z" fill="#e8b94a"/>
+          <path d="M80 50 Q65 55 50 50 Q65 45 80 50 Z" fill="#e8b94a"/>
+          <circle cx="50" cy="50" r="6" fill="#d4871c"/>
+        </svg>
+        <div>
+          <div class="logo-text" style="background:linear-gradient(135deg,#e8b94a,#d4871c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">AyurPedia</div>
+          <div class="logo-sub" style="color:#e8b94a">Ancient Wisdom · Modern Search</div>
+        </div>
+      </div>
+      <p>Bridging millennia of Ayurvedic knowledge with contemporary technology — for students, practitioners, and researchers worldwide.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#">Formulations</a></li>
+        <li><a href="#">Single Herbs</a></li>
+        <li><a href="#">Classical Texts</a></li>
+        <li><a href="#">Disease Index</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">API Access</a></li>
+        <li><a href="#">Research Papers</a></li>
+        <li><a href="#">Glossary</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-sanskrit">ॐ सर्वे भवन्तु सुखिनः ॥</div>
+    <div>© 2026 AyurPedia · Preserving Tradition, Empowering Practice</div>
+  </div>
+</footer>
+
+<script>
+/* ============ COUNTER ANIMATION ============ */
+const counters = document.querySelectorAll('.counter');
+const animateCounter = (counter) => {
+  const target = +counter.dataset.target;
+  const duration = 2000;
+  const step = target / (duration / 16);
+  let current = 0;
+  const update = () => {
+    current += step;
+    if (current < target) {
+      counter.textContent = Math.floor(current).toLocaleString();
+      requestAnimationFrame(update);
+    } else {
+      counter.textContent = target.toLocaleString();
+    }
+  };
+  update();
+};
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => counterObserver.observe(c));
+
+/* ============ SEARCH INTERACTION ============ */
+function fillSearch(text) {
+  const input = document.getElementById('searchInput');
+  input.value = text;
+  input.focus();
+  input.style.transition = 'all 0.3s';
+  input.style.background = 'rgba(232,185,74,0.1)';
+  setTimeout(() => input.style.background = 'transparent', 600);
+}
+
+/* ============ DEMO PREVIEW ============ */
+function showDemo() {
+  const preview = document.getElementById('demoPreview');
+  preview.classList.add('active');
+  preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function hideDemo() {
+  document.getElementById('demoPreview').classList.remove('active');
+}
+
+/* ============ NAVBAR SCROLL EFFECT ============ */
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 50) {
+    nav.style.boxShadow = '0 5px 20px rgba(31,58,26,0.1)';
+    nav.style.padding = '0.7rem 4%';
+  } else {
+    nav.style.boxShadow = 'none';
+    nav.style.padding = '1rem 4%';
+  }
+});
+
+/* ============ SEARCH BAR ENTER KEY ============ */
+document.getElementById('searchInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (val) {
+      alert(`🔍 Searching AyurPedia for: "${val}"\n\n(In production, this would query the full database of 150+ texts)`);
+    }
+  }
+});
+
+/* ============ PARALLAX ON HERO HERBS ============ */
+document.addEventListener('mousemove', (e) => {
+  const herbs = document.querySelectorAll('.floating-herb');
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 20;
+  herbs.forEach((herb, i) => {
+    const depth = (i + 1) * 0.3;
+    herb.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+  });
+});
+
+/* ============ ROLE CARD CLICK ============ */
+document.querySelectorAll('.role-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const role = card.querySelector('.role-title').textContent;
+    alert(`Welcome, ${role}! 🌿\n\nYour personalized AyurPedia experience would load here.`);
+  });
+});
+</script>
+</body>
+</html>
