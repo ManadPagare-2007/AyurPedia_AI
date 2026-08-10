@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-)!t620hqh2=vvr_r3o)xk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app','ayurpedia-ai-git-main-manadpagare-2007s-projects.vercel.app']
 
 
 # Application definition
