@@ -376,30 +376,48 @@ const SYM = {
 const FORMS = [
  {id:'vyaghryadi',n:'Vyaghryadi Kashaya',dev:'व्याघ्र्यादि काषायः',form:'Kashaya',ind:['jvara','kasa','pinasa','shvasa'],dosha:['Vata','Kapha'],region:'Pan-India',
   src:[['Charaka Samhita','Chikitsa 3'],['Ashtanga Hridaya','Uttara 39']],props:'Rasa Katu·Tikta · Guna Laghu·Ruksha · Virya Ushna · Vipaka Katu',unsafe:[{com:'pregnancy',t:'Ushna–Katu potency — caution in Garbhini'}],
+  recipe:'Kantakari, Shunthi, Guduchi, Pippali',
+  process:'Boil equal parts (e.g., 10g each) of the coarse herbs in 16 parts water. Reduce to 1/4th. Administer 40ml twice a day.',
   tip:'its Kantakari–Vyaghri pair opens the upper channels, clearing the nasal congestion of Pinasa and the breath-tightness of Shvasa'},
  {id:'punarnavadi',n:'Punarnavadi Kashaya',dev:'पुनर्नवादि काषायः',form:'Kashaya',ind:['jvara','kasa','shopha','pandu'],dosha:['Pitta','Kapha'],region:'South',
   src:[['Charaka Samhita','Chikitsa 16'],['Bhavaprakasha','Madhya 16']],props:'Rasa Tikta·Madhura · Guna Laghu · Virya Shita · Vipaka Madhura',unsafe:[],
+  recipe:'Punarnava, Nimba, Patola, Shunthi, Guduchi, Haritaki',
+  process:'Take 1 part of each herb. Add 16 parts of water, boil, and reduce to 1/4th volume to extract the water-soluble principles.',
   tip:'Punarnava’s Tikta–Shita, cooling action drains Shopha — inflammatory swelling that spreads through the body — and calms Pitta'},
  {id:'sitopaladi',n:'Sitopaladi Churna',dev:'शितोपलादि चूर्णम्',form:'Churna',ind:['kasa','pinasa','shvasa','jvara'],dosha:['Kapha','Pitta','Vata'],region:'North',
   src:[['Bhavaprakasha','Churna Khanda'],['Yoga Ratnakara','Kasa']],props:'Rasa Madhura · Guna Guru·Snigdha · Virya Shita · Vipaka Madhura',unsafe:[{com:'diabetes',t:'Contains sugar-candy (Mishri) base'}],
+  recipe:'Sitopala, Vamshalochana, Pippali, Ela, Tvak',
+  process:'Mix 16 parts Sitopala (sugar), 8 parts Vamshalochana, 4 parts Pippali, 2 parts Ela, and 1 part Tvak as fine powders.',
   tip:'a gentle cooling churna that soothes dry, hot coughs and post-fever throat irritation'},
  {id:'dashamula',n:'Dashamula Kashaya',dev:'दशमूल काषायः',form:'Kashaya',ind:['jvara','shopha','angamarda','klama'],dosha:['Vata'],region:'Pan-India',
   src:[['Sushruta Samhita','Uttara 39'],['Ashtanga Hridaya','Uttara']],props:'Rasa Katu·Tikta · Guna Laghu · Virya Ushna · Vipaka Katu',unsafe:[],
+  recipe:'Bilva, Agnimantha, Shyonaka, Patala, Gambhari, etc.',
+  process:'Take equal parts of the 10 roots, coarsely powder, and boil 40g in 640ml water, reducing to 160ml (standard decoction).',
   tip:'the ten-root group pacifies Vata aches (Angamarda) and low-grade inflammatory Shopha during febrile fatigue'},
  {id:'chyavanaprasha',n:'Chyavanaprasha Avaleha',dev:'च्यवनप्राश अवलेहः',form:'Avaleha',ind:['kasa','shvasa','pinasa','klama'],dosha:['Vata','Pitta','Kapha'],region:'Pan-India',
   src:[['Charaka Samhita','Chikitsa 1']],props:'Rasa Amla·Madhura · Guna Guru · Virya Ushna · Vipaka Amla',unsafe:[{com:'diabetes',t:'Contains jaggery (Guda) medium'}],
+  recipe:'Amalaki, Dashamula, Ashvagandha, Pippali, Guda',
+  process:'Boil 50 Amalaki with Dashamula decoction. Fry the pulp in ghee and sesame oil, then mix with jaggery syrup and spices.',
   tip:'a rasayana jam that rebuilds strength in chronic cough, breathlessness and post-fever exhaustion'},
  {id:'draksharishta',n:'Draksharishta',dev:'द्राक्षारिष्टः',form:'Arishta (fermented)',ind:['jvara','daha','aruchi','klama'],dosha:['Pitta'],region:'West',
   src:[['Charaka Samhita','Chikitsa 3'],['Sharngadhara Samhita','Arishta']],props:'Rasa Madhura·Amla · Guna Snigdha · Virya Shita · Vipaka Amla',unsafe:[{com:'diabetes',t:'Fermented / alcoholic medium (Arishta)'},{com:'pregnancy',t:'Alcoholic medium (Arishta)'}],
+  recipe:'Draksha, Dhataki, Jatiphala, Lavanga, Sharkara',
+  process:'Boil Draksha in water, reduce to 1/4th. Add jaggery, Dhataki flowers, and spices. Ferment in a sealed vat for 30 days.',
   tip:'a cooling fermented tonic for Pitta fevers with burning (Daha) and tastelessness — the medium itself is the caution'},
  {id:'sudarsana',n:'Sudarsana Churna',dev:'सुदर्शन चूर्णम्',form:'Churna',ind:['jvara','shopha','aruchi','daha'],dosha:['Pitta','Kapha'],region:'Pan-India',
   src:[['Sharngadhara Samhita','Khanda 2'],['Bhavaprakasha','Jvara']],props:'Rasa Tikta·Kashaya · Guna Laghu · Virya Shita · Vipaka Katu',unsafe:[],
+  recipe:'Kiratatikta, Haritaki, Bibhitaki, Amalaki, etc.',
+  process:'Take equal parts of 52 bitter herbs, with Kiratatikta making up 50% of the total mixture. Powder finely and mix well.',
   tip:'the classical “fever powder” for toxic Jvara with burning and loss of taste'},
  {id:'shadanga',n:'Shadanga Paniya',dev:'षडङ्ग पानीयम्',form:'Paniya (infusion)',ind:['jvara','angamarda','aruchi'],dosha:['Vata','Pitta','Kapha'],region:'East',
   src:[['Ashtanga Hridaya','Uttara 39']],props:'Rasa Kashaya·Tikta · Guna Laghu · Virya Shita · Vipaka Katu',unsafe:[],
+  recipe:'Musta, Parpataka, Ushira, Chandana, Udichya, Nagara',
+  process:'Add 10g of the six-herb coarse powder to 640ml boiling water, reduce to half (320ml). Serve cooled as a daily drink.',
   tip:'six-herb infusion for Santapa–Jvara across all doshas — a light, safe medium'},
  {id:'talisadi',n:'Talisadi Churna',dev:'तलीसादि चूर्णम्',form:'Churna',ind:['kasa','pinasa','shvasa','aruchi'],dosha:['Kapha','Vata'],region:'North',
   src:[['Yoga Ratnakara','Kasa'],['Bhavaprakasha','Churna']],props:'Rasa Katu·Madhura · Guna Laghu · Virya Ushna · Vipaka Katu',unsafe:[{com:'diabetes',t:'Traditionally taken with honey & sugar'}],
+  recipe:'Talisa Patra, Maricha, Shunthi, Pippali, Vamshalochana',
+  process:'Mix 1 part Talisa, 2 parts Maricha, 3 parts Shunthi, 4 parts Pippali, 5 parts Vamshalochana, and 30 parts Sugar.',
   tip:'a warming churna for congested coughs with weak digestion (Mandagni)'}
 ];
 const COMLBL={diabetes:'diabetic patients',pregnancy:'pregnancy'};
@@ -520,6 +538,8 @@ function renderDiff(){
       <div class="pct">${r?r.pct:0}%<small>MATCH</small></div></div>
       <div class="tips">${dec.length?`<b>Tips the scale:</b> ${labels(dec)} — present in your query, covered only here.`:(uniq.length?`<b>Unique reach:</b> ${labels(uniq.slice(0,2))}`:`<b>No unique edge</b> in this pairing`)}</div>
       <div class="drow"><span class="k">Form & Dosha</span><span class="v">${f.form} · ${doshaTxt(f)}</span></div>
+      <div class="drow"><span class="k">Recipe</span><span class="v">${f.recipe || 'Classical Herbs'}</span></div>
+      <div class="drow"><span class="k">Preparation</span><span class="v" style="display:block;margin-top:4px;font-size:13.5px;line-height:1.5">${f.process || 'Standard preparation.'}</span></div>
       <div class="drow"><span class="k">Properties</span><span class="v">${f.props}</span></div>
       <div class="drow"><span class="k">Source</span><span class="v">${f.src.map(s=>s[0]+' '+s[1]).join(' · ')}</span></div>
       ${flags(f).length?`<div class="safetyrow">${flags(f).map(u=>`<span class="safety"><span class="sq"></span>${u.t}</span>`).join('')}</div>`:''}
